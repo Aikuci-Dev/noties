@@ -1,0 +1,22 @@
+# Dependencies
+node_modules
+
+# Logs
+logs
+*.log*
+
+# .Env
+.env
+.env.*
+!.env.example
+
+# mise Config
+mise.*local.toml
+
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist

@@ -1,0 +1,12 @@
+experimental_monorepo_root = true
+
+[tools]
+deno = "2.7.2"
+node = "25.8.0"
+pnpm = "10.30.3"
+
+[env]
+MISE_EXPERIMENTAL = 1
+
+[tasks.dev]
+depends = ["//apps/...:dev"]

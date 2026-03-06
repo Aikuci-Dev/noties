@@ -1,0 +1,12 @@
+{
+  "workspace": ["apps/**"],
+  "lint": {
+    "rules": {
+      "exclude": ["no-sloppy-imports"]
+    }
+  },
+  "fmt": {
+    "exclude": ["./pnpm-lock.yaml"],
+    "lineWidth": 120
+  }
+}
