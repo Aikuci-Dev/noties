@@ -10,6 +10,8 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@antv/x6": "^3.1.6",
+    "@dagrejs/dagre": "^2.0.4",
     "@nuxt/ui": "^4.5.1",
     "nuxt": "^4.3.1",
     "tailwindcss": "^4.2.1",
