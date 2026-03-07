@@ -24,8 +24,8 @@ const dagreRankdir: DagreRankdir = "TB";
 
 const graphGap = 20;
 const nodePersonDimension = { height: 80, width: 280 };
-Graph.registerNode(NODE_PERSON, nodePerson(nodePersonDimension));
-Graph.registerEdge(EDGE_LINE, line);
+Graph.registerNode(NODE_PERSON, nodePerson(nodePersonDimension), true);
+Graph.registerEdge(EDGE_LINE, line, true);
 
 // https://nuxt.com/docs/4.x/api/components/client-only#accessing-html-elements
 const graphRef = useTemplateRef("graph");
