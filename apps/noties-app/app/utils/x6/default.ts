@@ -1,16 +1,14 @@
 import type { Cell, Graph, Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
-export function createEdgeLine({ graph, options }: { graph: Graph; options: { source?: Cell; target?: Cell } }) {
+export function createEdgeLine({ graph, options }: { graph: Graph; options: { source: Cell; target: Cell } }) {
   const { source, target } = options;
 
-  if (source && target) {
-    return graph.createEdge({
-      shape: EDGE_LINE,
-      source: { cell: source.id },
-      target: { cell: target.id },
-    });
-  }
+  return graph.createEdge({
+    shape: EDGE_LINE,
+    source: { cell: source.id },
+    target: { cell: target.id },
+  });
 }
 
 type LayoutArgs = {

@@ -1,4 +1,3 @@
-import { createEdgeLine, layout } from "./x6/default";
-import { createNodePerson } from "./x6/person";
-
-export { createEdgeLine, createNodePerson, layout };
+export { BidirectionalNodeEntityMap } from "./x6/utils";
+export { createEdgeLine, layout } from "./x6/default";
+export { createNodePerson } from "./x6/person";
