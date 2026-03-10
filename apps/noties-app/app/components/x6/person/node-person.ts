@@ -1,10 +1,5 @@
 import type { Graph } from "@antv/x6";
 
-// Known minor Deno LSP bug: https://github.com/denoland/deno/issues/32549
-// Issue: Nuxt AutoImports shared types are inferred as `any`, causing type safety loss.
-import type { Nullable } from "~/utils/utils";
-import type { Gender } from "~/utils/const";
-
 export function resolveFillColor(options: { light?: boolean; gender?: Nullable<Gender>; isDead?: boolean }) {
   const { light, gender, isDead } = options;
 

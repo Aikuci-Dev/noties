@@ -1,5 +1,5 @@
 {
-  "workspace": ["apps/**"],
+  "workspace": ["apps/*"],
   "lint": {
     "rules": {
       "exclude": ["no-sloppy-imports"]

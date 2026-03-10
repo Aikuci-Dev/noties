@@ -1,8 +1,8 @@
 {
   "recommendations": [
+    "ayonli.deno-tools",
     "bradlc.vscode-tailwindcss",
     "dejmedus.tailwind-sorter",
-    "denoland.vscode-deno",
     "donjayamanne.githistory",
     "vue.volar"
   ]

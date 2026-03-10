@@ -8,15 +8,15 @@ export function minMax(a: number, b: number): readonly [number, number] {
   return [Math.min(a, b), Math.max(a, b)];
 }
 
-export function createPairKey<T>(id1: Id, id2: Id): EntityPairKey<T> {
+export function createPairKey<T extends { id: Id }>(id1: Id, id2: Id): EntityPairKey<T> {
   return createPairKeyWithParts(id1, id2).key;
 }
-type PairKeyParts<T> = {
+type PairKeyParts<T extends { id: Id }> = {
   key: EntityPairKey<T>;
   prefix: string;
   suffix: string;
 };
-export function createPairKeyWithParts<T>(id1: Id, id2: Id): PairKeyParts<T> {
+export function createPairKeyWithParts<T extends { id: Id }>(id1: Id, id2: Id): PairKeyParts<T> {
   const a = String(id1);
   const b = String(id2);
 
