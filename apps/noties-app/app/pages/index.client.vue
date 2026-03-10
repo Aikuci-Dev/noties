@@ -24,39 +24,92 @@ import { nodePerson, nodePersonRelationship } from "~/components/x6/person/node-
 const gridSize = 20;
 const nodePersonDimension = { height: gridSize * 3, width: gridSize * 12 };
 const dagreRankdir: DagreRankdir = "TB";
+// const dagreRankdir: DagreRankdir = "LR";
 
-Graph.registerNode(NODE_PERSON_RELATIONSHIP, nodePersonRelationship({ radius: 0 }), true);
+Graph.registerNode(NODE_PERSON_RELATIONSHIP, nodePersonRelationship({ radius: 2 }), true);
 Graph.registerNode(NODE_PERSON, nodePerson({ dimension: nodePersonDimension }), true);
 Graph.registerEdge(EDGE_LINE, edgeLine, true);
 
 // NOTE:
+// Previous assumption:
 // Data must be sorted hierarchically: rank/level first, then sibling order (side-by-side).
+// Current assumption:
+// data is sorted by registration order.
+// The layout logic loops through children props, so the first child ends up being positioned last.
+
+const people: Person[] = []
+
+// const people: Person[] = [
+//     { id: 1, rank: "ROOT", name: "0", partner: 2, children: [6, 4, 5, 3] },
+//     { id: 2, rank: "ROOT PARTNER", name: "0'", partner: 1, children: [6, 4, 5, 3] },
+//     { id: 3, rank: "FIRST", name: "1" },
+//     { id: 4, rank: "SECOND", name: "2" },
+//     { id: 5, rank: "THIRD", name: "3" },
+//     { id: 6, rank: "FORTH", name: "4" },
+// ];
+// const people: Person[] = [
+//     { id: 1, rank: "ROOT", name: "0", partner: 2, children: [6, 5, 4, 3] },
+//     { id: 2, rank: "ROOT PARTNER", name: "0'", partner: 1, children: [6, 5, 4, 3] },
+//     { id: 3, rank: "FIRST", name: "1" },
+//     { id: 5, rank: "THIRD", name: "3" },
+//     { id: 4, rank: "SECOND", name: "2" },
+//     { id: 6, rank: "FORTH", name: "4" },
+// ];
+
 // BUG: Incorrect sibling order when the current node has children but the next sibling does not.
-const people: Person[] = [
-    // Level 1
-    { id: 1, rank: "DIE", name: "Die", isDead: true, partner: 2, children: [3, 12, 14, 10, 11, 55] },
-    { id: 2, rank: "ALIVE", name: "ALIVE", partner: 1, children: [3, 12, 14, 10, 11, 55] },
-    // Level 2
-    { id: 10, rank: "First", name: "Pak Dhe", gender: "M" as Gender, parent: [1, 2] },
-    { id: 11, rank: "Second", name: "Pak Dhe", gender: "M" as Gender, parent: [1, 2] },
-    { id: 3, rank: "MALE DIE", name: "Male Die", gender: "M" as Gender, isDead: true, parent: [1, 2], partner: 4, children: [56, 6, 9], },
-    { id: 4, rank: "FEMALE DIE", name: "Female Die", gender: "F" as Gender, isDead: true, partner: 3, children: [56, 6, 9], }, // Partner (follows immediately after the person)
-    { id: 12, rank: "Fourth", name: "Pak Lik", gender: "M" as Gender, parent: [1, 2], partner: 13, children: [7, 8] },
-    { id: 13, rank: "Fourth Partner", name: "Bu Lik", gender: "F" as Gender, partner: 12, children: [7, 8] }, // Partner
-    { id: 14, rank: "Fifth", name: "Pak Lik", gender: "M" as Gender, parent: [1, 2], partner: 15 },
-    { id: 15, rank: "Fifth Partner", name: "Bu Lik", gender: "F" as Gender, partner: 14 }, // Partner
-    // { id: 56, rank: "MALE ALIVE", name: "Male Alive", gender: "M" as Gender, parent: [3, 4], partner: 55, children: [100] }, // NOTE: Sample: child → treated as partner of grandchildren.
-    { id: 55, rank: "MALE ALIVE Partner", name: "Female Alive", gender: "F" as Gender, parent: [1, 2], partner: 56, children: [100], }, // NOTE: Sample: child → treated as partner of grandchildren.
-    // Level 3
-    // { id: 55, rank: "Sixth", name: "Female Alive", gender: "F" as Gender, parent: [1, 2], partner: 56, children: [100] }, // NOTE: Sample: child → treated as partner of grandchildren.
-    { id: 56, rank: "MALE ALIVE", name: "Male Alive", gender: "M" as Gender, parent: [3, 4], partner: 55, children: [100], }, // NOTE: Sample: child → treated as partner of grandchildren.
-    { id: 9, rank: "FEMALE ALIVE", name: "Female Alive", gender: "F" as Gender, parent: [3, 4] }, // children (ordering follows the parent’s sibling order.)
-    { id: 6, rank: "FEMALE ALIVE", name: "Female Alive", gender: "F" as Gender, parent: [3, 4] }, // children
-    // { id: 7, rank: "MALE Test", name: "Male Alive", gender: "M" as Gender, parent: [12, 13], }, // children
-    // { id: 8, rank: "FEMALE Test", name: "Female Alive", gender: "F" as Gender, parent: [12, 13], }, // children
-    // Level 4
-    { id: 100, rank: "MALE ALIVE CHILDREN", name: "Male Alive Children", parent: [5, 55] },
-];
+// // BROKEN (per ?)
+// const people: Person[] = [
+//     { id: 1, rank: "ROOT", name: "0", isDead: true, partner: 2, children: [9, 8, 7, 6, 5, 4, 3] },
+//     { id: 2, rank: "ROOT PARTNER", name: "0'", isDead: true, partner: 1, children: [9, 8, 7, 6, 5, 4, 3] },
+//     { id: 3, rank: "FIRST", name: "1", gender: 'M', isDead: true, partner: 31, children: [39, 38, 37, 36, 35, 34, 33, 32] },
+//     { id: 31, rank: "FIRST PARTNER", name: "1'", gender: 'F', isDead: true, partner: 3, children: [39, 38, 37, 36, 35, 34, 33, 32] },
+//     { id: 33, rank: "FIRST FIRST", name: "1-1", partner: 331, children: [339, 338, 337, 336, 335, 334, 333, 332] },
+//     { id: 331, rank: "FIRST FIRST PARTNER", name: "1-1'", partner: 33, children: [339, 338, 337, 336, 335, 334, 333, 332] },
+//     { id: 4, rank: "SECOND", name: "2" },
+//     { id: 5, rank: "THIRD", name: "3", partner: 51, children: [59, 58, 57, 56, 55, 54, 53, 52] },
+//     { id: 51, rank: "THIRD PARTNER", name: "3'", partner: 5, children: [59, 58, 57, 56, 55, 54, 53, 52] },
+//     { id: 52, rank: "THIRD THIRD", name: "3-1" },
+//     { id: 53, rank: "THIRD SECOND", name: "3-2", partner: 531, children: [539, 538, 537, 536, 535, 534, 533, 532] },
+//     { id: 531, rank: "THIRD SECOND PARTNER", name: "3-2'", partner: 53, children: [539, 538, 537, 536, 535, 534, 533, 532] },
+//     { id: 532, rank: "THIRD FIRST FIRST", name: "3-1-1", partner: 5321, children: [5329, 5328, 5327, 5326, 5325, 5324, 5323, 5322] },
+//     { id: 5321, rank: "THIRD FIRST FIRST PARTNER", name: "3-1-1'", partner: 532, children: [5329, 5328, 5327, 5326, 5325, 5324, 5323, 5322] },
+//     { id: 54, rank: "THIRD THIRD", name: "3-3" },
+//     { id: 6, rank: "FORTH", name: "4" },
+//     { id: 7, rank: "FIFTH", name: "5", partner: 71, children: [79, 78, 77, 76, 75, 74, 73, 72] },
+//     { id: 71, rank: "FIFTH PARTNER", name: "5'", partner: 7, children: [79, 78, 77, 76, 75, 74, 73, 72] },
+//     { id: 8, rank: "SIXTH", name: "6" },
+
+//     { id: 9, rank: "SEVENTH", name: "7", gender: 'M', partner: 32, children: [99, 98, 97, 96, 95, 94, 93, 92] },
+//     { id: 32, rank: "SEVENTH PARTNER / FIRST FIRST", name: "7' OR 1-1", gender: 'F', partner: 9, children: [99, 98, 97, 96, 95, 94, 93, 92] }, // NOTE: Sample: child → treated as partner of grandchildren.
+// ];
+// // BROKEN (per level)
+// const people: Person[] = [
+//     { id: 1, rank: "ROOT", name: "0", isDead: true, partner: 2, children: [9, 8, 7, 6, 5, 4, 3] },
+//     { id: 2, rank: "ROOT PARTNER", name: "0'", isDead: true, partner: 1, children: [9, 8, 7, 6, 5, 4, 3] },
+//     { id: 3, rank: "FIRST", name: "1", gender: 'M', isDead: true, partner: 31, children: [39, 38, 37, 36, 35, 34, 33, 32] },
+//     { id: 31, rank: "FIRST PARTNER", name: "1'", gender: 'F', isDead: true, partner: 3, children: [39, 38, 37, 36, 35, 34, 33, 32] },
+//     { id: 4, rank: "SECOND", name: "2" },
+//     { id: 5, rank: "THIRD", name: "3", partner: 51, children: [59, 58, 57, 56, 55, 54, 53, 52] },
+//     { id: 51, rank: "THIRD PARTNER", name: "3'", partner: 5, children: [59, 58, 57, 56, 55, 54, 53, 52] },
+//     { id: 6, rank: "FORTH", name: "4" },
+//     { id: 7, rank: "FIFTH", name: "5", partner: 71, children: [79, 78, 77, 76, 75, 74, 73, 72] },
+//     { id: 71, rank: "FIFTH PARTNER", name: "5'", partner: 7, children: [79, 78, 77, 76, 75, 74, 73, 72] },
+//     { id: 8, rank: "SIXTH", name: "6" },
+
+//     { id: 9, rank: "SEVENTH", name: "7", gender: 'M', partner: 32, children: [99, 98, 97, 96, 95, 94, 93, 92] },
+//     { id: 32, rank: "SEVENTH PARTNER / FIRST FIRST", name: "7' OR 1-1", gender: 'F', partner: 9, children: [99, 98, 97, 96, 95, 94, 93, 92] }, // NOTE: Sample: child → treated as partner of grandchildren.
+
+//     { id: 33, rank: "FIRST FIRST", name: "1-1", partner: 331, children: [339, 338, 337, 336, 335, 334, 333, 332] },
+//     { id: 331, rank: "FIRST FIRST PARTNER", name: "1-1'", partner: 33, children: [339, 338, 337, 336, 335, 334, 333, 332] },
+
+//     { id: 52, rank: "THIRD THIRD", name: "3-1" },
+//     { id: 53, rank: "THIRD SECOND", name: "3-2", partner: 531, children: [539, 538, 537, 536, 535, 534, 533, 532] },
+//     { id: 531, rank: "THIRD SECOND PARTNER", name: "3-2'", partner: 53, children: [539, 538, 537, 536, 535, 534, 533, 532] },
+//     { id: 54, rank: "THIRD THIRD", name: "3-3" },
+
+//     { id: 532, rank: "THIRD FIRST FIRST", name: "3-1-1", partner: 5321, children: [5329, 5328, 5327, 5326, 5325, 5324, 5323, 5322] },
+//     { id: 5321, rank: "THIRD FIRST FIRST PARTNER", name: "3-1-1'", partner: 532, children: [5329, 5328, 5327, 5326, 5325, 5324, 5323, 5322] },
+// ];
 
 // https://nuxt.com/docs/4.x/api/components/client-only#accessing-html-elements
 const graphRef = useTemplateRef("graph");
@@ -76,7 +129,8 @@ watch(graphRef, () => {
     });
 
     const bidirectionalMap = new BidirectionalNodeEntityMap<Person | PersonPartner>();
-    const personPartnerMap: Map<EntityPairKey<Person>, PersonPartner> = new Map();
+    const personPartnerMap: Map<PersonPartner["id"], PersonPartner> = new Map();
+    const personPartnerEdgeMap: Map<PersonPartnerChildren["id"], PersonPartnerChildren> = new Map();
 
     const nodes: X6Node[] = [];
     people.forEach((person) => {
@@ -99,33 +153,43 @@ watch(graphRef, () => {
         nodes.push(nodeRelationship);
     });
 
+    function getEdgesChildren(isDirectConnection: boolean, nodeParent: X6Node, children?: Person["id"][]) {
+        if (!children) return [];
+        return children.flatMap((id) => {
+            const childrenNode = bidirectionalMap.getNodeByEntityId(id);
+            if (childrenNode) return [createEdgeLine({ graph, data: { source: nodeParent, target: childrenNode }, meta: { isDirectConnection } })];
+            return [];
+        });
+    }
     const edges: Edge[] = [];
     people.forEach((person) => {
         const nodePerson = bidirectionalMap.getNodeByEntityId(person.id);
         if (!nodePerson) return;
 
-        let nodePersonRelationship: X6Node | undefined;
         if (person.partner) {
             const nodePersonPartner = bidirectionalMap.getNodeByEntityId(person.partner);
-            if (!nodePersonPartner) return;
+            if (nodePersonPartner) {
+                const key = createPairKey<Person>(person.id, person.partner);
+                const relationshipPartner = personPartnerMap.get(key);
+                if (!relationshipPartner) return;
+                const nodePersonRelationship = bidirectionalMap.getNodeByEntityId(relationshipPartner.id);
+                if (!nodePersonRelationship) return;
 
-            const key = createPairKey<Person>(person.id, person.partner);
-            const relationshipPartner = personPartnerMap.get(key);
-            if (!relationshipPartner) return;
-            nodePersonRelationship = bidirectionalMap.getNodeByEntityId(relationshipPartner.id);
-            if (!nodePersonRelationship) return;
+                const hasEdges = personPartnerEdgeMap.get(key);
+                if (!hasEdges) {
+                    personPartnerEdgeMap.set(key, { id: key, children: person.children ?? [] });
 
-            edges.push(createEdgeLine({ graph, data: { source: nodePerson, target: nodePersonRelationship }, type: "PARTNER" }));
-            edges.push(createEdgeLine({ graph, data: { source: nodePersonPartner, target: nodePersonRelationship }, type: "PARTNER" }));
+                    [nodePerson, nodePersonPartner].forEach(node => {
+                        edges.push(createEdgeLine({ graph, data: { source: node, target: nodePersonRelationship }, meta: { isDirectConnection: true }, type: "PARTNER" }));
+                    })
+
+                    getEdgesChildren(false, nodePersonRelationship, person.children).forEach((edge) => edges.push(edge));
+                }
+                return;
+            }
         }
 
-        if (!person.children) return;
-        person.children.forEach((id) => {
-            const childrenNode = bidirectionalMap.getNodeByEntityId(id);
-            if (childrenNode) {
-                edges.push(createEdgeLine({ graph, data: { source: nodePersonRelationship ?? nodePerson, target: childrenNode } }));
-            }
-        });
+        getEdgesChildren(true, nodePerson, person.children).forEach((edge) => edges.push(edge));
     });
 
     graph.resetCells([...nodes, ...edges]);
@@ -143,5 +207,4 @@ watch(graphRef, () => {
         if (entityType === "PERSON") animateNodePerson(node);
     });
 }, { once: true });
-
 </script>

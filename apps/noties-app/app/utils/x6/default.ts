@@ -2,7 +2,12 @@ import type { Cell, Graph, Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
 export function createEdgeLine(
-  { graph, data, type = "LINE" }: { graph: Graph; data: { source: Cell; target: Cell }; type?: EdgeType },
+  { graph, data, meta, type = "LINE" }: {
+    graph: Graph;
+    data: { source: Cell; target: Cell };
+    meta: { isDirectConnection?: boolean };
+    type?: EdgeType;
+  },
 ) {
   const { source, target } = data;
 
@@ -10,16 +15,18 @@ export function createEdgeLine(
     shape: EDGE_LINE,
     source: { cell: source.id },
     target: { cell: target.id },
-    data: { cellType: "EDGE", type, value: data } satisfies CellData,
+    data: { cellType: "EDGE", type, value: data, meta } satisfies CellData,
   });
 }
 
 type LayoutArgs = {
   graph: Graph;
-  rankdir: DagreRankdir;
   gap: number;
+  rankdir?: DagreRankdir;
 };
-export function layout({ graph, rankdir, gap }: LayoutArgs) {
+export function layout({ graph, gap, rankdir = "TB" }: LayoutArgs) {
+  const isVertical = rankdir === "TB" || rankdir === "BT";
+
   const g = new dagre.graphlib.Graph();
   g.setGraph({ rankdir, ranksep: gap, nodesep: gap });
   g.setDefaultEdgeLabel(() => ({}));
@@ -34,8 +41,6 @@ export function layout({ graph, rankdir, gap }: LayoutArgs) {
   });
 
   dagre.layout(g);
-  const isHorizontal = rankdir === "LR" || rankdir === "RL";
-  const isVertical = rankdir === "TB" || rankdir === "BT";
 
   g.nodes().forEach((id) => {
     const node = graph.getCellById(id) as X6Node;
@@ -65,8 +70,8 @@ export function layout({ graph, rankdir, gap }: LayoutArgs) {
 
       const [minX, maxX] = minMax(personBBox.x, personPartnerBBox.x);
       const [minY, maxY] = minMax(personBBox.y, personPartnerBBox.y);
-      const x = isHorizontal ? personBBox.x + personBBox.width / 2 : (maxX + (minX + personBBox.width)) / 2;
-      const y = isHorizontal ? (maxY + (minY + personBBox.height)) / 2 : personBBox.y + personBBox.height / 2;
+      const x = isVertical ? (maxX + (minX + personBBox.width)) / 2 : personBBox.x + personBBox.width / 2;
+      const y = isVertical ? personBBox.y + personBBox.height / 2 : (maxY + (minY + personBBox.height)) / 2;
       node.position(x, y);
     }
   });
@@ -80,12 +85,25 @@ export function layout({ graph, rankdir, gap }: LayoutArgs) {
     const sourceBBox = source.getBBox();
     const targetBBox = target.getBBox();
 
-    if (isHorizontal && sourceBBox.y !== targetBBox.y) {
-      const x = (targetBBox.x + sourceBBox.x + (targetBBox.width / 2)) / 2;
-      edge.setVertices([{ x, y: sourceBBox.y }, { x, y: targetBBox.center.y }]);
-    } else if (isVertical && sourceBBox.x !== targetBBox.x) {
-      const y = (targetBBox.y + sourceBBox.y + (targetBBox.height / 2)) / 2;
-      edge.setVertices([{ x: sourceBBox.x, y }, { x: targetBBox.center.x, y }]);
+    const { isDirectConnection } = data.meta as Parameters<typeof createEdgeLine>[0]["meta"];
+    if (isVertical) {
+      const y = isDirectConnection
+        ? sourceBBox.y + sourceBBox.height + gap / 2
+        : sourceBBox.y + targetBBox.height / 2 + gap;
+
+      edge.setVertices([
+        { x: isDirectConnection ? sourceBBox.center.x : sourceBBox.x, y },
+        { x: targetBBox.center.x, y },
+      ]);
+    } else {
+      const x = isDirectConnection
+        ? sourceBBox.x + sourceBBox.width + gap / 2
+        : sourceBBox.x + targetBBox.width / 2 + gap;
+
+      edge.setVertices([
+        { x, y: isDirectConnection ? sourceBBox.center.y : sourceBBox.y },
+        { x, y: targetBBox.center.y },
+      ]);
     }
   });
 }

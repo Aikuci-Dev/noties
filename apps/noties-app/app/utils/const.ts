@@ -18,16 +18,20 @@ export type Person = {
   isDead?: boolean;
 };
 export type PersonPartner = {
-  id: string;
+  id: EntityPairKey<Person>;
   person: Person["id"];
   partner: Person["id"];
+};
+export type PersonPartnerChildren = {
+  id: PersonPartner["id"];
+  children: Person["id"][];
 };
 
 // X6
 export type Dimension = { width: number; height: number };
 export type CellData =
-  | { cellType: "NODE"; type: NodeType; value: unknown }
-  | { cellType: "EDGE"; type: EdgeType; value: unknown };
+  | { cellType: "NODE"; type: NodeType; value: unknown; meta?: unknown }
+  | { cellType: "EDGE"; type: EdgeType; value: unknown; meta?: unknown };
 
 export const NODE_TYPE = ["PERSON", "PERSON_RELATIONSHIP"] as const;
 export type NodeType = typeof NODE_TYPE[number];
