@@ -13,9 +13,9 @@ export function resolveFillColor(options: { light?: boolean; gender?: Nullable<G
   if (gender === "F") return light ? "#fccee8" : "#fb64b6"; // Pink (200/400)
 }
 
-export default (
+function nodePerson(
   { data, options }: { data: { gender?: Nullable<Gender>; isDead?: boolean }; options: { dimension: Dimension } },
-) => {
+) {
   const { gender, isDead } = data;
   const { dimension: { height, width } } = options;
 
@@ -106,4 +106,13 @@ export default (
       },
     },
   } satisfies Parameters<typeof Graph.registerNode>[1];
-};
+}
+
+function nodePersonRelationship() {
+  return {
+    markup: [{ tagName: "circle", attrs: { class: "dot" } }],
+    attrs: { ".dot": { r: 2 } } satisfies Parameters<typeof Graph.registerNode>[1],
+  };
+}
+
+export { nodePerson, nodePersonRelationship };
