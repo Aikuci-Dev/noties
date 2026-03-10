@@ -1,4 +1,5 @@
 import type { Graph } from "@antv/x6";
+import { Dom, ObjectExt } from "@antv/x6";
 
 export function resolveFillColor(options: { light?: boolean; gender?: Nullable<Gender>; isDead?: boolean }) {
   const { light, gender, isDead } = options;
@@ -8,105 +9,109 @@ export function resolveFillColor(options: { light?: boolean; gender?: Nullable<G
   if (gender === "F") return light ? "#fccee8" : "#fb64b6"; // Pink (200/400)
 }
 
-function nodePerson(
-  { data, options }: { data: { gender?: Nullable<Gender>; isDead?: boolean }; options: { dimension: Dimension } },
-) {
-  const { gender, isDead } = data;
+function nodePerson(options: { dimension: Dimension }) {
   const { dimension: { height, width } } = options;
+  const radius = 8;
 
-  const genderTop: Gender = gender ?? "M";
-  const genderBottom: Gender = gender ?? "F";
+  function contentAttrs(isTop?: boolean) {
+    return {
+      clipPath: isTop ? "inset(0 0 49% 0)" : "inset(50% 0 0 0)",
+      rx: radius,
+      refX: "0%",
+      refWidth: "0%",
+      refHeight: "100%",
+    };
+  }
+  function barAttrs(isTop?: boolean) {
+    return {
+      clipPath: isTop ? "inset(0 0 49% 0)" : "inset(50% 0 0 0)",
+      d: "M 8 0 L 8 60 C 3.582 60 0 56.418 0 52 L 0 8 C 0 3.582 3.582 0 8 0 Z", // Created using Boxy SVG: https://boxy-svg.com/
+    };
+  }
+
   return {
     height,
     width,
     markup: [
       { tagName: "rect", attrs: { class: "card" } },
       { tagName: "rect", attrs: { class: "content" } },
-      { tagName: "rect", attrs: { class: "content-animation-top" } },
-      { tagName: "rect", attrs: { class: "content-animation-bottom" } },
-      { tagName: "path", attrs: { class: "bar-top" } },
-      { tagName: "path", attrs: { class: "bar-bottom" } },
+      { tagName: "rect", attrs: { class: "content-t" } },
+      { tagName: "rect", attrs: { class: "content-b" } },
+      { tagName: "path", attrs: { class: "bar-t" } },
+      { tagName: "path", attrs: { class: "bar-b" } },
       { tagName: "text", attrs: { class: "rank" } },
       { tagName: "text", attrs: { class: "name" } },
     ],
     attrs: {
       ".card": {
-        rx: 5,
-        ry: 5,
+        // Defining either `rx` or `ry` is enough — the other will mirror the value.
+        // https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/rx#rect
+        rx: radius,
         refWidth: "100%",
         refHeight: "100%",
         fill: "#fff",
 
         filter: {
           name: "dropShadow",
-          args: {
-            dx: 4,
-            dy: 4,
-            blur: 4,
-            opacity: 0.4,
-          },
+          args: { dx: 4, dy: 4, blur: 4, opacity: 0.4 },
         },
       },
       ".content": {
-        refX: "8%",
-        refWidth: "84%",
+        ref: ".card",
+        refX: radius,
+        refWidth: -2 * radius,
         refHeight: "100%",
         fill: "#fff",
       },
-      ".content-animation-top": {
-        clipPath: "inset(0 0 49% 0)",
-        rx: 5,
-        ry: 5,
-        refX: "0%",
-        refWidth: "0%",
-        refHeight: "100%",
-        fill: resolveFillColor({ light: true, gender: genderTop }),
-      },
-      ".content-animation-bottom": {
-        clipPath: "inset(50% 0 0 0)",
-        rx: 5,
-        ry: 5,
-        refX: "0%",
-        refWidth: "0%",
-        refHeight: "100%",
-        fill: resolveFillColor({ light: true, gender: genderBottom }),
-      },
-      ".bar-top": {
-        clipPath: "inset(0 0 49% 0)",
-        d: "M 5 0 L 5 60 C 2.239 60 0 58.321 0 56.25 L 0 3.75 C 0 1.679 2.239 0 5 0 Z", // Created using Boxy SVG: https://boxy-svg.com/
-        fill: resolveFillColor({ gender: genderTop, isDead }),
-      },
-      ".bar-bottom": {
-        clipPath: "inset(50% 0 0 0)",
-        d: "M 5 0 L 5 60 C 2.239 60 0 58.321 0 56.25 L 0 3.75 C 0 1.679 2.239 0 5 0 Z", // Created using Boxy SVG: https://boxy-svg.com/
-        fill: resolveFillColor({ gender: genderBottom, isDead }),
-      },
+      ".content-t": contentAttrs(true),
+      ".content-b": contentAttrs(),
+      ".bar-t": barAttrs(true),
+      ".bar-b": barAttrs(),
       ".rank": {
         refX: 0.5,
-        refY: 0.1,
+        refY: 0.05,
         fontFamily: "Courier New",
-        fontSize: 8,
+        fontSize: "0.5rem",
         fontWeight: "500",
         textAnchor: "middle",
-        fill: resolveFillColor({ gender, isDead }),
       },
       ".name": {
         refX: 0.5,
         refY: 0.5,
         fontFamily: "Arial",
-        fontSize: 12,
+        fontSize: "1rem",
         fontWeight: "800",
         textAnchor: "middle",
         textVerticalAnchor: "middle",
       },
     },
+    propHooks(metadata) {
+      const { data, ...rest } = metadata;
+      if (data) {
+        const value: Person = data.value;
+        const { name, rank, gender, isDead } = value;
+
+        const textHeight = Math.min(Math.max(height / 2, 40), height);
+        ObjectExt.setByPath(rest, "attrs/.rank/text", Dom.breakText(rank, { height: textHeight, width }));
+        ObjectExt.setByPath(rest, "attrs/.name/text", Dom.breakText(name, { height: textHeight, width }));
+
+        const genderOrMale = gender ?? "M";
+        const genderOrFemale = gender ?? "F";
+        ObjectExt.setByPath(rest, "attrs/.rank/fill", resolveFillColor({ gender, isDead }));
+        ObjectExt.setByPath(rest, "attrs/.content-t/fill", resolveFillColor({ light: true, gender: genderOrMale }));
+        ObjectExt.setByPath(rest, "attrs/.content-b/fill", resolveFillColor({ light: true, gender: genderOrFemale }));
+        ObjectExt.setByPath(rest, "attrs/.bar-t/fill", resolveFillColor({ gender: genderOrMale, isDead }));
+        ObjectExt.setByPath(rest, "attrs/.bar-b/fill", resolveFillColor({ gender: genderOrFemale, isDead }));
+      }
+      return rest;
+    },
   } satisfies Parameters<typeof Graph.registerNode>[1];
 }
 
-function nodePersonRelationship() {
+function nodePersonRelationship({ radius }: { radius: number }) {
   return {
     markup: [{ tagName: "circle", attrs: { class: "dot" } }],
-    attrs: { ".dot": { r: 2 } } satisfies Parameters<typeof Graph.registerNode>[1],
+    attrs: { ".dot": { r: radius } } satisfies Parameters<typeof Graph.registerNode>[1],
   };
 }
 

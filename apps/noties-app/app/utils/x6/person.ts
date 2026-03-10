@@ -1,28 +1,24 @@
 import type { Graph, Node as X6Node } from "@antv/x6";
-import { Dom } from "@antv/x6";
 
-export function createNodePerson(
-  { graph, options }: {
-    graph: Graph;
-    options: { rank: string; name: string; gender?: Nullable<Gender>; isDead?: boolean; dimension: Dimension };
-  },
-) {
-  const { rank, name, gender, isDead, dimension } = options;
-  const { height, width } = dimension;
-
+export function createNodePerson({ graph, data }: { graph: Graph; data: Person }) {
   return graph.createNode({
-    shape: gender
-      ? gender === "M"
-        ? (isDead ? NODE_PERSON_MALE_DIE : NODE_PERSON_MALE)
-        : (isDead ? NODE_PERSON_FEMALE_DIE : NODE_PERSON_FEMALE)
-      : (isDead ? NODE_PERSON_DIE : NODE_PERSON),
-    attrs: {
-      ".rank": { text: Dom.breakText(rank, { height: height / 2, width }) },
-      ".name": { text: Dom.breakText(name, { height: height / 2, width }) },
-    },
+    shape: NODE_PERSON,
+    data: { cellType: "NODE", type: "PERSON", value: data } satisfies CellData,
   });
 }
 
 export function createNodePersonRelationship({ graph, data }: { graph: Graph; data: { nodes: X6Node[] } }) {
-  return graph.createNode({ shape: NODE_PERSON_RELATIONSHIP, data });
+  return graph.createNode({
+    shape: NODE_PERSON_RELATIONSHIP,
+    data: { cellType: "NODE", type: "PERSON_RELATIONSHIP", value: data } satisfies CellData,
+  });
+}
+
+export function animateNodePerson(node: X6Node, options: { fill?: boolean } = {}) {
+  const targetWidth = options.fill ? "100%" : "0%";
+
+  node.animate({ "attrs/.content-t/refWidth": targetWidth }, { duration: 1000, iterations: 1 });
+  node.on("animation:finish", () => node.attr(".content-t/refWidth", targetWidth));
+  node.animate({ "attrs/.content-b/refWidth": targetWidth }, { duration: 1000, iterations: 1 });
+  node.on("animation:finish", () => node.attr(".content-b/refWidth", targetWidth));
 }

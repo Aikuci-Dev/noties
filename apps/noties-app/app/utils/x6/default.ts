@@ -2,15 +2,15 @@ import type { Cell, Graph, Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
 export function createEdgeLine(
-  { graph, options, data }: { graph: Graph; options: { source: Cell; target: Cell }; data?: unknown },
+  { graph, data, type = "LINE" }: { graph: Graph; data: { source: Cell; target: Cell }; type?: EdgeType },
 ) {
-  const { source, target } = options;
+  const { source, target } = data;
 
   return graph.createEdge({
     shape: EDGE_LINE,
     source: { cell: source.id },
     target: { cell: target.id },
-    data,
+    data: { cellType: "EDGE", type, value: data } satisfies CellData,
   });
 }
 
@@ -39,31 +39,40 @@ export function layout({ graph, rankdir, gap }: LayoutArgs) {
 
   g.nodes().forEach((id) => {
     const node = graph.getCellById(id) as X6Node;
-    if (node) {
-      const dagreNode = g.node(id);
-      if (node.data) {
-        const nodePerson1 = graph.getCellById(node.data.nodes[0].id);
-        const nodePerson2 = graph.getCellById(node.data.nodes[1].id);
-        const sourceBBox = nodePerson1.getBBox();
-        const targetBBox = nodePerson2.getBBox();
+    if (!node) return;
 
-        const [minX, maxX] = minMax(sourceBBox.x, targetBBox.x);
-        const [minY, maxY] = minMax(sourceBBox.y, targetBBox.y);
-        const x = isHorizontal ? sourceBBox.x + sourceBBox.width / 2 : (maxX + (minX + sourceBBox.width)) / 2;
-        const y = isHorizontal ? (maxY + (minY + sourceBBox.height)) / 2 : sourceBBox.y + sourceBBox.height / 2;
-        node.position(x, y);
-      } else {
-        // // TODO: Override sibling order manually; keep Dagre’s level/rank.
-        // // Level/rank: x if horizontal layout, y if vertical.
-        // const x = isHorizontal ? dagreNode.x : 0;
-        // const y = isHorizontal ? 0 : dagreNode.y;
-        // node.position(x, y);
-        node.position(dagreNode.x, dagreNode.y);
-      }
+    const dagreNode = g.node(id);
+    const data: CellData = node.data;
+
+    if (!data) {
+      node.position(dagreNode.x, dagreNode.y);
+      return;
+    }
+
+    if (!data || data.cellType !== "NODE" || data.type !== "PERSON_RELATIONSHIP") {
+      node.position(dagreNode.x, dagreNode.y);
+      return;
+    }
+
+    const { nodes } = data.value as Parameters<typeof createNodePersonRelationship>[0]["data"];
+
+    // Relationship Partner
+    if (nodes[0] && nodes[1]) {
+      const nodePerson = graph.getCellById(nodes[0].id);
+      const nodePersonPartner = graph.getCellById(nodes[1].id);
+      const personBBox = nodePerson.getBBox();
+      const personPartnerBBox = nodePersonPartner.getBBox();
+
+      const [minX, maxX] = minMax(personBBox.x, personPartnerBBox.x);
+      const [minY, maxY] = minMax(personBBox.y, personPartnerBBox.y);
+      const x = isHorizontal ? personBBox.x + personBBox.width / 2 : (maxX + (minX + personBBox.width)) / 2;
+      const y = isHorizontal ? (maxY + (minY + personBBox.height)) / 2 : personBBox.y + personBBox.height / 2;
+      node.position(x, y);
     }
   });
   edges.forEach((edge) => {
-    if (edge.data && edge.data.type === "partner") return;
+    const data: CellData = edge.data;
+    if (data.cellType === "EDGE" && data.type === "PARTNER") return;
 
     const source = edge.getSourceNode();
     const target = edge.getTargetNode();
