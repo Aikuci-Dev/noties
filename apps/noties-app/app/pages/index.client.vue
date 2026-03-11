@@ -48,15 +48,13 @@ const peopleByGeneration: { [generation: number]: Person[] } = {
         { id: 7, rank: "FIFTH", name: "5", partner: 71, children: [79, 78, 77, 76, 75, 74, 73, 72] },
         { id: 71, rank: "FIFTH PARTNER", name: "5'", partner: 7, children: [79, 78, 77, 76, 75, 74, 73, 72] },
         { id: 8, rank: "SIXTH", name: "6" },
-
-        // // NOTE: Sample: child → treated as partner of grandchildren.
-        // // Instead of this
-        // { id: 9, rank: "SEVENTH", name: "7", gender: 'M', partner: 32, children: [99, 98, 97, 96, 95, 94, 93, 92] },
-        // { id: 32, rank: "SEVENTH PARTNER / FIRST FIRST", name: "7' OR 1-1", gender: 'F', partner: 9, children: [99, 98, 97, 96, 95, 94, 93, 92] },
     ],
     2: [
-        // // NOTE: Sample: child → treated as partner of grandchildren.
-        // // Prefer like this
+        /**
+         *  NOTE: Sample: child → treated as partner of grandchildren.
+         * Such relationships are prohibited (e.g., in Islam)
+         * so this case is intentionally not supported and will not be implemented.
+         * */
         // { id: 32, rank: "SEVENTH PARTNER / FIRST FIRST", name: "7' OR 1-1", gender: "F", partner: 9, children: [99, 98, 97, 96, 95, 94, 93, 92] },
         // { id: 9, rank: "SEVENTH", name: "7", gender: "M", partner: 32, children: [99, 98, 97, 96, 95, 94, 93, 92] },
 
