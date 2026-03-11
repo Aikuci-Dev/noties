@@ -1,11 +1,12 @@
 import type { Cell, Graph, Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
+type EdgeMeta = { isPlaceholder?: boolean };
 export function createEdgeLine(
   { graph, data, meta, type = "LINE" }: {
     graph: Graph;
     data: { source: Cell; target: Cell };
-    meta: { isDirectConnection?: boolean };
+    meta?: EdgeMeta;
     type?: EdgeType;
   },
 ) {
@@ -15,7 +16,7 @@ export function createEdgeLine(
     shape: EDGE_LINE,
     source: { cell: source.id },
     target: { cell: target.id },
-    data: { cellType: "EDGE", type, value: data, meta } satisfies CellData,
+    data: { cellType: "EDGE", type, value: data, meta } satisfies CellData<EdgeMeta>,
   });
 }
 
@@ -26,6 +27,7 @@ type LayoutArgs = {
 };
 export function layout({ graph, gap, rankdir = "TB" }: LayoutArgs) {
   const isVertical = rankdir === "TB" || rankdir === "BT";
+  const isHorizontal = rankdir === "LR" || rankdir === "RL";
 
   const g = new dagre.graphlib.Graph();
   g.setGraph({ rankdir, ranksep: gap, nodesep: gap });
@@ -59,10 +61,16 @@ export function layout({ graph, gap, rankdir = "TB" }: LayoutArgs) {
       return;
     }
 
-    const { nodes } = data.value as Parameters<typeof createNodePersonRelationship>[0]["data"];
-
-    // Relationship Partner
-    if (nodes[0] && nodes[1]) {
+    const { nodes } = data.value as
+      | Parameters<typeof createNodePersonRelationship>[0]["data"]
+      | Parameters<typeof createNodePersonPlaceholder>[0]["data"];
+    if (nodes.length === 1) {
+      const nodePerson = graph.getCellById(nodes[0].id);
+      const personBBox = nodePerson.getBBox();
+      const x = isVertical ? personBBox.center.x : rankdir === "LR" ? personBBox.width + personBBox.x : personBBox.x;
+      const y = isHorizontal ? personBBox.center.y : rankdir === "TB" ? personBBox.height + personBBox.y : personBBox.y;
+      node.position(x, y);
+    } else {
       const nodePerson = graph.getCellById(nodes[0].id);
       const nodePersonPartner = graph.getCellById(nodes[1].id);
       const personBBox = nodePerson.getBBox();
@@ -76,7 +84,7 @@ export function layout({ graph, gap, rankdir = "TB" }: LayoutArgs) {
     }
   });
   edges.forEach((edge) => {
-    const data: CellData = edge.data;
+    const data: CellData<EdgeMeta> = edge.data;
     if (data.cellType === "EDGE" && data.type === "PARTNER") return;
 
     const source = edge.getSourceNode();
@@ -85,25 +93,12 @@ export function layout({ graph, gap, rankdir = "TB" }: LayoutArgs) {
     const sourceBBox = source.getBBox();
     const targetBBox = target.getBBox();
 
-    const { isDirectConnection } = data.meta as Parameters<typeof createEdgeLine>[0]["meta"];
     if (isVertical) {
-      const y = isDirectConnection
-        ? sourceBBox.y + sourceBBox.height + gap / 2
-        : sourceBBox.y + targetBBox.height / 2 + gap;
-
-      edge.setVertices([
-        { x: isDirectConnection ? sourceBBox.center.x : sourceBBox.x, y },
-        { x: targetBBox.center.x, y },
-      ]);
+      const y = data.meta?.isPlaceholder ? sourceBBox.y + gap : sourceBBox.y + gap + targetBBox.height / 2;
+      edge.setVertices([{ x: sourceBBox.x, y }, { x: targetBBox.center.x, y }]);
     } else {
-      const x = isDirectConnection
-        ? sourceBBox.x + sourceBBox.width + gap / 2
-        : sourceBBox.x + targetBBox.width / 2 + gap;
-
-      edge.setVertices([
-        { x, y: isDirectConnection ? sourceBBox.center.y : sourceBBox.y },
-        { x, y: targetBBox.center.y },
-      ]);
+      const x = data.meta?.isPlaceholder ? sourceBBox.x + gap : sourceBBox.x + gap + targetBBox.width / 2;
+      edge.setVertices([{ x, y: sourceBBox.y }, { x, y: targetBBox.center.y }]);
     }
   });
 }

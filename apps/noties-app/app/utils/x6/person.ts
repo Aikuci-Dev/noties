@@ -7,9 +7,18 @@ export function createNodePerson({ graph, data }: { graph: Graph; data: Person }
   });
 }
 
-export function createNodePersonRelationship({ graph, data }: { graph: Graph; data: { nodes: X6Node[] } }) {
+export function createNodePersonPlaceholder(
+  { graph, type, data }: { graph: Graph; type: NodeType; data: { nodes: [X6Node] } },
+) {
   return graph.createNode({
-    shape: NODE_PERSON_RELATIONSHIP,
+    shape: NODE_PERSON_PLACEHOLDER,
+    data: { cellType: "NODE", type, value: data } satisfies CellData,
+  });
+}
+
+export function createNodePersonRelationship({ graph, data }: { graph: Graph; data: { nodes: [X6Node, X6Node] } }) {
+  return graph.createNode({
+    shape: NODE_PERSON_INTERMEDIARY,
     data: { cellType: "NODE", type: "PERSON_RELATIONSHIP", value: data } satisfies CellData,
   });
 }
