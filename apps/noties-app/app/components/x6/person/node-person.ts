@@ -1,5 +1,5 @@
 import type { Graph } from "@antv/x6";
-import { Dom, ObjectExt } from "@antv/x6";
+import { ObjectExt } from "@antv/x6";
 
 export function resolveFillColor(options: { light?: boolean; gender?: Nullable<Gender>; isDead?: boolean }) {
   const { light, gender, isDead } = options;
@@ -39,8 +39,8 @@ export default function nodePerson(options: { dimension: Dimension }) {
       { tagName: "rect", attrs: { class: "content-b" } },
       { tagName: "path", attrs: { class: "bar-t" } },
       { tagName: "path", attrs: { class: "bar-b" } },
-      { tagName: "text", attrs: { class: "rank" } },
-      { tagName: "text", attrs: { class: "name" } },
+      { tagName: "text", attrs: { class: "subtitle" } },
+      { tagName: "text", attrs: { class: "title" } },
     ],
     attrs: {
       ".card": {
@@ -67,37 +67,48 @@ export default function nodePerson(options: { dimension: Dimension }) {
       ".content-b": contentAttrs(),
       ".bar-t": barAttrs(true),
       ".bar-b": barAttrs(),
-      ".rank": {
+      ".subtitle": {
         refX: 0.5,
         refY: 0.05,
-        fontFamily: "Courier New",
+        fontFamily: "Inter, system-ui, sans-serif",
         fontSize: "0.5rem",
-        fontWeight: "500",
+        fontWeight: "400",
         textAnchor: "middle",
+        textWrap: {
+          width: width / 20,
+          height: Math.min(40, height / 2),
+          ellipsis: true,
+          breakWord: true,
+        },
       },
-      ".name": {
+      ".title": {
         refX: 0.5,
         refY: 0.5,
-        fontFamily: "Arial",
-        fontSize: "1rem",
+        fontFamily: "'Playfair Display', serif",
+        fontSize: "0.75rem",
         fontWeight: "800",
         textAnchor: "middle",
         textVerticalAnchor: "middle",
+        textWrap: {
+          width: width / 20,
+          height: Math.min(40, height / 1.5),
+          ellipsis: true,
+          breakWord: true,
+        },
       },
     },
     propHooks(metadata) {
       const { data, ...rest } = metadata;
       if (data) {
         const value: Person = data.value;
-        const { name, rank, gender, isDead } = value;
+        const { title, subtitle, gender, isDead } = value;
 
-        const textHeight = Math.min(Math.max(height / 2, 40), height);
-        ObjectExt.setByPath(rest, "attrs/.rank/text", Dom.breakText(rank, { height: textHeight, width }));
-        ObjectExt.setByPath(rest, "attrs/.name/text", Dom.breakText(name, { height: textHeight, width }));
+        ObjectExt.setByPath(rest, "attrs/.subtitle/text", subtitle);
+        ObjectExt.setByPath(rest, "attrs/.title/text", title);
 
         const genderOrMale = gender ?? "M";
         const genderOrFemale = gender ?? "F";
-        ObjectExt.setByPath(rest, "attrs/.rank/fill", resolveFillColor({ gender, isDead }));
+        ObjectExt.setByPath(rest, "attrs/.subtitle/fill", resolveFillColor({ gender, isDead }));
         ObjectExt.setByPath(rest, "attrs/.content-t/fill", resolveFillColor({ light: true, gender: genderOrMale }));
         ObjectExt.setByPath(rest, "attrs/.content-b/fill", resolveFillColor({ light: true, gender: genderOrFemale }));
         ObjectExt.setByPath(rest, "attrs/.bar-t/fill", resolveFillColor({ gender: genderOrMale, isDead }));

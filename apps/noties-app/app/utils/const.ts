@@ -12,8 +12,8 @@ export type Person = {
   parent?: [number, number];
   partner?: number;
   children?: number[];
-  rank: string;
-  name: string;
+  subtitle?: string;
+  title: string;
   gender?: Gender;
   isDead?: boolean;
 };
