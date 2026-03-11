@@ -17,15 +17,18 @@ export type Person = {
   gender?: Gender;
   isDead?: boolean;
 };
+export type PeopleByGeneration = { [generation: number]: Person[] };
 export type PersonPartner = {
   id: EntityPairKey<Person>;
   person: Person["id"];
   partner: Person["id"];
 };
+export type PersonPartnerMap = Map<PersonPartner["id"], PersonPartner>;
 export type PersonPartnerChildren = {
   id: PersonPartner["id"];
   children: Person["id"][];
 };
+export type PersonPartnerChildrenMap = Map<PersonPartnerChildren["id"], PersonPartnerChildren>;
 
 // X6
 export type Dimension = { width: number; height: number };
@@ -44,6 +47,7 @@ export const NODE_PERSON_INTERMEDIARY = "node-person-intermediary";
 export const EDGE_LINE = "edge-line";
 export const EDGE_TYPE = ["LINE", "PARTNER"] as const;
 export type EdgeType = typeof EDGE_TYPE[number];
+export type EdgeMeta = { isPlaceholder?: boolean };
 
 // Dagre
 export const DAGRE_RANKDIRS = ["LR", "RL", "TB", "BT"] as const;

@@ -1,5 +1,11 @@
 import type { Node as X6Node } from "@antv/x6";
 
+type BidirectionalNodeEntityMapInstance<Entity extends { id: Id }> = {
+  set: (nodeType: NodeType, node: X6Node, entity: Entity) => void;
+  getEntityByNodeId: (nodeId: X6Node["id"]) => Entity | undefined;
+  getNodeByEntityId: (entityId: Entity["id"]) => X6Node | undefined;
+  getEntityTypeByNodeId: (nodeId: X6Node["id"]) => NodeType | undefined;
+};
 class BidirectionalNodeEntityMap<Entity extends { id: Id }> {
   private nodeToEntityMap: Map<X6Node["id"], Entity> = new Map();
   private entityToNodeMap: Map<Entity["id"], X6Node> = new Map();
@@ -24,4 +30,5 @@ class BidirectionalNodeEntityMap<Entity extends { id: Id }> {
   }
 }
 
+export { type BidirectionalNodeEntityMapInstance };
 export { BidirectionalNodeEntityMap };

@@ -15,24 +15,14 @@
 </template>
 
 <script setup lang="ts">
-// Reference: https://x6.antv.antgroup.com/en/examples/showcase/practices/#orgchart
-import type { Edge, Node as X6Node } from "@antv/x6";
-import { Graph } from "@antv/x6";
-import edgeLine from "~/components/x6/default/edge-line";
-import nodePlaceholder from "~/components/x6/default/node-placeholder";
-import nodePerson from "~/components/x6/person/node-person";
-
 const gridSize = 20;
 const nodePersonDimension = { height: gridSize * 3, width: gridSize * 12 };
 const dagreRankdir: DagreRankdir = "TB";
 // const dagreRankdir: DagreRankdir = "LR";
 
-Graph.registerNode(NODE_PERSON, nodePerson({ dimension: nodePersonDimension }), true);
-Graph.registerNode(NODE_PERSON_PLACEHOLDER, nodePlaceholder({ radius: 0 }), true);
-Graph.registerNode(NODE_PERSON_INTERMEDIARY, nodePlaceholder({ radius: 2 }), true);
-Graph.registerEdge(EDGE_LINE, edgeLine, true);
+registration({ nodePersonDimension });
 
-const peopleByGeneration: { [generation: number]: Person[] } = {
+const peopleByGeneration: PeopleByGeneration = {
     0: [
         { id: 1, subtitle: "ROOT", title: "0", isDead: true, partner: 2, children: [9, 8, 7, 6, 5, 4, 3] },
         // { id: 2, subtitle: "ROOT PARTNER", title: "0'", isDead: true, partner: 1, children: [9, 8, 7, 6, 5, 4, 3] },
@@ -81,104 +71,20 @@ const peopleByGeneration: { [generation: number]: Person[] } = {
 // https://nuxt.com/docs/4.x/api/components/client-only#accessing-html-elements
 const graphRef = useTemplateRef("graph");
 watch(graphRef, () => {
-    const graph = new Graph({
+    const graph = graphInstance({
         container: graphRef.value!, // The watch will be triggered when the component is available
-        virtual: true,
-        interacting: false,
-        autoResize: true,
-        background: { color: "#eee" },
-        grid: {
-            visible: true,
-            type: "dot",
-            size: gridSize,
-            args: [{ color: "#bbb", thickness: 2 }],
-        },
+        gridSize,
     });
+    if (!graph) return;
 
-    const bidirectionalMap = new BidirectionalNodeEntityMap<Person | PersonPartner>();
-    const personPartnerMap: Map<PersonPartner["id"], PersonPartner> = new Map();
-    const personPartnerEdgeMap: Map<PersonPartnerChildren["id"], PersonPartnerChildren> = new Map();
+    const nodeEntityMap = new BidirectionalNodeEntityMap<Person | PersonPartner>();
 
-    const nodes: X6Node[] = [];
-    Object.values(peopleByGeneration).forEach((people) => {
-        people.forEach((person) => {
-            if (person.partner) {
-                const key = createPairKey<Person>(person.id, person.partner);
-                personPartnerMap.set(key, { id: key, person: person.id, partner: person.partner });
-            }
+    const cells = getCells({ graph, data: { peopleByGeneration, nodeEntityMap } });
+    graph.resetCells(cells);
 
-            const node = createNodePerson({ graph, data: person });
-            bidirectionalMap.set("PERSON", node, person);
-            nodes.push(node);
-        });
-    });
-    personPartnerMap.values().forEach((personPartner) => {
-        const node = bidirectionalMap.getNodeByEntityId(personPartner.person);
-        if (!node) return;
+    layout({ graph, data: { rankdir: dagreRankdir, gap: gridSize } });
+    animation({ graph, data: { nodeEntityMap } });
 
-        const nodePartner = bidirectionalMap.getNodeByEntityId(personPartner.partner);
-        const nodeRelationship = nodePartner
-            ? createNodePersonRelationship({ graph, data: { nodes: [node, nodePartner] } })
-            : createNodePersonPlaceholder({ graph, type: "PERSON_RELATIONSHIP", data: { nodes: [node] } });
-        bidirectionalMap.set("PERSON_RELATIONSHIP", nodeRelationship, personPartner);
-        nodes.push(nodeRelationship);
-    });
-
-    function getEdgesChildren(nodeParent: X6Node, nodePatner?: X6Node, children?: Person["id"][]) {
-        if (!children) return [];
-        return children.flatMap((id) => {
-            const childrenNode = bidirectionalMap.getNodeByEntityId(id);
-            if (childrenNode) return [createEdgeLine({ graph, data: { source: nodeParent, target: childrenNode }, meta: { isPlaceholder: !nodePatner } })];
-            return [];
-        });
-    }
-    const edges: Edge[] = [];
-    Object.values(peopleByGeneration).forEach((people) => {
-        people.forEach((person) => {
-            const nodePerson = bidirectionalMap.getNodeByEntityId(person.id);
-            if (!nodePerson) return;
-
-            if (person.partner) {
-                const nodePersonPartner = bidirectionalMap.getNodeByEntityId(person.partner);
-                const key = createPairKey<Person>(person.id, person.partner);
-                const relationshipPartner = personPartnerMap.get(key);
-                if (!relationshipPartner) return;
-
-                const nodePersonRelationship = bidirectionalMap.getNodeByEntityId(relationshipPartner.id);
-                if (!nodePersonRelationship) return;
-
-                const hasEdges = personPartnerEdgeMap.get(key);
-                if (!hasEdges) {
-                    personPartnerEdgeMap.set(key, { id: key, children: person.children ?? [] });
-
-                    [nodePerson, nodePersonPartner].forEach((node) => {
-                        if (node) edges.push(createEdgeLine({ graph, data: { source: node, target: nodePersonRelationship }, type: "PARTNER" }));
-                    });
-
-                    getEdgesChildren(nodePersonRelationship, nodePersonPartner, person.children)
-                        .forEach((edge) => edges.push(edge));
-                }
-                return;
-            }
-
-            getEdgesChildren(nodePerson, undefined, person.children)
-                .forEach((edge) => edges.push(edge));
-        });
-    });
-
-    graph.resetCells([...nodes, ...edges]);
-    layout({ graph, rankdir: dagreRankdir, gap: gridSize });
     graph.positionContent("top");
-
-    graph.on("node:mouseenter", ({ node }) => {
-        const entityType = bidirectionalMap.getEntityTypeByNodeId(node.id);
-
-        if (entityType === "PERSON") animateNodePerson(node, { fill: true });
-    });
-    graph.on("node:mouseleave", ({ node }) => {
-        const entityType = bidirectionalMap.getEntityTypeByNodeId(node.id);
-
-        if (entityType === "PERSON") animateNodePerson(node);
-    });
 }, { once: true });
 </script>
