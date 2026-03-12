@@ -79,12 +79,8 @@ watch(graphRef, () => {
     });
     if (!graph) return;
 
-    const cells = getCells({ graph, data: { peopleByGeneration, peoplePartnerByGeneration } });
-    graph.resetCells(cells);
-
-    layout({ graph, data: { rankdir: dagreRankdir, gap: gridSize } });
+    familyTreeLayout({ graph, data: { peopleByGeneration, peoplePartnerByGeneration }, options: { rankdir: dagreRankdir, gap: gridSize } });
     animation({ graph });
-
     graph.positionContent("top");
 }, { once: true });
 </script>

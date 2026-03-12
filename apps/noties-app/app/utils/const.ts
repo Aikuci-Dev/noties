@@ -1,4 +1,4 @@
-// Common
+// App
 export type Id = string | number;
 export type EntityPairKey<T extends { id: Id }> = `${T["id"]}-${T["id"]}`;
 
@@ -16,7 +16,8 @@ export type Person = {
   gender?: Gender;
   isDead?: boolean;
 };
-export type PeopleByGeneration = { [generation: number]: Person[] };
+export type PeopleByRank = { [rank: number]: Person[] };
+export type PeopleByGeneration = PeopleByRank;
 export type PersonPartner = {
   id: EntityPairKey<Person>;
   person: Person["id"];
