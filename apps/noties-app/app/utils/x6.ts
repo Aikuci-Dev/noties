@@ -1,4 +1,5 @@
 export { default as familyTreeLayout } from "./x6/layouts/family-tree";
+export { default as simpleLayout } from "./x6/layouts/simple";
 
 /**
  * Internal exports — required to fully support Nuxt's auto-import mechanism.
