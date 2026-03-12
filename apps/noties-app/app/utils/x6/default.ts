@@ -4,16 +4,16 @@ export function createEdgeLine(
   { graph, data, meta, type = "LINE" }: {
     graph: Graph;
     data: { source: Cell; target: Cell };
-    meta?: EdgeMeta;
+    meta?: EdgeLineMeta;
     type?: EdgeType;
   },
 ) {
   const { source, target } = data;
 
   return graph.createEdge({
-    shape: EDGE_LINE,
+    shape: meta?.isDash ? EDGE_LINE_DASH : EDGE_LINE,
     source: { cell: source.id },
     target: { cell: target.id },
-    data: { cellType: "EDGE", type, value: data, meta } satisfies CellData<EdgeMeta>,
+    data: { cellType: "EDGE", type, value: data, meta } satisfies CellData<EdgeLineMeta>,
   });
 }

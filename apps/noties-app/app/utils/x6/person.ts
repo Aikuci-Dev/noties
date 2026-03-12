@@ -1,9 +1,9 @@
 import type { Graph, Node as X6Node } from "@antv/x6";
 
-export function createNodePerson({ graph, data }: { graph: Graph; data: Person }) {
+export function createNodePerson({ graph, data, meta }: { graph: Graph; data: Person; meta?: NodePersonMeta }) {
   return graph.createNode({
-    shape: NODE_PERSON,
-    data: { cellType: "NODE", type: "PERSON", value: data } satisfies CellData,
+    shape: meta?.isStack ? NODE_PERSON_STACK : NODE_PERSON,
+    data: { cellType: "NODE", type: "PERSON", value: data, meta } satisfies CellData,
   });
 }
 

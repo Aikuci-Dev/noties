@@ -7,10 +7,9 @@ export const GENDER = ["M", "F"] as const;
 export type Gender = typeof GENDER[number];
 export type Person = {
   id: number;
-  // parent?: [number] | [number, number]; // TODO: Support single-parent source
-  // partner?: number[]; // TODO: support multiple spouses
-  parent?: [number, number];
+  parent?: [number] | [number, number];
   partner?: number;
+  partners?: number[];
   children?: number[];
   subtitle?: string;
   title: string;
@@ -22,13 +21,9 @@ export type PersonPartner = {
   id: EntityPairKey<Person>;
   person: Person["id"];
   partner: Person["id"];
+  children?: Person["id"][];
 };
 export type PersonPartnerMap = Map<PersonPartner["id"], PersonPartner>;
-export type PersonPartnerChildren = {
-  id: PersonPartner["id"];
-  children: Person["id"][];
-};
-export type PersonPartnerChildrenMap = Map<PersonPartnerChildren["id"], PersonPartnerChildren>;
 
 // X6
 export type Dimension = { width: number; height: number };
@@ -41,13 +36,16 @@ export type NodeType = typeof NODE_TYPE[number];
 export const NODE_PLACEHOLDER = "node-placeholder";
 export const NODE_INTERMEDIARY = "node-intermediary";
 export const NODE_PERSON = "node-person";
+export const NODE_PERSON_STACK = "node-person-stack";
 export const NODE_PERSON_PLACEHOLDER = "node-person-placeholder";
 export const NODE_PERSON_INTERMEDIARY = "node-person-intermediary";
+export type NodePersonMeta = { isStack?: boolean };
 
-export const EDGE_LINE = "edge-line";
 export const EDGE_TYPE = ["LINE", "PARTNER"] as const;
 export type EdgeType = typeof EDGE_TYPE[number];
-export type EdgeMeta = { isPlaceholder?: boolean };
+export const EDGE_LINE = "edge-line";
+export const EDGE_LINE_DASH = "edge-line-dash";
+export type EdgeLineMeta = { isDash?: boolean; isPlaceholder?: boolean; isChildOfCurrentMarriage?: boolean };
 
 // Dagre
 export const DAGRE_RANKDIRS = ["LR", "RL", "TB", "BT"] as const;

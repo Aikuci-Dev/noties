@@ -9,8 +9,8 @@ export function resolveFillColor(options: { light?: boolean; gender?: Nullable<G
   if (gender === "F") return light ? "#fccee8" : "#fb64b6"; // Pink (200/400)
 }
 
-export default function nodePerson(options: { dimension: Dimension }) {
-  const { dimension: { height, width } } = options;
+export default function nodePerson(options: { dimension: Dimension; isStack?: boolean }) {
+  const { dimension: { height, width }, isStack } = options;
   const radius = 8;
 
   function contentAttrs(isTop?: boolean) {
@@ -28,11 +28,25 @@ export default function nodePerson(options: { dimension: Dimension }) {
       d: "M 8 0 L 8 60 C 3.582 60 0 56.418 0 52 L 0 8 C 0 3.582 3.582 0 8 0 Z", // Created using Boxy SVG: https://boxy-svg.com/
     };
   }
+  function cardAttrs(withFilter?: boolean) {
+    return {
+      // Defining either `rx` or `ry` is enough — the other will mirror the value.
+      // https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/rx#rect
+      rx: radius,
+      refWidth: "100%",
+      refHeight: "100%",
+      fill: "#fff",
+      stroke: "#000",
+      strokeWidth: 0.4,
+      ...(withFilter && { filter: { name: "dropShadow", args: { dx: 4, dy: 4, blur: 4, opacity: 0.4 } } }),
+    };
+  }
 
   return {
     height,
     width,
     markup: [
+      { tagName: "rect", attrs: { class: "card-behind" } },
       { tagName: "rect", attrs: { class: "card" } },
       { tagName: "rect", attrs: { class: "content" } },
       { tagName: "rect", attrs: { class: "content-t" } },
@@ -43,18 +57,11 @@ export default function nodePerson(options: { dimension: Dimension }) {
       { tagName: "text", attrs: { class: "title" } },
     ],
     attrs: {
-      ".card": {
-        // Defining either `rx` or `ry` is enough — the other will mirror the value.
-        // https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/rx#rect
-        rx: radius,
-        refWidth: "100%",
-        refHeight: "100%",
-        fill: "#fff",
-
-        filter: {
-          name: "dropShadow",
-          args: { dx: 4, dy: 4, blur: 4, opacity: 0.4 },
-        },
+      ".card": cardAttrs(!isStack),
+      ".card-behind": {
+        ...cardAttrs(isStack),
+        ref: ".card",
+        ...(isStack && { refX: 4, refY: 4 }),
       },
       ".content": {
         ref: ".card",
@@ -114,7 +121,7 @@ export default function nodePerson(options: { dimension: Dimension }) {
         ObjectExt.setByPath(rest, "attrs/.bar-t/fill", resolveFillColor({ gender: genderOrMale, isDead }));
         ObjectExt.setByPath(rest, "attrs/.bar-b/fill", resolveFillColor({ gender: genderOrFemale, isDead }));
       }
-      return rest;
+      return { ...rest, data };
     },
   } satisfies Parameters<typeof Graph.registerNode>[1];
 }

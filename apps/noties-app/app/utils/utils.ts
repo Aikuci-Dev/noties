@@ -4,6 +4,11 @@ export function removeFalsy<T>(array: Nullable<T>[]): T[] {
   return array.filter((item): item is T => Boolean(item));
 }
 
+export function intersectionBy<T>(a: T[] = [], b: T[] = [], selector: (item: T) => unknown): T[] {
+  const set = new Set(b.map(selector));
+  return a.filter((x) => set.has(selector(x)));
+}
+
 export function minMax(a: number, b: number): readonly [number, number] {
   return [Math.min(a, b), Math.max(a, b)];
 }
