@@ -1,24 +1,31 @@
 // Reference: https://x6.antv.antgroup.com/en/examples/showcase/practices/#orgchart
 import type { Edge, Node as X6Node } from "@antv/x6";
-import { Graph } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
-function getCells({ graph, data: { peopleByRank } }: { graph: Graph; data: { peopleByRank: PeopleByRank } }) {
+import type { GraphArgs, GraphDep, GraphLayoutArgs } from "./type";
+
+type CellArgs = { peopleByRank: PeopleByRank };
+type CellInheritanceArgs = CellArgs & { nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner> };
+export type CellDep = CellArgs;
+
+const main = (graphDep: GraphDep) => (cellDep: CellArgs) => {
+  const { graph, options: graphOptions } = graphDep;
+
+  const cells = getCells({ graph })(cellDep);
+  graph.resetCells(cells);
+
+  layout({ graph })(graphOptions);
+};
+
+const getCells = ({ graph }: GraphArgs) => ({ peopleByRank }: CellArgs) => {
   const nodeEntityMap = new BidirectionalNodeEntityMap<Person | PersonPartner>();
 
-  const nodes = getNodes({ graph, data: { peopleByRank, nodeEntityMap } });
-  const edges = getEdges({ graph, data: { peopleByRank, nodeEntityMap } });
+  const nodes = getNodes({ graph })({ peopleByRank, nodeEntityMap });
+  const edges = getEdges({ graph })({ peopleByRank, nodeEntityMap });
 
   return [...nodes, ...edges];
-}
-type GetCellsInheritanceArgs = {
-  graph: Graph;
-  data: {
-    peopleByRank: PeopleByRank;
-    nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner>;
-  };
 };
-function getNodes({ graph, data: { peopleByRank, nodeEntityMap } }: GetCellsInheritanceArgs) {
+const getNodes = ({ graph }: GraphArgs) => ({ peopleByRank, nodeEntityMap }: CellInheritanceArgs) => {
   const nodes: X6Node[] = [];
 
   Object.values(peopleByRank).forEach((people) => {
@@ -30,8 +37,8 @@ function getNodes({ graph, data: { peopleByRank, nodeEntityMap } }: GetCellsInhe
   });
 
   return nodes;
-}
-function getEdges({ graph, data: { peopleByRank, nodeEntityMap } }: GetCellsInheritanceArgs) {
+};
+const getEdges = ({ graph }: GraphArgs) => ({ peopleByRank, nodeEntityMap }: CellInheritanceArgs) => {
   const edges: Edge[] = [];
 
   Object.values(peopleByRank).forEach((people) => {
@@ -50,12 +57,9 @@ function getEdges({ graph, data: { peopleByRank, nodeEntityMap } }: GetCellsInhe
   });
 
   return edges;
-}
+};
 
-function layout({ graph, data: { gap, rankdir = "TB" } }: {
-  graph: Graph;
-  data: { gap: number; rankdir?: DagreRankdir };
-}) {
+const layout = ({ graph }: GraphArgs) => ({ gap, rankdir = "TB" }: GraphLayoutArgs) => {
   const isVertical = rankdir === "TB" || rankdir === "BT";
   // const isHorizontal = rankdir === "LR" || rankdir === "RL";
 
@@ -96,16 +100,6 @@ function layout({ graph, data: { gap, rankdir = "TB" } }: {
       edge.setVertices([{ x, y: sourceBBox.center.y }, { x, y: targetBBox.center.y }]);
     }
   });
-}
+};
 
-export default function main(
-  { graph, data, options }: {
-    graph: Graph;
-    data: { peopleByRank: PeopleByRank };
-    options: { gap: number; rankdir?: DagreRankdir };
-  },
-) {
-  const cells = getCells({ graph, data });
-  graph.resetCells(cells);
-  layout({ graph, data: options });
-}
+export default main;

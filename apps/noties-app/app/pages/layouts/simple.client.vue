@@ -57,7 +57,7 @@ watch(graphRef, () => {
     });
     if (!graph) return;
 
-    simpleLayout({ graph, data: { peopleByRank }, options: { rankdir: dagreRankdir, gap: gridSize } });
+    simpleLayout({ graph, options: { rankdir: dagreRankdir, gap: gridSize } })({ peopleByRank });
     animation({ graph });
     graph.positionContent("top");
 }, { once: true });

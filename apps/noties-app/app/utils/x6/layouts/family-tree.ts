@@ -1,182 +1,165 @@
 // Reference: https://x6.antv.antgroup.com/en/examples/showcase/practices/#orgchart
 import type { Edge, Node as X6Node } from "@antv/x6";
-import { Graph } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
-function getCells({ graph, data: { peopleByGeneration, peoplePartner } }: {
-  graph: Graph;
-  data: { peopleByGeneration: PeopleByGeneration; peoplePartner: People };
-}) {
+import type { GraphArgs, GraphDep, GraphLayoutArgs } from "./type";
+
+type CellArgs = { peopleByGeneration: PeopleByGeneration; peoplePartner: People };
+type CellInheritanceArgs = Omit<CellArgs, "peoplePartner"> & {
+  nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner>;
+  personPartnerMap: PersonPartnerMap;
+};
+type NodeArgs = CellInheritanceArgs & { partnerMap: PersonMap };
+export type CellDep = CellArgs;
+
+const main = (graphDep: GraphDep) => (cellDep: CellArgs) => {
+  const { graph, options: graphOptions } = graphDep;
+
+  const cells = getCells({ graph })(cellDep);
+  graph.resetCells(cells);
+
+  layout({ graph })(graphOptions);
+};
+
+const getCells = ({ graph }: GraphArgs) => ({ peopleByGeneration, peoplePartner }: CellArgs) => {
   const nodeEntityMap = new BidirectionalNodeEntityMap<Person | PersonPartner>();
   const personPartnerMap: PersonPartnerMap = new Map();
   const partnerMap = new Map(peoplePartner.map((person) => [person.id, person]));
 
-  const nodes = getNodes({ graph, data: { peopleByGeneration, nodeEntityMap, personPartnerMap, partnerMap } });
-  const edges = getEdges({ graph, data: { peopleByGeneration, nodeEntityMap, personPartnerMap } });
+  const nodes = getNodes({ graph })({ peopleByGeneration, nodeEntityMap, personPartnerMap, partnerMap });
+  const edges = getEdges({ graph })({ peopleByGeneration, nodeEntityMap, personPartnerMap });
 
   return [...nodes, ...edges];
-}
-function getNodes(
-  { graph, data: { peopleByGeneration, nodeEntityMap, partnerMap, personPartnerMap } }: {
-    graph: Graph;
-    data: {
-      peopleByGeneration: PeopleByGeneration;
-      nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner>;
-      personPartnerMap: PersonPartnerMap;
-      partnerMap: PersonMap;
-    };
-  },
-) {
-  const nodes: X6Node[] = [];
+};
+const getNodes =
+  ({ graph }: GraphArgs) => ({ peopleByGeneration, nodeEntityMap, personPartnerMap, partnerMap }: NodeArgs) => {
+    const nodes: X6Node[] = [];
 
-  // NODE-PERSON
-  Object.values(peopleByGeneration).forEach((people) => {
-    people.forEach((person) => {
-      const node = createNodePerson({ graph, data: person });
-      nodeEntityMap.set("PERSON", node, person);
-      nodes.push(node);
+    // NODE-PERSON
+    Object.values(peopleByGeneration).forEach((people) => {
+      people.forEach((person) => {
+        const node = createNodePerson({ graph, data: person });
+        nodeEntityMap.set("PERSON", node, person);
+        nodes.push(node);
 
-      if (person.partner) {
-        const personPartner = partnerMap.get(person.partner);
-        if (personPartner) { // Register node partner
-          const node = createNodePerson({
-            graph,
-            data: personPartner,
-            meta: { isStack: person.partners && person.partners.length > 1 },
-          });
-          nodeEntityMap.set("PERSON", node, personPartner);
-          nodes.push(node);
-        }
-
-        const personPartnerMapKey: EntityPairKey<Person> = `${person.id}-${person.partner!}`;
-        personPartnerMap.set(personPartnerMapKey, {
-          id: personPartnerMapKey,
-          person: person.id,
-          partner: person.partner,
-          children: personPartner ? intersectionBy(person.children, personPartner.children, (x) => x) : person.children,
-        });
-      } else if (person.children) { // Register node relationship (without partner)
-        const nodeRelationship = createNodePersonPlaceholder({
-          graph,
-          type: "PERSON_RELATIONSHIP",
-          data: { nodes: [node] },
-        });
-        nodeEntityMap.set("PERSON_RELATIONSHIP", nodeRelationship, person);
-        nodes.push(nodeRelationship);
-      }
-    });
-  });
-
-  // NODE-PERSON-RELATIONSHIP
-  personPartnerMap.values().forEach((personPartner) => {
-    const node = nodeEntityMap.getNodeByEntityId("PERSON", personPartner.person);
-    if (!node) return;
-
-    let nodeRelationship;
-    const nodePartner = nodeEntityMap.getNodeByEntityId("PERSON", personPartner.partner);
-    if (nodePartner) {
-      nodeRelationship = createNodePersonRelationship({ graph, data: { nodes: [node, nodePartner] } });
-    } else {
-      const hasChildrenNodes = (personPartner.children ?? []).some((child) =>
-        nodeEntityMap.getNodeByEntityId("PERSON", child)
-      );
-      if (hasChildrenNodes) {
-        nodeRelationship = createNodePersonPlaceholder({ graph, type: "PERSON_RELATIONSHIP", data: { nodes: [node] } });
-      }
-    }
-    if (!nodeRelationship) return;
-
-    nodeEntityMap.set("PERSON_RELATIONSHIP", nodeRelationship, personPartner);
-    nodes.push(nodeRelationship);
-  });
-
-  return nodes;
-}
-function getEdges({ graph, data: { peopleByGeneration, nodeEntityMap, personPartnerMap } }: {
-  graph: Graph;
-  data: {
-    peopleByGeneration: PeopleByGeneration;
-    nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner>;
-    personPartnerMap: PersonPartnerMap;
-  };
-}) {
-  const edges: Edge[] = [];
-
-  Object.values(peopleByGeneration).forEach((people) => {
-    people.forEach((person) => {
-      const nodePerson = nodeEntityMap.getNodeByEntityId("PERSON", person.id);
-      if (!nodePerson) return;
-
-      let relationshipPartner: PersonPartner | undefined;
-      let nodePersonPartner: X6Node | undefined;
-      if (person.partner) {
-        nodePersonPartner = nodeEntityMap.getNodeByEntityId("PERSON", person.partner);
-        const personPartnerMapKey: EntityPairKey<Person> = `${person.id}-${person.partner}`;
-        relationshipPartner = personPartnerMap.get(personPartnerMapKey);
-        if (!relationshipPartner) return;
-      }
-      const nodePersonRelationship = nodeEntityMap.getNodeByEntityId(
-        "PERSON_RELATIONSHIP",
-        relationshipPartner?.id ?? person.id,
-      );
-      if (!nodePersonRelationship) return;
-
-      [nodePerson, nodePersonPartner].forEach((node) => {
-        if (node) {
-          edges.push(
-            createEdgeLine({
+        if (person.partner) {
+          const personPartner = partnerMap.get(person.partner);
+          if (personPartner) { // Register node partner
+            const node = createNodePerson({
               graph,
-              data: { source: node, target: nodePersonRelationship },
-              type: "PARTNER",
-            }),
-          );
+              data: personPartner,
+              meta: { isStack: person.partners && person.partners.length > 1 },
+            });
+            nodeEntityMap.set("PERSON", node, personPartner);
+            nodes.push(node);
+          }
+
+          const personPartnerMapKey: EntityPairKey<Person> = `${person.id}-${person.partner!}`;
+          personPartnerMap.set(personPartnerMapKey, {
+            id: personPartnerMapKey,
+            person: person.id,
+            partner: person.partner,
+            children: personPartner
+              ? intersectionBy(person.children, personPartner.children, (x) => x)
+              : person.children,
+          });
+        } else if (person.children) { // Register node relationship (without partner)
+          const nodeRelationship = createNodePersonPlaceholder({
+            graph,
+            type: "PERSON_RELATIONSHIP",
+            data: { nodes: [node] },
+          });
+          nodeEntityMap.set("PERSON_RELATIONSHIP", nodeRelationship, person);
+          nodes.push(nodeRelationship);
         }
       });
-
-      getEdgesChildren({
-        graph,
-        data: {
-          nodeEntityMap,
-          node: { parent: nodePersonRelationship, partner: nodePersonPartner },
-          children: { person: person.children, currentMarriage: relationshipPartner?.children },
-        },
-      }).forEach((edge) => edges.push(edge));
     });
-  });
 
-  return edges;
-}
-function getEdgesChildren(
-  { graph, data: { nodeEntityMap, node: { parent, partner }, children } }: {
-    graph: Graph;
-    data: {
-      nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner>;
-      node: { parent: X6Node; partner?: X6Node };
-      children: { person?: Person["id"][]; currentMarriage?: Person["id"][] };
-    };
-  },
-) {
-  const personChildren = children.person;
-  if (!personChildren) return [];
+    // NODE-PERSON-RELATIONSHIP
+    personPartnerMap.values().forEach((personPartner) => {
+      const node = nodeEntityMap.getNodeByEntityId("PERSON", personPartner.person);
+      if (!node) return;
 
-  const currentMarriageChildren = children.currentMarriage;
-  return personChildren.flatMap((id) => {
-    const children = nodeEntityMap.getNodeByEntityId("PERSON", id);
-    if (!children) return [];
+      let nodeRelationship;
+      const nodePartner = nodeEntityMap.getNodeByEntityId("PERSON", personPartner.partner);
+      if (nodePartner) {
+        nodeRelationship = createNodePersonRelationship({ graph, data: { nodes: [node, nodePartner] } });
+      } else {
+        const hasChildrenNodes = (personPartner.children ?? []).some((child) =>
+          nodeEntityMap.getNodeByEntityId("PERSON", child)
+        );
+        if (hasChildrenNodes) {
+          nodeRelationship = createNodePersonPlaceholder({
+            graph,
+            type: "PERSON_RELATIONSHIP",
+            data: { nodes: [node] },
+          });
+        }
+      }
+      if (!nodeRelationship) return;
 
-    const isChildOfCurrentMarriage = (currentMarriageChildren ?? []).includes(id);
-    return [createEdgeLine({
-      graph,
-      data: { source: parent, target: children },
-      meta: { isDash: partner && !isChildOfCurrentMarriage, isPlaceholder: !partner, isChildOfCurrentMarriage },
-    })];
-  });
-}
+      nodeEntityMap.set("PERSON_RELATIONSHIP", nodeRelationship, personPartner);
+      nodes.push(nodeRelationship);
+    });
 
-function layout({ graph, data: { gap, rankdir = "TB" } }: {
-  graph: Graph;
-  data: { gap: number; rankdir?: DagreRankdir };
-}) {
+    return nodes;
+  };
+const getEdges =
+  ({ graph }: GraphArgs) => ({ peopleByGeneration, nodeEntityMap, personPartnerMap }: CellInheritanceArgs) => {
+    const edges: Edge[] = [];
+
+    Object.values(peopleByGeneration).forEach((people) => {
+      people.forEach((person) => {
+        const nodePerson = nodeEntityMap.getNodeByEntityId("PERSON", person.id);
+        if (!nodePerson) return;
+
+        let relationshipPartner: PersonPartner | undefined;
+        let nodePersonPartner: X6Node | undefined;
+        if (person.partner) {
+          nodePersonPartner = nodeEntityMap.getNodeByEntityId("PERSON", person.partner);
+          const personPartnerMapKey: EntityPairKey<Person> = `${person.id}-${person.partner}`;
+          relationshipPartner = personPartnerMap.get(personPartnerMapKey);
+          if (!relationshipPartner) return;
+        }
+        const nodePersonRelationship = nodeEntityMap.getNodeByEntityId(
+          "PERSON_RELATIONSHIP",
+          relationshipPartner?.id ?? person.id,
+        );
+        if (!nodePersonRelationship) return;
+
+        [nodePerson, nodePersonPartner].forEach((node) => {
+          if (node) {
+            edges.push(
+              createEdgeLine({ graph, data: { source: node, target: nodePersonRelationship }, type: "PARTNER" }),
+            );
+          }
+        });
+
+        if (!person.children) return;
+
+        const currentMarriageChildren = relationshipPartner?.children ?? [];
+        person.children.forEach((id) => {
+          const children = nodeEntityMap.getNodeByEntityId("PERSON", id);
+          if (!children) return;
+
+          const isChildOfCurrentMarriage = currentMarriageChildren.includes(id);
+          edges.push(createEdgeLine({
+            graph,
+            data: { source: nodePersonRelationship, target: children },
+            meta: {
+              isDash: nodePersonPartner && !isChildOfCurrentMarriage,
+              isPlaceholder: !nodePersonPartner,
+              isChildOfCurrentMarriage,
+            },
+          }));
+        });
+      });
+    });
+
+    return edges;
+  };
+
+const layout = ({ graph }: GraphArgs) => ({ gap, rankdir = "TB" }: GraphLayoutArgs) => {
   const isVertical = rankdir === "TB" || rankdir === "BT";
   const isHorizontal = rankdir === "LR" || rankdir === "RL";
 
@@ -256,16 +239,6 @@ function layout({ graph, data: { gap, rankdir = "TB" } }: {
       edge.setVertices([{ x, y: sourceBBox.y }, { x, y: targetBBox.center.y }]);
     }
   });
-}
+};
 
-export default function main(
-  { graph, data, options }: {
-    graph: Graph;
-    data: { peopleByGeneration: PeopleByGeneration; peoplePartner: People };
-    options: { gap: number; rankdir?: DagreRankdir };
-  },
-) {
-  const cells = getCells({ graph, data });
-  graph.resetCells(cells);
-  layout({ graph, data: options });
-}
+export default main;

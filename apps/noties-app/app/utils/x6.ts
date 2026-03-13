@@ -1,4 +1,7 @@
+export type { CellDep as FamilyTreeCellDep } from "./x6/layouts/family-tree";
 export { default as familyTreeLayout } from "./x6/layouts/family-tree";
+
+export type { CellDep as SimpleCellDep } from "./x6/layouts/simple";
 export { default as simpleLayout } from "./x6/layouts/simple";
 
 /**
