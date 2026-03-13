@@ -2,17 +2,17 @@
 import type { Edge, Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
-import type { GraphArgs, GraphDep, GraphLayoutArgs } from "./type";
+import type { BaseGraphDep } from "@/utils/x6/index";
+import type { GraphDep, GraphLayoutDep } from "./index";
 
-type CellArgs = { peopleByGeneration: PeopleByGeneration; peoplePartner: People };
-type CellInheritanceArgs = Omit<CellArgs, "peoplePartner"> & {
+export type CellDep = { peopleByGeneration: PeopleByGeneration; peoplePartner: People };
+type CellInheritanceDep = Omit<CellDep, "peoplePartner"> & {
   nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner>;
   personPartnerMap: PersonPartnerMap;
 };
-type NodeArgs = CellInheritanceArgs & { partnerMap: PersonMap };
-export type CellDep = CellArgs;
+type CellNodeDep = CellInheritanceDep & { partnerMap: PersonMap };
 
-const main = (graphDep: GraphDep) => (cellDep: CellArgs) => {
+const main = (graphDep: GraphDep) => (cellDep: CellDep) => {
   const { graph, options: graphOptions } = graphDep;
 
   const cells = getCells({ graph })(cellDep);
@@ -21,32 +21,32 @@ const main = (graphDep: GraphDep) => (cellDep: CellArgs) => {
   layout({ graph })(graphOptions);
 };
 
-const getCells = ({ graph }: GraphArgs) => ({ peopleByGeneration, peoplePartner }: CellArgs) => {
+const getCells = (graphDep: BaseGraphDep) => ({ peopleByGeneration, peoplePartner }: CellDep) => {
   const nodeEntityMap = new BidirectionalNodeEntityMap<Person | PersonPartner>();
   const personPartnerMap: PersonPartnerMap = new Map();
   const partnerMap = new Map(peoplePartner.map((person) => [person.id, person]));
+  const cellInheritanceDep = { peopleByGeneration, nodeEntityMap, personPartnerMap };
 
-  const nodes = getNodes({ graph })({ peopleByGeneration, nodeEntityMap, personPartnerMap, partnerMap });
-  const edges = getEdges({ graph })({ peopleByGeneration, nodeEntityMap, personPartnerMap });
+  const nodes = getCellNodes(graphDep)({ ...cellInheritanceDep, partnerMap });
+  const edges = getCellEdges(graphDep)(cellInheritanceDep);
 
   return [...nodes, ...edges];
 };
-const getNodes =
-  ({ graph }: GraphArgs) => ({ peopleByGeneration, nodeEntityMap, personPartnerMap, partnerMap }: NodeArgs) => {
+const getCellNodes =
+  (graphDep: BaseGraphDep) => ({ peopleByGeneration, nodeEntityMap, personPartnerMap, partnerMap }: CellNodeDep) => {
     const nodes: X6Node[] = [];
 
     // NODE-PERSON
     Object.values(peopleByGeneration).forEach((people) => {
       people.forEach((person) => {
-        const node = createNodePerson({ graph, data: person });
+        const node = createNodePerson(graphDep)({ data: person });
         nodeEntityMap.set("PERSON", node, person);
         nodes.push(node);
 
         if (person.partner) {
           const personPartner = partnerMap.get(person.partner);
           if (personPartner) { // Register node partner
-            const node = createNodePerson({
-              graph,
+            const node = createNodePerson(graphDep)({
               data: personPartner,
               meta: { isStack: person.partners && person.partners.length > 1 },
             });
@@ -64,8 +64,7 @@ const getNodes =
               : person.children,
           });
         } else if (person.children) { // Register node relationship (without partner)
-          const nodeRelationship = createNodePersonPlaceholder({
-            graph,
+          const nodeRelationship = createNodePersonPlaceholder(graphDep)({
             type: "PERSON_RELATIONSHIP",
             data: { nodes: [node] },
           });
@@ -83,14 +82,13 @@ const getNodes =
       let nodeRelationship;
       const nodePartner = nodeEntityMap.getNodeByEntityId("PERSON", personPartner.partner);
       if (nodePartner) {
-        nodeRelationship = createNodePersonRelationship({ graph, data: { nodes: [node, nodePartner] } });
+        nodeRelationship = createNodePersonRelationship(graphDep)({ data: { nodes: [node, nodePartner] } });
       } else {
         const hasChildrenNodes = (personPartner.children ?? []).some((child) =>
           nodeEntityMap.getNodeByEntityId("PERSON", child)
         );
         if (hasChildrenNodes) {
-          nodeRelationship = createNodePersonPlaceholder({
-            graph,
+          nodeRelationship = createNodePersonPlaceholder(graphDep)({
             type: "PERSON_RELATIONSHIP",
             data: { nodes: [node] },
           });
@@ -104,8 +102,8 @@ const getNodes =
 
     return nodes;
   };
-const getEdges =
-  ({ graph }: GraphArgs) => ({ peopleByGeneration, nodeEntityMap, personPartnerMap }: CellInheritanceArgs) => {
+const getCellEdges =
+  (graphDep: BaseGraphDep) => ({ peopleByGeneration, nodeEntityMap, personPartnerMap }: CellInheritanceDep) => {
     const edges: Edge[] = [];
 
     Object.values(peopleByGeneration).forEach((people) => {
@@ -130,7 +128,7 @@ const getEdges =
         [nodePerson, nodePersonPartner].forEach((node) => {
           if (node) {
             edges.push(
-              createEdgeLine({ graph, data: { source: node, target: nodePersonRelationship }, type: "PARTNER" }),
+              createEdgeLine(graphDep)({ data: { source: node, target: nodePersonRelationship }, type: "PARTNER" }),
             );
           }
         });
@@ -143,15 +141,16 @@ const getEdges =
           if (!children) return;
 
           const isChildOfCurrentMarriage = currentMarriageChildren.includes(id);
-          edges.push(createEdgeLine({
-            graph,
-            data: { source: nodePersonRelationship, target: children },
-            meta: {
-              isDash: nodePersonPartner && !isChildOfCurrentMarriage,
-              isPlaceholder: !nodePersonPartner,
-              isChildOfCurrentMarriage,
-            },
-          }));
+          edges.push(
+            createEdgeLine(graphDep)({
+              data: { source: nodePersonRelationship, target: children },
+              meta: {
+                isDash: nodePersonPartner && !isChildOfCurrentMarriage,
+                isPlaceholder: !nodePersonPartner,
+                isChildOfCurrentMarriage,
+              },
+            }),
+          );
         });
       });
     });
@@ -159,7 +158,7 @@ const getEdges =
     return edges;
   };
 
-const layout = ({ graph }: GraphArgs) => ({ gap, rankdir = "TB" }: GraphLayoutArgs) => {
+const layout = ({ graph }: BaseGraphDep) => ({ gap, rankdir = "TB" }: GraphLayoutDep) => {
   const isVertical = rankdir === "TB" || rankdir === "BT";
   const isHorizontal = rankdir === "LR" || rankdir === "RL";
 
@@ -196,8 +195,8 @@ const layout = ({ graph }: GraphArgs) => ({ gap, rankdir = "TB" }: GraphLayoutAr
     }
 
     const { nodes } = data.value as
-      | Parameters<typeof createNodePersonRelationship>[0]["data"]
-      | Parameters<typeof createNodePersonPlaceholder>[0]["data"];
+      | Parameters<ReturnType<typeof createNodePersonRelationship>>[0]["data"]
+      | Parameters<ReturnType<typeof createNodePersonPlaceholder>>[0]["data"];
     if (nodes.length === 1) { // No Partner (Placeholder Relationship)
       const nodePerson = graph.getCellById(nodes[0].id);
       const personBBox = nodePerson.getBBox();

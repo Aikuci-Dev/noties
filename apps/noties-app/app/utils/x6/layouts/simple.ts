@@ -2,13 +2,13 @@
 import type { Edge, Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
-import type { GraphArgs, GraphDep, GraphLayoutArgs } from "./type";
+import type { BaseGraphDep } from "@/utils/x6/index";
+import type { GraphDep, GraphLayoutDep } from "./index";
 
-type CellArgs = { peopleByRank: PeopleByRank };
-type CellInheritanceArgs = CellArgs & { nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner> };
-export type CellDep = CellArgs;
+export type CellDep = { peopleByRank: PeopleByRank };
+type CellInheritanceDep = CellDep & { nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner> };
 
-const main = (graphDep: GraphDep) => (cellDep: CellArgs) => {
+const main = (graphDep: GraphDep) => (cellDep: CellDep) => {
   const { graph, options: graphOptions } = graphDep;
 
   const cells = getCells({ graph })(cellDep);
@@ -17,20 +17,21 @@ const main = (graphDep: GraphDep) => (cellDep: CellArgs) => {
   layout({ graph })(graphOptions);
 };
 
-const getCells = ({ graph }: GraphArgs) => ({ peopleByRank }: CellArgs) => {
+const getCells = (graphDep: BaseGraphDep) => (cellDep: CellDep) => {
   const nodeEntityMap = new BidirectionalNodeEntityMap<Person | PersonPartner>();
+  const cellInheritanceDep = { ...cellDep, nodeEntityMap };
 
-  const nodes = getNodes({ graph })({ peopleByRank, nodeEntityMap });
-  const edges = getEdges({ graph })({ peopleByRank, nodeEntityMap });
+  const nodes = getCellNodes(graphDep)(cellInheritanceDep);
+  const edges = getCellEdges(graphDep)(cellInheritanceDep);
 
   return [...nodes, ...edges];
 };
-const getNodes = ({ graph }: GraphArgs) => ({ peopleByRank, nodeEntityMap }: CellInheritanceArgs) => {
+const getCellNodes = (graphDep: BaseGraphDep) => ({ peopleByRank, nodeEntityMap }: CellInheritanceDep) => {
   const nodes: X6Node[] = [];
 
   Object.values(peopleByRank).forEach((people) => {
     people.forEach((person) => {
-      const node = createNodePerson({ graph, data: person });
+      const node = createNodePerson(graphDep)({ data: person });
       nodeEntityMap.set("PERSON", node, person);
       nodes.push(node);
     });
@@ -38,7 +39,7 @@ const getNodes = ({ graph }: GraphArgs) => ({ peopleByRank, nodeEntityMap }: Cel
 
   return nodes;
 };
-const getEdges = ({ graph }: GraphArgs) => ({ peopleByRank, nodeEntityMap }: CellInheritanceArgs) => {
+const getCellEdges = (graphDep: BaseGraphDep) => ({ peopleByRank, nodeEntityMap }: CellInheritanceDep) => {
   const edges: Edge[] = [];
 
   Object.values(peopleByRank).forEach((people) => {
@@ -50,7 +51,7 @@ const getEdges = ({ graph }: GraphArgs) => ({ peopleByRank, nodeEntityMap }: Cel
         person.children.forEach((id) => {
           const children = nodeEntityMap.getNodeByEntityId("PERSON", id);
           if (!children) return;
-          edges.push(createEdgeLine({ graph, data: { source: nodePerson, target: children } }));
+          edges.push(createEdgeLine(graphDep)({ data: { source: nodePerson, target: children } }));
         });
       }
     });
@@ -59,7 +60,7 @@ const getEdges = ({ graph }: GraphArgs) => ({ peopleByRank, nodeEntityMap }: Cel
   return edges;
 };
 
-const layout = ({ graph }: GraphArgs) => ({ gap, rankdir = "TB" }: GraphLayoutArgs) => {
+const layout = ({ graph }: BaseGraphDep) => ({ gap, rankdir = "TB" }: GraphLayoutDep) => {
   const isVertical = rankdir === "TB" || rankdir === "BT";
   // const isHorizontal = rankdir === "LR" || rankdir === "RL";
 

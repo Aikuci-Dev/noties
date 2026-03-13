@@ -1,9 +1,13 @@
-// Reference: https://x6.antv.antgroup.com/en/examples/showcase/practices/#orgchart
+import type { Node as X6Node } from "@antv/x6";
+
 import { Graph } from "@antv/x6";
 
 import edgeLine from "~/components/x6/default/edge-line";
 import nodePlaceholder from "~/components/x6/default/node-placeholder";
 import nodePerson from "~/components/x6/person/node-person";
+
+export type BaseGraphDep = { graph: Graph };
+export type BaseNodeDep = { node: X6Node };
 
 export function registration({ nodePersonDimension }: { nodePersonDimension: Dimension }) {
   Graph.registerNode(NODE_PERSON, nodePerson({ dimension: nodePersonDimension }), true);
@@ -37,10 +41,10 @@ export function graphInstance({ container, gridSize }: { gridSize: number; conta
 export function animation({ graph }: { graph: Graph }) {
   graph.on("node:mouseenter", ({ node }) => {
     const { type } = node.data as CellData;
-    if (type === "PERSON") animateNodePerson(node, { fill: true });
+    if (type === "PERSON") animateNodePerson({ node, options: { fill: true } });
   });
   graph.on("node:mouseleave", ({ node }) => {
     const { type } = node.data as CellData;
-    if (type === "PERSON") animateNodePerson(node);
+    if (type === "PERSON") animateNodePerson({ node, options: { fill: false } });
   });
 }

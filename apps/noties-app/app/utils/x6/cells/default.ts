@@ -1,13 +1,10 @@
-import type { Cell, Graph } from "@antv/x6";
+import type { Cell } from "@antv/x6";
 
-export function createEdgeLine(
-  { graph, data, meta, type = "LINE" }: {
-    graph: Graph;
-    data: { source: Cell; target: Cell };
-    meta?: EdgeLineMeta;
-    type?: EdgeType;
-  },
-) {
+import type { BaseGraphDep as GraphDep } from "@/utils/x6/index";
+
+type EdgeLineDep = { data: { source: Cell; target: Cell }; meta?: EdgeLineMeta; type?: EdgeType };
+
+export const createEdgeLine = ({ graph }: GraphDep) => ({ data, meta, type = "LINE" }: EdgeLineDep) => {
   const { source, target } = data;
 
   return graph.createEdge({
@@ -16,4 +13,4 @@ export function createEdgeLine(
     target: { cell: target.id },
     data: { cellType: "EDGE", type, value: data, meta } satisfies CellData<EdgeLineMeta>,
   });
-}
+};
