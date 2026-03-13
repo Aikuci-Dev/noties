@@ -182,7 +182,7 @@ const layout = ({ graph }: BaseGraphDep) => ({ gap, rankdir = "TB" }: GraphLayou
     if (!node) return;
 
     const dagreNode = g.node(id);
-    const data: CellData = node.data;
+    const data: PersonCellData = node.data;
 
     if (!data) {
       node.position(dagreNode.x, dagreNode.y);
@@ -217,7 +217,7 @@ const layout = ({ graph }: BaseGraphDep) => ({ gap, rankdir = "TB" }: GraphLayou
     }
   });
   edges.forEach((edge) => {
-    const data: CellData<EdgeLineMeta> = edge.data;
+    const data: PersonCellData<EdgeLineMeta> = edge.data;
     if (data.cellType === "EDGE" && data.type === "PARTNER") return;
 
     const source = edge.getSourceNode();

@@ -11,6 +11,6 @@ export const createEdgeLine = ({ graph }: GraphDep) => ({ data, meta, type = "LI
     shape: meta?.isDash ? EDGE_LINE_DASH : EDGE_LINE,
     source: { cell: source.id },
     target: { cell: target.id },
-    data: { cellType: "EDGE", type, value: data, meta } satisfies CellData<EdgeLineMeta>,
+    data: { cellType: "EDGE", type, value: data, meta } satisfies AllowedCellData<EdgeLineMeta>,
   });
 };

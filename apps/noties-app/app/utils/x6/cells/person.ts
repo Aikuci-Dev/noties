@@ -11,21 +11,21 @@ type AnimationNodePersonDep = BaseNodeDep & { options?: { fill?: boolean } };
 export const createNodePerson = ({ graph }: GraphDep) => ({ data, meta }: NodePersonDep) => {
   return graph.createNode({
     shape: meta?.isStack ? NODE_PERSON_STACK : NODE_PERSON,
-    data: { cellType: "NODE", type: "PERSON", value: data, meta } satisfies CellData,
+    data: { cellType: "NODE", type: "PERSON", value: data, meta } satisfies PersonCellData,
   });
 };
 
 export const createNodePersonPlaceholder = ({ graph }: GraphDep) => ({ type, data }: NodePersonPlaceholderDep) => {
   return graph.createNode({
     shape: NODE_PERSON_PLACEHOLDER,
-    data: { cellType: "NODE", type, value: data } satisfies CellData,
+    data: { cellType: "NODE", type, value: data } satisfies PersonCellData,
   });
 };
 
 export const createNodePersonRelationship = ({ graph }: GraphDep) => ({ data }: NodePersonRelationshipDep) => {
   return graph.createNode({
     shape: NODE_PERSON_INTERMEDIARY,
-    data: { cellType: "NODE", type: "PERSON_RELATIONSHIP", value: data } satisfies CellData,
+    data: { cellType: "NODE", type: "PERSON_RELATIONSHIP", value: data } satisfies PersonCellData,
   });
 };
 

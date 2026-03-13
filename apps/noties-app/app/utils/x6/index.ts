@@ -40,11 +40,11 @@ export function graphInstance({ container, gridSize }: { gridSize: number; conta
 
 export function animation({ graph }: { graph: Graph }) {
   graph.on("node:mouseenter", ({ node }) => {
-    const { type } = node.data as CellData;
+    const { type } = node.data as AllowedCellData;
     if (type === "PERSON") animateNodePerson({ node, options: { fill: true } });
   });
   graph.on("node:mouseleave", ({ node }) => {
-    const { type } = node.data as CellData;
+    const { type } = node.data as AllowedCellData;
     if (type === "PERSON") animateNodePerson({ node, options: { fill: false } });
   });
 }
