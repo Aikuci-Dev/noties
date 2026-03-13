@@ -3,41 +3,31 @@ import type { Edge, Node as X6Node } from "@antv/x6";
 import { Graph } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
-function getCells({ graph, data: { peopleByGeneration, peoplePartnerByGeneration } }: {
+function getCells({ graph, data: { peopleByGeneration, peoplePartner } }: {
   graph: Graph;
-  data: { peopleByGeneration: PeopleByGeneration; peoplePartnerByGeneration: PeopleByGeneration };
+  data: { peopleByGeneration: PeopleByGeneration; peoplePartner: People };
 }) {
   const nodeEntityMap = new BidirectionalNodeEntityMap<Person | PersonPartner>();
   const personPartnerMap: PersonPartnerMap = new Map();
+  const partnerMap = new Map(peoplePartner.map((person) => [person.id, person]));
 
-  const nodes = getNodes({
-    graph,
-    data: { peopleByGeneration, peoplePartnerByGeneration, nodeEntityMap, personPartnerMap },
-  });
-  const edges = getEdges({
-    graph,
-    data: { peopleByGeneration, peoplePartnerByGeneration, nodeEntityMap, personPartnerMap },
-  });
+  const nodes = getNodes({ graph, data: { peopleByGeneration, nodeEntityMap, personPartnerMap, partnerMap } });
+  const edges = getEdges({ graph, data: { peopleByGeneration, nodeEntityMap, personPartnerMap } });
 
   return [...nodes, ...edges];
 }
-type GetCellsInheritanceArgs = {
-  graph: Graph;
-  data: {
-    peopleByGeneration: PeopleByGeneration;
-    peoplePartnerByGeneration: PeopleByGeneration;
-    nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner>;
-    personPartnerMap: PersonPartnerMap;
-  };
-};
 function getNodes(
-  { graph, data: { peopleByGeneration, peoplePartnerByGeneration, nodeEntityMap, personPartnerMap } }:
-    GetCellsInheritanceArgs,
+  { graph, data: { peopleByGeneration, nodeEntityMap, partnerMap, personPartnerMap } }: {
+    graph: Graph;
+    data: {
+      peopleByGeneration: PeopleByGeneration;
+      nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner>;
+      personPartnerMap: PersonPartnerMap;
+      partnerMap: PersonMap;
+    };
+  },
 ) {
   const nodes: X6Node[] = [];
-  const partnerMap = new Map(
-    Object.values(peoplePartnerByGeneration).flatMap((people) => people.map((person) => [person.id, person])),
-  );
 
   // NODE-PERSON
   Object.values(peopleByGeneration).forEach((people) => {
@@ -102,7 +92,14 @@ function getNodes(
 
   return nodes;
 }
-function getEdges({ graph, data: { peopleByGeneration, nodeEntityMap, personPartnerMap } }: GetCellsInheritanceArgs) {
+function getEdges({ graph, data: { peopleByGeneration, nodeEntityMap, personPartnerMap } }: {
+  graph: Graph;
+  data: {
+    peopleByGeneration: PeopleByGeneration;
+    nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner>;
+    personPartnerMap: PersonPartnerMap;
+  };
+}) {
   const edges: Edge[] = [];
 
   Object.values(peopleByGeneration).forEach((people) => {
@@ -264,7 +261,7 @@ function layout({ graph, data: { gap, rankdir = "TB" } }: {
 export default function main(
   { graph, data, options }: {
     graph: Graph;
-    data: { peopleByGeneration: PeopleByGeneration; peoplePartnerByGeneration: PeopleByGeneration };
+    data: { peopleByGeneration: PeopleByGeneration; peoplePartner: People };
     options: { gap: number; rankdir?: DagreRankdir };
   },
 ) {

@@ -16,7 +16,9 @@ export type Person = {
   gender?: Gender;
   isDead?: boolean;
 };
-export type PeopleByRank = { [rank: number]: Person[] };
+export type PersonMap = Map<Person["id"], Person>;
+export type People = Person[];
+export type PeopleByRank = { [rank: number]: People };
 export type PeopleByGeneration = PeopleByRank;
 export type PersonPartner = {
   id: EntityPairKey<Person>;
