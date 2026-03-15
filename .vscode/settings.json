@@ -6,6 +6,5 @@
     ["ui:\\s*{([^)]*)\\s*}", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "ayonli.deno-tools",
-  "[vue]": { "editor.defaultFormatter": "Vue.volar" }
+  "editor.defaultFormatter": "ayonli.deno-tools"
 }
