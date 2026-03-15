@@ -3,6 +3,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ layout: "simple" });
+
 import type { TreeItem } from "@nuxt/ui";
 
 const items = ref<TreeItem[]>([

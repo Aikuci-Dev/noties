@@ -3,6 +3,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ layout: "simple" });
+
 import type { Graph } from "@antv/x6";
 
 const gridSize = 20;

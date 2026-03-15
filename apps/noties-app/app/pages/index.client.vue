@@ -3,6 +3,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ middleware: "layout-default" });
+
 import type { NavigationMenuItem } from "@nuxt/ui";
 
 const items = ref<NavigationMenuItem[]>([
