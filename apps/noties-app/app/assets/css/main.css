@@ -4,3 +4,7 @@
  * Fix: Removed unnecessary file as suggested — https://github.com/nuxt/ui/issues/6070#issuecomment-3927864267
  */
 @import "@nuxt/ui";
+
+:root {
+  --ui-header-height: --spacing(12);
+}

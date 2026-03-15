@@ -19,9 +19,7 @@ export function registration({ nodePersonDimension }: { nodePersonDimension: Dim
   Graph.registerEdge(EDGE_LINE_DASH, edgeLine({ isDash: true }), true);
 }
 
-export function graphInstance({ container, gridSize }: { gridSize: number; container?: HTMLElement }) {
-  if (!container) return;
-
+export function graphInstance({ container, gridSize }: { gridSize: number; container: HTMLElement }) {
   // https://x6.antv.antgroup.com/en/api/graph/graph
   return new Graph({
     container,

@@ -8,9 +8,5 @@ export default defineAppConfig({
       info: "cyan",
       neutral: "gray",
     },
-
-    container: {
-      base: "tw:p-0! tw-h-screen tw:shadow-2xl",
-    },
   },
 });

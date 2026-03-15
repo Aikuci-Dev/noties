@@ -1,23 +1,13 @@
 <template>
-  <UContainer class="tw:h-screen">
-    <UPage class="tw:size-full" :ui='{ center: "tw:size-full" }'>
-      <!-- <template #left>
-                Left
-            </template> -->
-
-      <div ref="graph" class="tw:size-full"></div>
-
-      <!-- <template #right>
-                Right
-            </template> -->
-    </UPage>
-  </UContainer>
+  <div ref="graphEl"></div>
 </template>
 
 <script setup lang="ts">
+import type { Graph } from "@antv/x6";
+
 const gridSize = 20;
-const nodePersonDimension = { height: gridSize * 3, width: gridSize * 12 }; // ratio (1:4)
-// const nodePersonDimension = { height: gridSize * 3, width: gridSize * 9 }; // ratio (1:3)
+// const nodePersonDimension = { height: gridSize * 3, width: gridSize * 12 }; // ratio (1:4)
+const nodePersonDimension = { height: gridSize * 3, width: gridSize * 9 }; // ratio (1:3)
 const dagreRankdir: DagreRankdir = "TB"; // vertical orientation
 // const dagreRankdir: DagreRankdir = "LR"; // horizontal orientation
 
@@ -123,13 +113,15 @@ const peoplePartner: People = [
 ];
 
 // https://nuxt.com/docs/4.x/api/components/client-only#accessing-html-elements
-const graphRef = useTemplateRef("graph");
-watch(graphRef, () => {
-  const graph = graphInstance({
-    container: graphRef.value!, // The watch will be triggered when the component is available
+const graphEl = useTemplateRef("graphEl");
+const graphRef = ref<Graph>();
+watch(graphEl, () => {
+  if (!graphEl.value) return;
+  graphRef.value = graphInstance({
+    container: graphEl.value, // The watch will be triggered when the component is available
     gridSize,
   });
-  if (!graph) return;
+  const graph = graphRef.value;
 
   familyTreeLayout({ graph, options: { rankdir: dagreRankdir, gap: gridSize } })({ peopleByGeneration, peoplePartner });
   animation({ graph });

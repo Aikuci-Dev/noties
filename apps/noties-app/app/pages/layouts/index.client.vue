@@ -1,9 +1,5 @@
 <template>
-  <UContainer class="tw:h-screen">
-    <UPage class="tw:size-full" :ui='{ center: "tw:size-full" }'>
-      <UTree :items="items" />
-    </UPage>
-  </UContainer>
+  <UTree :items="items" />
 </template>
 
 <script setup lang="ts">

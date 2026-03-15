@@ -1,9 +1,5 @@
 <template>
-  <UContainer class="tw:h-screen">
-    <UPage class="tw:size-full" :ui='{ center: "tw:size-full" }'>
-      <UNavigationMenu :items="items" />
-    </UPage>
-  </UContainer>
+  <UNavigationMenu :items="items" />
 </template>
 
 <script setup lang="ts">
