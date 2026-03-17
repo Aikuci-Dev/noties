@@ -1,5 +1,10 @@
 <template>
-  <div ref="graphEl"></div>
+  <div class="tw:relative tw:h-screen">
+    <div ref="graphEl"></div>
+    <div class="tw:right-4 tw:bottom-4 tw:absolute">
+      <AppFAB />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">

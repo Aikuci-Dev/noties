@@ -3,10 +3,10 @@ export default defineAppConfig({
     // https://ui.nuxt.com/docs/getting-started/theme/design-system#runtime-configuration
     colors: {
       primary: "blue",
-      secondary: "sky",
-      tertiary: "slate",
+      secondary: "pink",
+      tertiary: "gray",
       info: "cyan",
-      neutral: "gray",
+      neutral: "slate",
     },
   },
 });
