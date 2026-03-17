@@ -2,10 +2,10 @@ const GENDER = ["M", "F"] as const;
 export type Gender = typeof GENDER[number];
 export type Person = {
   id: number;
-  parent?: [number] | [number, number];
-  partner?: number;
-  partners?: number[];
-  children?: number[];
+  parentIds?: [number] | [number, number];
+  partnerId?: number;
+  partnerIds?: number[];
+  childrenIds?: number[];
   subtitle?: string;
   title: string;
   gender?: Gender;
@@ -15,15 +15,21 @@ export type PersonMap = Map<Person["id"], Person>;
 
 export type People = Person[];
 export type PeopleByRank = { [rank: number]: People };
-export type PeopleByGeneration = PeopleByRank;
 
-export type PersonPartner = {
-  id: EntityPairKey<Person>;
-  person: Person["id"];
-  partner: Person["id"];
-  children?: Person["id"][];
+export type PersonRelationship = {
+  id: Person["id"];
+  partnerId: Person["id"];
+  partnerIds: Person["id"][];
+  childrenIds: Person["id"][];
 };
-export type PersonPartnerMap = Map<PersonPartner["id"], PersonPartner>;
+export type PersonRelationshipMap = Map<PersonRelationship["id"], PersonRelationship>;
+export type PersonRelationshipPartner = {
+  id: EntityPairKey<Person>;
+  personId: Person["id"];
+  partnerId: Person["id"];
+  childrenIds: Person["id"][];
+};
+export type PersonRelationshipPartnerMap = Map<PersonRelationshipPartner["id"], PersonRelationshipPartner>;
 
 /** ==== X6 ==== */
 // X6 Node
@@ -41,7 +47,12 @@ export const NODE_PERSON_INTERMEDIARY = "node-person-intermediary";
 // X6 Edge
 const EDGE_TYPE = ["LINE", "PARTNER"] as const;
 export type EdgeType = typeof EDGE_TYPE[number];
-export type EdgeLineMeta = { isDash?: boolean; isPlaceholder?: boolean; isChildOfCurrentMarriage?: boolean };
+export type EdgeLineMeta = {
+  isDash?: boolean;
+  isPlaceholder?: boolean;
+  hasPartner?: boolean;
+  isChildOfCurrentMarriage?: boolean;
+};
 
 export const EDGE_LINE = "edge-line";
 export const EDGE_LINE_DASH = "edge-line-dash";

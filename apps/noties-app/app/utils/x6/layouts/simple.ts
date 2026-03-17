@@ -1,12 +1,10 @@
 // Reference: https://x6.antv.antgroup.com/en/examples/showcase/practices/#orgchart
-import type { Edge, Node as X6Node } from "@antv/x6";
+import type { Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
 import type { BaseGraphDep } from "@/utils/x6/index";
-import type { GraphDep, GraphLayoutDep } from "./index";
-
-export type CellDep = { peopleByRank: PeopleByRank };
-type CellInheritanceDep = CellDep & { nodeEntityMap: BidirectionalNodeEntityMapInstance<Person | PersonPartner> };
+import type { CellDep, CellInheritanceDep, GraphDep, GraphLayoutDep, NodeWithChildrenNodeDep } from "./index";
+import { getNodesWithChildren, setNodesRelationship } from "./index";
 
 const main = (graphDep: GraphDep) => (cellDep: CellDep) => {
   const { graph, options: graphOptions } = graphDep;
@@ -17,47 +15,34 @@ const main = (graphDep: GraphDep) => (cellDep: CellDep) => {
   layout({ graph })(graphOptions);
 };
 
-const getCells = (graphDep: BaseGraphDep) => (cellDep: CellDep) => {
-  const nodeEntityMap = new BidirectionalNodeEntityMap<Person | PersonPartner>();
-  const cellInheritanceDep = { ...cellDep, nodeEntityMap };
+const getCells = (graphDep: BaseGraphDep) => ({ peopleByRank }: CellDep) => {
+  const people = Object.values(peopleByRank).flatMap((people) => people);
 
-  const nodes = getCellNodes(graphDep)(cellInheritanceDep);
-  const edges = getCellEdges(graphDep)(cellInheritanceDep);
+  const { nodes, nodeEntityMap } = registerCellNodes(graphDep)({ people });
+
+  const nodesWithChildrenMap = getNodesWithChildren({ nodeEntityMap })({ people });
+  setNodesRelationship({ nodesWithChildrenMap });
+
+  const edges = registerCellEdges(graphDep)({ nodesWithChildrenMap });
 
   return [...nodes, ...edges];
 };
-const getCellNodes = (graphDep: BaseGraphDep) => ({ peopleByRank, nodeEntityMap }: CellInheritanceDep) => {
+const registerCellNodes = (graphDep: BaseGraphDep) => ({ people }: CellInheritanceDep) => {
+  const nodeEntityMap = new BidirectionalNodeEntityMap<Person>();
   const nodes: X6Node[] = [];
 
-  Object.values(peopleByRank).forEach((people) => {
-    people.forEach((person) => {
-      const node = createNodePerson(graphDep)({ data: person });
-      nodeEntityMap.set("PERSON", node, person);
-      nodes.push(node);
-    });
+  people.forEach((person) => {
+    const node = createNodePerson(graphDep)({ data: person });
+    nodeEntityMap.set("PERSON", node, person);
+    nodes.push(node);
   });
 
-  return nodes;
+  return { nodes, nodeEntityMap };
 };
-const getCellEdges = (graphDep: BaseGraphDep) => ({ peopleByRank, nodeEntityMap }: CellInheritanceDep) => {
-  const edges: Edge[] = [];
-
-  Object.values(peopleByRank).forEach((people) => {
-    people.forEach((person) => {
-      const nodePerson = nodeEntityMap.getNodeByEntityId("PERSON", person.id);
-      if (!nodePerson) return;
-
-      if (person.children) {
-        person.children.forEach((id) => {
-          const children = nodeEntityMap.getNodeByEntityId("PERSON", id);
-          if (!children) return;
-          edges.push(createEdgeLine(graphDep)({ data: { source: nodePerson, target: children } }));
-        });
-      }
-    });
-  });
-
-  return edges;
+const registerCellEdges = (graphDep: BaseGraphDep) => ({ nodesWithChildrenMap }: NodeWithChildrenNodeDep) => {
+  return Array.from(nodesWithChildrenMap.values()).flatMap(({ node, nodeChildren }) =>
+    nodeChildren.map((nodeChild) => createEdgeLine(graphDep)({ data: { source: node, target: nodeChild } }))
+  );
 };
 
 const layout = ({ graph }: BaseGraphDep) => ({ gap, rankdir = "TB" }: GraphLayoutDep) => {
