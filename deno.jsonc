@@ -8,5 +8,6 @@
   "fmt": {
     "exclude": ["./pnpm-lock.yaml"],
     "lineWidth": 120
-  }
+  },
+  "unstable": ["fmt-component"]
 }
