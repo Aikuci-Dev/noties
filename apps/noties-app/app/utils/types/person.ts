@@ -2,6 +2,7 @@ const GENDER = ["M", "F"] as const;
 export type Gender = typeof GENDER[number];
 export type Person = {
   id: number;
+  generationOrder?: number;
   parentIds?: [number] | [number, number];
   partnerId?: number;
   partnerIds?: number[];
