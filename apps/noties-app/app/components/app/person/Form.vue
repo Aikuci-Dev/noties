@@ -114,19 +114,9 @@ const schema = v.object({
   ),
 
   file: v.pipe(
-    v.optional(v.file()),
-    v.check(
-      (value) => value !== undefined,
-      "File is required",
-    ),
-    v.check((value) => {
-      if (value) return value.size <= 1024 * 1024;
-      return false;
-    }, "File must be less than 1MB"),
-    v.check((value) => {
-      if (value) return ["image/png"].includes(value.type);
-      return false;
-    }, "Only PNG files are allowed"),
+    v.file("File is required"),
+    v.maxSize(1024 * 1024, "File must be less than 1MB"),
+    v.mimeType(["image/png"], "Only PNG files are allowed"),
   ),
 });
 type Schema = v.InferInput<typeof schema>;
@@ -147,6 +137,7 @@ const state = reactive<Schema>({
   checkboxGroup: [],
   slider: 0,
   pin: [],
+  // @ts-ignore: initial form state allows undefined, validated later by schema
   file: undefined,
 });
 
