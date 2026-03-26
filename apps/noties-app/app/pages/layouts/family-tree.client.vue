@@ -14,7 +14,11 @@
       </div>
 
       <template #body>
-        <AppPersonForm />
+        <AppPersonForm ref="appPersonFormEl">
+          <template #action-buttons>
+            &nbsp;
+          </template>
+        </AppPersonForm>
       </template>
       <template #footer="{ close }">
         <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
@@ -190,7 +194,12 @@ function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-function handleAddPerson() {
+const appPersonFormEl = useTemplateRef("appPersonFormEl");
+
+async function handleAddPerson() {
+  const validateFormResult = await appPersonFormEl.value?.validateForm();
+  if (validateFormResult === false) return;
+
   function addPersonToGeneration(generation: number, person: Person) {
     peopleByGeneration$.value[generation]?.push(person);
   }

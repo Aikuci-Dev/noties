@@ -4,7 +4,6 @@
 // Source: https://github.com/nuxt/ui/blob/v4/docs/app/components/content/examples/form/FormExampleElements.vue
 
 import * as v from "valibot";
-import type { FormSubmitEvent } from "@nuxt/ui";
 
 const itemSchema = v.object({ label: v.string(), value: v.string() });
 type ItemSchema = v.InferInput<typeof itemSchema>;
@@ -121,6 +120,12 @@ const schema = v.object({
 });
 type Schema = v.InferInput<typeof schema>;
 
+const items: ItemSchema[] = [
+  { label: "Option 1", value: "option-1" },
+  { label: "Option 2", value: "option-2" },
+  { label: "Option 3", value: "option-3" },
+];
+
 const state = reactive<Schema>({
   input: "",
   inputNumber: 0,
@@ -141,21 +146,17 @@ const state = reactive<Schema>({
   file: undefined,
 });
 
-const form = useTemplateRef("form");
+const formEl = useTemplateRef("formEl");
 
-const items: ItemSchema[] = [
-  { label: "Option 1", value: "option-1" },
-  { label: "Option 2", value: "option-2" },
-  { label: "Option 3", value: "option-3" },
-];
-
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  console.log(event.data);
+function validateForm() {
+  return formEl.value?.validate({ silent: true });
 }
+
+defineExpose({ formEl, validateForm });
 </script>
 
 <template>
-  <UForm ref="form" :state="state" :schema="schema" @submit="onSubmit">
+  <UForm ref="formEl" :state :schema @submit='$emit("submit")'>
     <div class="tw:gap-4 tw:grid tw:grid-cols-3">
       <UFormField label="Input" name="input">
         <UInput v-model="state.input" placeholder="john@lennon.com" class="tw:w-full" />
@@ -225,14 +226,16 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       </UFormField>
     </div>
 
-    <div class="tw:flex tw:gap-2 tw:mt-8">
-      <UButton type="submit">
-        Submit
-      </UButton>
+    <slot name="action-buttons">
+      <div class="tw:flex tw:gap-2 tw:mt-8">
+        <UButton type="submit">
+          Submit
+        </UButton>
 
-      <UButton variant="outline" @click="form?.clear()">
-        Clear
-      </UButton>
-    </div>
+        <UButton variant="outline" @click="formEl?.clear()">
+          Clear
+        </UButton>
+      </div>
+    </slot>
   </UForm>
 </template>
