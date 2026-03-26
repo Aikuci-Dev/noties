@@ -14,7 +14,7 @@
       </div>
 
       <template #body>
-        <AppPersonForm ref="appPersonFormEl">
+        <AppPersonForm ref="appPersonFormEl" :people="allPeople">
           <template #action-buttons>
             &nbsp;
           </template>
@@ -168,6 +168,7 @@ const initialPeoplePartner: People = [
 ];
 const peopleByGeneration$ = ref<PeopleByRank>(initialPeopleByGeneration);
 const peoplePartner$ = ref<People>(initialPeoplePartner);
+const allPeople = computed(() => [...Object.values(peopleByGeneration$.value).flat(), ...peoplePartner$.value]);
 
 const modalOpen = ref(false);
 

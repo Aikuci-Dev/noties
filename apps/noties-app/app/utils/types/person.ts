@@ -1,4 +1,4 @@
-const GENDER = ["M", "F"] as const;
+export const GENDER = ["M", "F"] as const;
 export type Gender = typeof GENDER[number];
 export type Person = {
   id: number;

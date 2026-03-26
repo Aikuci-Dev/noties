@@ -4,9 +4,8 @@
 
     <UModal
       v-model:open="modalOpen"
-      fullscreen
       title="Add Person"
-      description="Add new member to family tree"
+      description="Add new member to chart"
       :ui='{ footer: "tw:justify-end" }'
     >
       <div class="tw:right-4 tw:bottom-4 tw:absolute">
@@ -14,7 +13,7 @@
       </div>
 
       <template #body>
-        <AppPersonForm ref="appPersonFormEl">
+        <AppPersonForm ref="appPersonFormEl" :people="allPeople">
           <template #action-buttons>
             &nbsp;
           </template>
@@ -104,6 +103,7 @@ const initialPeopleByRank: PeopleByRank = {
   ],
 };
 const peopleByRank$ = ref<PeopleByRank>(initialPeopleByRank);
+const allPeople = computed(() => Object.values(peopleByRank$.value).flat());
 
 const modalOpen = ref(false);
 
