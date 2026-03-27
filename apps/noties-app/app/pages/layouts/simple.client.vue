@@ -81,28 +81,38 @@ const mapPersonGeneration = computed(() => {
   return map;
 });
 
-const modalOpen = ref(false);
-
 // https://nuxt.com/docs/4.x/api/components/client-only#accessing-html-elements
 const graphEl = useTemplateRef("graphEl");
 const graphRef = ref<Graph>();
+let previousGraph: typeof graphRef.value;
 watch(graphEl, () => {
   if (!graphEl.value) return;
   graphRef.value = graphInstance({
     container: graphEl.value, // The watch will be triggered when the component is available
     gridSize,
   });
-  const graph = graphRef.value;
-
-  simpleLayout({ graph, options: { rankdir: dagreRankdir, gap: gridSize } })({ peopleByRank: initialPeopleByRank });
-  animation({ graph });
-  graph.positionContent("top");
 }, { once: true });
+watchEffect(() => {
+  const graph = graphRef.value;
+  if (!graph) return;
+
+  simpleLayout({ graph, options: { rankdir: dagreRankdir, gap: gridSize } })({
+    peopleByRank: peopleByRank$.value,
+  });
+
+  if (graph !== previousGraph) {
+    previousGraph = graph;
+
+    animation({ graph });
+    graph.positionContent("top");
+  }
+});
 
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
+const modalOpen = ref(false);
 const appPersonFormEl = useTemplateRef("appPersonFormEl");
 
 async function handleAddPerson() {
@@ -125,13 +135,19 @@ async function handleAddPerson() {
     return generationOrder;
   }
   function addPersonToGeneration(generation: number, person: Person) {
-    peopleByRank$.value[generation]?.push(person);
+    peopleByRank$.value[generation] ??= [];
+
+    peopleByRank$.value[generation].push(person);
   }
   function addPersonToParent(generation: number, parentId: number, id: number) {
-    peopleByRank$.value[generation] = peopleByRank$.value[generation]?.map((person) => {
+    peopleByRank$.value[generation] ??= [];
+
+    peopleByRank$.value[generation] = peopleByRank$.value[generation].map((person) => {
       if (person.id !== parentId) return person;
 
-      person.childrenIds?.unshift(id);
+      person.childrenIds ??= [];
+
+      person.childrenIds.unshift(id);
       return person;
     }) ?? [];
   }
@@ -155,11 +171,7 @@ async function handleAddPerson() {
       person.parentIds.forEach((parentId) => addPersonToParent(generation - 1, parentId, person.id));
     }
   }
-}
 
-watch(peopleByRank$, (val) => {
-  if (!graphRef.value) return;
-  simpleLayout({ graph: graphRef.value, options: { rankdir: dagreRankdir, gap: gridSize } })({ peopleByRank: val });
   modalOpen.value = false;
-}, { deep: true });
+}
 </script>

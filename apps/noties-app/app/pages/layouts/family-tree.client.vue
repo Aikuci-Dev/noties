@@ -4,7 +4,6 @@
 
     <UModal
       v-model:open="modalOpen"
-      fullscreen
       title="Add Person"
       description="Add new member to family tree"
       :ui='{ footer: "tw:justify-end" }'
@@ -90,27 +89,35 @@ const peopleByGeneration$ = ref<PeopleByRank>(initialPeopleByGeneration);
 const peoplePartner$ = ref<People>(initialPeoplePartner);
 const allPeople = computed(() => [...Object.values(peopleByGeneration$.value).flat(), ...peoplePartner$.value]);
 
-const modalOpen = ref(false);
-
 // https://nuxt.com/docs/4.x/api/components/client-only#accessing-html-elements
 const graphEl = useTemplateRef("graphEl");
 const graphRef = ref<Graph>();
+let previousGraph: typeof graphRef.value;
 watch(graphEl, () => {
   if (!graphEl.value) return;
   graphRef.value = graphInstance({
     container: graphEl.value, // The watch will be triggered when the component is available
     gridSize,
   });
+}, { once: true });
+watchEffect(() => {
   const graph = graphRef.value;
+  if (!graph) return;
 
   familyTreeLayout({ graph, options: { rankdir: dagreRankdir, gap: gridSize } })({
-    peopleByRank: initialPeopleByGeneration,
-    peoplePartner: initialPeoplePartner,
+    peopleByRank: peopleByGeneration$.value,
+    peoplePartner: peoplePartner$.value,
   });
-  animation({ graph });
-  graph.positionContent("top");
-}, { once: true });
 
+  if (graph !== previousGraph) {
+    previousGraph = graph;
+
+    animation({ graph });
+    graph.positionContent("top");
+  }
+});
+
+const modalOpen = ref(false);
 const appPersonFormEl = useTemplateRef("appPersonFormEl");
 
 async function handleAddPerson() {
@@ -118,14 +125,7 @@ async function handleAddPerson() {
   if (!validateFormResult) return;
 
   // TODO: Store to DB
-}
 
-watch([peopleByGeneration$, peoplePartner$], ([peopleByGeneration, peoplePartner]) => {
-  if (!graphRef.value) return;
-  familyTreeLayout({ graph: graphRef.value, options: { rankdir: dagreRankdir, gap: gridSize } })({
-    peopleByRank: peopleByGeneration,
-    peoplePartner,
-  });
   modalOpen.value = false;
-}, { deep: true });
+}
 </script>
