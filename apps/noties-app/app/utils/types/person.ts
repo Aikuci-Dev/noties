@@ -3,7 +3,6 @@ export type Gender = typeof GENDER[number];
 export type PersonParent = [number] | [number, number];
 export type Person = {
   id: number;
-  generationOrder?: number;
   parentIds?: PersonParent;
   partnerId?: number;
   partnerIds?: number[];
