@@ -31,6 +31,7 @@
 definePageMeta({ layout: "simple" });
 
 import type { Graph } from "@antv/x6";
+import type { FormSchemaOutput } from "~/components/app/person/Form.vue";
 
 const gridSize = 20;
 // const nodePersonDimension = { height: gridSize * 3, width: gridSize * 12 }; // ratio (1:4)
@@ -131,7 +132,8 @@ const appPersonFormEl = useTemplateRef("appPersonFormEl");
 
 async function handleAddPerson() {
   const validateFormResult = await appPersonFormEl.value?.validateForm();
-  if (validateFormResult === false) return;
+  if (!validateFormResult) return;
+  const formValue = validateFormResult as FormSchemaOutput;
 
   function addPersonToGeneration(generation: number, person: Person) {
     peopleByRank$.value[generation]?.push(person);
@@ -144,13 +146,17 @@ async function handleAddPerson() {
       return person;
     }) ?? [];
   }
+  function addChildrenToPerson(generation: number, parentId: number, id: number) {
+  }
 
   const person: Person = {
     generationOrder: 1,
     id: getRandomInt(Number.MAX_SAFE_INTEGER),
-    title: "Person",
-    subtitle: "2026",
-    parentIds: [0],
+    title: formValue.title,
+    subtitle: formValue.subtitle,
+    parentIds: formValue.parent,
+    partnerIds: formValue.partner,
+    childrenIds: formValue.children,
   };
   const generation = person.generationOrder;
   if (generation) {

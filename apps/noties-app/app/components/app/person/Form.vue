@@ -1,48 +1,82 @@
 <script setup lang="ts">
+import { getLocalTimeZone, today } from "@internationalized/date";
 import * as v from "valibot";
+import { CalendarDate } from "@internationalized/date";
 
-const schema = v.pipe(
+const ParentSchema = v.optional(v.union([v.tuple([v.number()]), v.tuple([v.number(), v.number()])]));
+
+const FormSchema = v.pipe(
   v.object({
-    title: v.string(),
-    subtitle: v.optional(v.string()),
-    gender: v.nullish(v.picklist(GENDER)),
-    isDead: v.boolean(),
-    parent: v.optional(
-      v.pipe(
-        v.array(v.number()),
-        v.maxLength(2, "Max parent are 2"),
+    name: v.pipe(v.string(), v.nonEmpty("Name is required")),
+    life_span: v.pipe(
+      v.object({
+        start: v.pipe(v.any(), v.title("birth_date")),
+        end: v.pipe(v.any(), v.title("death_date")),
+      }),
+      v.rawTransform(
+        ({ dataset, addIssue, NEVER }) => {
+          const birth_date = dataset.value.start;
+          const death_date = dataset.value.end;
+
+          function getPath(key: "start" | "end"): v.IssuePathItem {
+            return {
+              type: "object",
+              origin: "value",
+              input: dataset.value,
+              key,
+              value: dataset.value[key],
+            };
+          }
+
+          if (!birth_date) {
+            addIssue({
+              message: "Date of Birth is required.",
+              path: [getPath("start")],
+            });
+            return NEVER;
+          }
+          if (!(birth_date instanceof CalendarDate)) {
+            addIssue({
+              message: "Invalid Date of Birth.",
+              path: [getPath("start")],
+            });
+            return NEVER;
+          }
+          if (!(death_date instanceof CalendarDate) && death_date !== undefined) {
+            addIssue({
+              message: "Invalid Date of Death.",
+              path: [getPath("end")],
+            });
+            return NEVER;
+          }
+
+          return { birth_date, death_date };
+        },
       ),
     ),
-    partner: v.optional(v.array(v.number())),
-    children: v.optional(v.array(v.number())),
+    gender: v.nullish(v.picklist(GENDER)),
+    parent: ParentSchema,
+    partner: v.array(v.number()),
+    children: v.array(v.number()),
   }),
-  // Known issue: https://github.com/nuxt/ui/issues/5932
-  v.forward(
-    v.partialCheck(
-      [["partner"], ["children"]],
-      (input) => !(input.children?.length && !input.partner?.length),
-      "Person should have a partner if they have children",
-    ),
-    ["children"],
-  ),
+  v.transform(({ name, life_span, ...rest }) => ({
+    ...rest,
+    title: name,
+    subtitle: `${life_span.birth_date.year}-${life_span.death_date === undefined ? "" : life_span.death_date.year}`,
+  })),
 );
-type Schema = v.InferInput<typeof schema>;
 
-const state = reactive<Schema>({
-  title: "",
-  subtitle: undefined,
+export type FormSchemaInput = v.InferInput<typeof FormSchema>;
+export type FormSchemaOutput = v.InferOutput<typeof FormSchema>;
+
+const state = reactive<FormSchemaInput>({
+  name: "",
+  life_span: { start: today(getLocalTimeZone()), end: undefined },
   gender: undefined,
-  isDead: false,
   parent: undefined,
-  partner: undefined,
-  children: undefined,
+  partner: [],
+  children: [],
 });
-
-const formEl = useTemplateRef("formEl");
-
-function validateForm() {
-  return formEl.value?.validate({ silent: true });
-}
 
 const { person, people } = defineProps<{ person?: Person; people: People }>();
 const peopleOptions = computed(() => {
@@ -50,24 +84,45 @@ const peopleOptions = computed(() => {
   else return people;
 });
 
+const formEl = useTemplateRef("formEl");
+function validateForm({ transform }: { transform: boolean } = { transform: true }) {
+  return formEl.value?.validate({ silent: true, transform });
+}
 defineExpose({ formEl, validateForm });
 </script>
 
 <template>
-  <UForm ref="formEl" :state :schema @submit='$emit("submit")'>
+  <UForm ref="formEl" :state :schema="FormSchema" @submit='$emit("submit")'>
     <div class="tw:gap-2 tw:grid">
-      <UFormField name="title" label="Name">
-        <UInput v-model="state.title" placeholder="Name" class="tw:w-full" />
+      <UFormField name="name" label="Name">
+        <UInput v-model="state.name" placeholder="Name" class="tw:w-full" />
       </UFormField>
-      <UFormField name="subtitle" label="Life Year">
-        <UInput v-model="state.subtitle" :placeholder="`${new Date().getFullYear()} - now`" class="tw:w-full" />
+      <UFormField name="life_span" label="Life span (birth–death)">
+        <UInputDate ref="inputDate" v-model="state.life_span" range class="tw:w-full">
+          <template #trailing>
+            <UPopover
+              class="tw:w-full"
+              :content='{ align: "end" }'
+            >
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                icon="i-lucide-calendar"
+                aria-label="Open calendar to select birth and death dates"
+                class="tw:px-0"
+              />
+
+              <template #content>
+                <UCalendar v-model="state.life_span" class="tw:p-2 tw:w-full" range />
+              </template>
+            </UPopover>
+          </template>
+        </UInputDate>
       </UFormField>
 
       <UFormField name="gender" label="Gender">
         <USelectMenu v-model="state.gender" :items='["M", "F"]' class="tw:w-full" clear />
-      </UFormField>
-      <UFormField name="isDead">
-        <USwitch v-model="state.isDead" label="Is Dead?" />
       </UFormField>
 
       <UFormField name="parent" label="Parent">
@@ -76,7 +131,7 @@ defineExpose({ formEl, validateForm });
           multiple
           value-key="id"
           label-key="title"
-          :items="people"
+          :items="peopleOptions"
           class="tw:w-full"
           clear
         />
@@ -87,7 +142,7 @@ defineExpose({ formEl, validateForm });
           multiple
           value-key="id"
           label-key="title"
-          :items="people"
+          :items="peopleOptions"
           class="tw:w-full"
           clear
         />
@@ -98,7 +153,7 @@ defineExpose({ formEl, validateForm });
           multiple
           value-key="id"
           label-key="title"
-          :items="people"
+          :items="peopleOptions"
           class="tw:w-full"
           clear
         />
