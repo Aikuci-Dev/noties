@@ -76,12 +76,12 @@ const registerCellNodes =
     personRelationshipMap.values().forEach((personRelationship) => {
       const { id, partnerId, childrenIds } = personRelationship;
 
-      const nodePerson = nodeEntityMap.getNodeByEntityId("PERSON", id);
+      const nodePerson = nodeEntityMap.getNode("PERSON", id);
       if (!nodePerson) return;
 
       let nodeRelationship;
       if (partnerId) {
-        const nodePartner = nodeEntityMap.getNodeByEntityId("PERSON", partnerId);
+        const nodePartner = nodeEntityMap.getNode("PERSON", partnerId);
         if (nodePartner) {
           nodeRelationship = createNodePersonRelationship(graphDep)({ data: { nodes: [nodePerson, nodePartner] } });
 
@@ -99,7 +99,7 @@ const registerCellNodes =
         }
       }
       if (!nodeRelationship) {
-        const hasChildrenNodes = childrenIds.some((id) => nodeEntityMap.getNodeByEntityId("PERSON", id));
+        const hasChildrenNodes = childrenIds.some((id) => nodeEntityMap.getNode("PERSON", id));
         if (hasChildrenNodes) {
           nodeRelationship = createNodePersonPlaceholder(graphDep)({
             type: "PERSON_RELATIONSHIP",
@@ -121,17 +121,17 @@ const registerCellEdges =
     personRelationshipMap.values().forEach((personRelationship) => {
       const { id, partnerId, childrenIds } = personRelationship;
 
-      const nodePerson = nodeEntityMap.getNodeByEntityId("PERSON", id);
+      const nodePerson = nodeEntityMap.getNode("PERSON", id);
       if (!nodePerson) return;
 
       let nodePartner: X6Node | undefined;
       let relationshipPartner: PersonRelationshipPartner | undefined;
       if (partnerId) {
-        nodePartner = nodeEntityMap.getNodeByEntityId("PERSON", partnerId);
+        nodePartner = nodeEntityMap.getNode("PERSON", partnerId);
         relationshipPartner = personRelationshipPartnerMap.get(`${id}-${partnerId}`);
       }
 
-      const nodePersonRelationship = nodeEntityMap.getNodeByEntityId(
+      const nodePersonRelationship = nodeEntityMap.getNode(
         "PERSON_RELATIONSHIP",
         relationshipPartner ? relationshipPartner.id : id,
       );
@@ -146,7 +146,7 @@ const registerCellEdges =
       });
 
       childrenIds.forEach((id) => {
-        const nodeChild = nodeEntityMap.getNodeByEntityId("PERSON", id);
+        const nodeChild = nodeEntityMap.getNode("PERSON", id);
         if (!nodeChild) return;
 
         const hasPartner = !!nodePartner;

@@ -1,3 +1,5 @@
+import type { EntityPairKey, Id } from "#shared/types/app";
+
 export type Nullable<T> = T | null | undefined;
 
 export function removeFalsy<T>(array: Nullable<T>[]): T[] {

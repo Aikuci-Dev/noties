@@ -7,10 +7,10 @@ export { default as familyTreeLayout } from "./x6/layouts/family-tree";
 /**
  * Internal exports — required to fully support Nuxt's auto-import mechanism.
  */
-export type { TBidirectionalNodeEntityMap } from "./x6/utils";
+export type { TBidirectionalNodeEntityMap } from "./x6/bidirectional-node-entity-map";
 
 export { animation, graphInstance, registration } from "./x6/index";
-export { BidirectionalNodeEntityMap } from "./x6/utils";
+export { BidirectionalNodeEntityMap } from "./x6/bidirectional-node-entity-map";
 
 export { createEdgeLine } from "./x6/cells/default";
 export {

@@ -14,12 +14,12 @@ export const getNodesWithChildren =
     const nodeWithChildrenMap: NodeWithChildrenNodeMap<Person["id"]> = new Map();
 
     people.forEach((person) => {
-      const node = nodeEntityMap.getNodeByEntityId("PERSON", person.id);
+      const node = nodeEntityMap.getNode("PERSON", person.id);
       if (!node) return;
 
       if (person.childrenIds) {
         const nodeChildren = person.childrenIds.flatMap((id) => {
-          const nodeChild = nodeEntityMap.getNodeByEntityId("PERSON", id);
+          const nodeChild = nodeEntityMap.getNode("PERSON", id);
           if (!nodeChild) return [];
           return [nodeChild];
         });
