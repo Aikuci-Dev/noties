@@ -28,11 +28,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-definePageMeta({ layout: "simple" });
-
-import type { Graph } from "@antv/x6";
-
+<script lang="ts">
 const gridSize = 20;
 // const nodePersonDimension = { height: gridSize * 3, width: gridSize * 12 }; // ratio (1:4)
 const nodePersonDimension = { height: gridSize * 3, width: gridSize * 9 }; // ratio (1:3)
@@ -82,6 +78,13 @@ const initialPeoplePartner: People = [
   { id: 5321, subtitle: "THIRD FIRST FIRST PARTNER", title: "3-1-1'" },
   { id: 7221, subtitle: "FIFTH FIRST FIRST PARTNER", title: "5-1-1'" },
 ];
+</script>
+
+<script setup lang="ts">
+import type { Graph } from "@antv/x6";
+
+definePageMeta({ layout: "simple" });
+
 // TODO: Get from DB
 const peopleByGeneration$ = ref<PeopleByRank>(initialPeopleByGeneration);
 const peoplePartner$ = ref<People>(initialPeoplePartner);

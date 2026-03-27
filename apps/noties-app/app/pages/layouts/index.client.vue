@@ -2,12 +2,10 @@
   <UTree :items="items" />
 </template>
 
-<script setup lang="ts">
-definePageMeta({ layout: "simple" });
-
+<script lang="ts">
 import type { TreeItem } from "@nuxt/ui";
 
-const items = ref<TreeItem[]>([
+const items: TreeItem[] = [
   {
     label: "Layouts",
     defaultExpanded: true,
@@ -24,5 +22,9 @@ const items = ref<TreeItem[]>([
       },
     ],
   },
-]);
+];
+</script>
+
+<script setup lang="ts">
+definePageMeta({ layout: "simple" });
 </script>

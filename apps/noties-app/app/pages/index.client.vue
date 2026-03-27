@@ -2,12 +2,10 @@
   <UNavigationMenu :items="items" />
 </template>
 
-<script setup lang="ts">
-definePageMeta({ middleware: "layout-default" });
-
+<script lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
 
-const items = ref<NavigationMenuItem[]>([
+const items: NavigationMenuItem[] = [
   {
     label: "Layouts",
     icon: "i-lucide-box",
@@ -28,5 +26,9 @@ const items = ref<NavigationMenuItem[]>([
       },
     ],
   },
-]);
+];
+</script>
+
+<script setup lang="ts">
+definePageMeta({ middleware: "layout-default" });
 </script>

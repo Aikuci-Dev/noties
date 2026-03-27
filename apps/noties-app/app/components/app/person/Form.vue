@@ -146,6 +146,7 @@ const FormSchema = v.pipe(
 export type FormSchemaInput = v.InferInput<typeof FormSchema>;
 export type FormSchemaOutput = v.InferOutput<typeof FormSchema>;
 </script>
+
 <script setup lang="ts">
 const state = reactive<FormSchemaInput>({
   name: "",
