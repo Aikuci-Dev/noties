@@ -1,96 +1,3 @@
-<script setup lang="ts">
-import { getLocalTimeZone, today } from "@internationalized/date";
-import * as v from "valibot";
-import { CalendarDate } from "@internationalized/date";
-
-const ParentSchema = v.optional(v.union([v.tuple([v.number()]), v.tuple([v.number(), v.number()])]));
-
-const FormSchema = v.pipe(
-  v.object({
-    name: v.pipe(v.string(), v.nonEmpty("Name is required")),
-    life_span: v.pipe(
-      v.object({
-        start: v.pipe(v.any(), v.title("birth_date")),
-        end: v.pipe(v.any(), v.title("death_date")),
-      }),
-      v.rawTransform(
-        ({ dataset, addIssue, NEVER }) => {
-          const birth_date = dataset.value.start;
-          const death_date = dataset.value.end;
-
-          function getPath(key: "start" | "end"): v.IssuePathItem {
-            return {
-              type: "object",
-              origin: "value",
-              input: dataset.value,
-              key,
-              value: dataset.value[key],
-            };
-          }
-
-          if (!birth_date) {
-            addIssue({
-              message: "Date of Birth is required.",
-              path: [getPath("start")],
-            });
-            return NEVER;
-          }
-          if (!(birth_date instanceof CalendarDate)) {
-            addIssue({
-              message: "Invalid Date of Birth.",
-              path: [getPath("start")],
-            });
-            return NEVER;
-          }
-          if (!(death_date instanceof CalendarDate) && death_date !== undefined) {
-            addIssue({
-              message: "Invalid Date of Death.",
-              path: [getPath("end")],
-            });
-            return NEVER;
-          }
-
-          return { birth_date, death_date };
-        },
-      ),
-    ),
-    gender: v.nullish(v.picklist(GENDER)),
-    parent: ParentSchema,
-    partner: v.array(v.number()),
-    children: v.array(v.number()),
-  }),
-  v.transform(({ name, life_span, ...rest }) => ({
-    ...rest,
-    title: name,
-    subtitle: `${life_span.birth_date.year}-${life_span.death_date === undefined ? "" : life_span.death_date.year}`,
-  })),
-);
-
-export type FormSchemaInput = v.InferInput<typeof FormSchema>;
-export type FormSchemaOutput = v.InferOutput<typeof FormSchema>;
-
-const state = reactive<FormSchemaInput>({
-  name: "",
-  life_span: { start: today(getLocalTimeZone()), end: undefined },
-  gender: undefined,
-  parent: undefined,
-  partner: [],
-  children: [],
-});
-
-const { person, people } = defineProps<{ person?: Person; people: People }>();
-const peopleOptions = computed(() => {
-  if (person) return people.filter((p) => p.id !== person.id);
-  else return people;
-});
-
-const formEl = useTemplateRef("formEl");
-function validateForm({ transform }: { transform: boolean } = { transform: true }) {
-  return formEl.value?.validate({ silent: true, transform });
-}
-defineExpose({ formEl, validateForm });
-</script>
-
 <template>
   <UForm ref="formEl" :state :schema="FormSchema" @submit='$emit("submit")'>
     <div class="tw:gap-2 tw:grid">
@@ -167,3 +74,97 @@ defineExpose({ formEl, validateForm });
     </slot>
   </UForm>
 </template>
+
+<script lang="ts">
+import { getLocalTimeZone, today } from "@internationalized/date";
+import * as v from "valibot";
+import { CalendarDate } from "@internationalized/date";
+
+const ParentSchema = v.optional(v.union([v.tuple([v.number()]), v.tuple([v.number(), v.number()])]));
+
+const FormSchema = v.pipe(
+  v.object({
+    name: v.pipe(v.string(), v.nonEmpty("Name is required")),
+    life_span: v.pipe(
+      v.object({
+        start: v.pipe(v.any(), v.title("birth_date")),
+        end: v.pipe(v.any(), v.title("death_date")),
+      }),
+      v.rawTransform(
+        ({ dataset, addIssue, NEVER }) => {
+          const birth_date = dataset.value.start;
+          const death_date = dataset.value.end;
+
+          function getPath(key: "start" | "end"): v.IssuePathItem {
+            return {
+              type: "object",
+              origin: "value",
+              input: dataset.value,
+              key,
+              value: dataset.value[key],
+            };
+          }
+
+          if (!birth_date) {
+            addIssue({
+              message: "Date of Birth is required.",
+              path: [getPath("start")],
+            });
+            return NEVER;
+          }
+          if (!(birth_date instanceof CalendarDate)) {
+            addIssue({
+              message: "Invalid Date of Birth.",
+              path: [getPath("start")],
+            });
+            return NEVER;
+          }
+          if (!(death_date instanceof CalendarDate) && death_date !== undefined) {
+            addIssue({
+              message: "Invalid Date of Death.",
+              path: [getPath("end")],
+            });
+            return NEVER;
+          }
+
+          return { birth_date, death_date };
+        },
+      ),
+    ),
+    gender: v.nullish(v.picklist(GENDER)),
+    parent: ParentSchema,
+    partner: v.array(v.number()),
+    children: v.array(v.number()),
+  }),
+  v.transform(({ name, life_span, ...rest }) => ({
+    ...rest,
+    title: name,
+    subtitle: `${life_span.birth_date.year}-${life_span.death_date === undefined ? "" : life_span.death_date.year}`,
+  })),
+);
+
+export type FormSchemaInput = v.InferInput<typeof FormSchema>;
+export type FormSchemaOutput = v.InferOutput<typeof FormSchema>;
+</script>
+<script setup lang="ts">
+const state = reactive<FormSchemaInput>({
+  name: "",
+  life_span: { start: today(getLocalTimeZone()), end: undefined },
+  gender: undefined,
+  parent: undefined,
+  partner: [],
+  children: [],
+});
+
+const { person, people } = defineProps<{ person?: Person; people: People }>();
+const peopleOptions = computed(() => {
+  if (person) return people.filter((p) => p.id !== person.id);
+  else return people;
+});
+
+const formEl = useTemplateRef("formEl");
+function validateForm({ transform }: { transform: boolean } = { transform: true }) {
+  return formEl.value?.validate({ silent: true, transform });
+}
+defineExpose({ formEl, validateForm });
+</script>
