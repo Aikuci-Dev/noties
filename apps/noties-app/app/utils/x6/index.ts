@@ -9,11 +9,17 @@ import nodePerson from "~/components/x6/person/node-person";
 export type BaseGraphDep = { graph: Graph };
 export type BaseNodeDep = { node: X6Node };
 
-export function registration({ nodePersonDimension }: { nodePersonDimension: Dimension }) {
-  Graph.registerNode(NODE_PERSON, nodePerson({ dimension: nodePersonDimension }), true);
-  Graph.registerNode(NODE_PERSON_STACK, nodePerson({ dimension: nodePersonDimension, isStack: true }), true);
-  Graph.registerNode(NODE_PERSON_PLACEHOLDER, nodePlaceholder(), true);
-  Graph.registerNode(NODE_PERSON_INTERMEDIARY, nodePlaceholder({ radius: 2 }), true);
+export function registration(
+  { nodePersonDimension, nodePersonRadius }: {
+    nodePersonDimension: Dimension;
+    nodePersonRadius?: { default?: number; placeholder?: number; intermediary?: number };
+  },
+) {
+  const nodePersonOptions = { dimension: nodePersonDimension, radius: nodePersonRadius?.default ?? 8 };
+  Graph.registerNode(NODE_PERSON, nodePerson(nodePersonOptions), true);
+  Graph.registerNode(NODE_PERSON_STACK, nodePerson({ ...nodePersonOptions, isStack: true }), true);
+  Graph.registerNode(NODE_PERSON_PLACEHOLDER, nodePlaceholder({ radius: nodePersonRadius?.placeholder }), true);
+  Graph.registerNode(NODE_PERSON_INTERMEDIARY, nodePlaceholder({ radius: nodePersonRadius?.intermediary ?? 2 }), true);
 
   Graph.registerEdge(EDGE_LINE, edgeLine(), true);
   Graph.registerEdge(EDGE_LINE_DASH, edgeLine({ isDash: true }), true);

@@ -9,9 +9,30 @@ export function resolveFillColor(options: { light?: boolean; gender?: Nullable<G
   if (gender === "F") return light ? "#fccee8" : "#fb64b6"; // Pink (200/400)
 }
 
-export default function nodePerson(options: { dimension: Dimension; isStack?: boolean }) {
-  const { dimension: { height, width }, isStack } = options;
-  const radius = 8;
+function leftRoundedRectPath(height: number, radius: number): string {
+  /**
+   * "kappa" constant used to approximate a quarter circle with cubic Bézier curves.
+   * See:
+   *  - https://spencermortensen.com/articles/bezier-circle/
+   *  - https://pomax.github.io/bezierinfo/#circles_cubic
+   */
+  const k = 0.5522847498;
+
+  const offset = radius * k;
+  const inner = radius - offset;
+
+  return [
+    `M ${radius} 0`,
+    `L ${radius} ${height}`,
+    `C ${inner} ${height} 0 ${height - offset} 0 ${height - radius}`,
+    `L 0 ${radius}`,
+    `C 0 ${offset} ${inner} 0 ${radius} 0`,
+    `Z`,
+  ].join(" ");
+}
+
+export default function nodePerson(options: { dimension: Dimension; radius?: number; isStack?: boolean }) {
+  const { dimension: { height, width }, radius = 8, isStack } = options;
 
   function contentAttrs(isTop?: boolean) {
     return {
@@ -25,13 +46,15 @@ export default function nodePerson(options: { dimension: Dimension; isStack?: bo
   function barAttrs(isTop?: boolean) {
     return {
       clipPath: isTop ? "inset(0 0 49% 0)" : "inset(50% 0 0 0)",
-      d: "M 8 0 L 8 60 C 3.582 60 0 56.418 0 52 L 0 8 C 0 3.582 3.582 0 8 0 Z", // Created using Boxy SVG: https://boxy-svg.com/
+      d: leftRoundedRectPath(height, radius),
     };
   }
   function cardAttrs(withFilter?: boolean) {
     return {
-      // Defining either `rx` or `ry` is enough — the other will mirror the value.
-      // https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/rx#rect
+      /**
+       * Defining either `rx` or `ry` is enough — the other will mirror the value.
+       * See: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/rx#rect
+       */
       rx: radius,
       refWidth: "100%",
       refHeight: "100%",
