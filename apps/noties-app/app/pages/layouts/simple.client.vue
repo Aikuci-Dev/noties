@@ -13,7 +13,7 @@
       </div>
 
       <template #body>
-        <AppPersonForm ref="appPersonFormEl" :people="allPeople">
+        <AppPersonForm ref="appPersonFormEl" :people="allPeople" :person>
           <template #action-buttons>
             &nbsp;
           </template>
@@ -21,7 +21,6 @@
       </template>
       <template #footer="{ close }">
         <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
-        <UButton label="Submit" color="success" @click="handleAddPerson" />
       </template>
     </UModal>
   </div>
@@ -33,8 +32,6 @@ const gridSize = 20;
 const nodePersonDimension = { height: gridSize * 3, width: gridSize * 9 }; // ratio (1:3)
 const dagreRankdir: DagreRankdir = "TB"; // vertical orientation
 // const dagreRankdir: DagreRankdir = "LR"; // horizontal orientation
-
-registration({ nodePersonDimension });
 
 const initialPeopleByRank: PeopleByRank = {
   0: [
@@ -64,22 +61,12 @@ const initialPeopleByRank: PeopleByRank = {
 
 <script setup lang="ts">
 import type { Graph } from "@antv/x6";
-import type { FormSchemaOutput } from "~/components/app/person/Form.vue";
 
 definePageMeta({ layout: "simple" });
 
 // TODO: Get from DB
 const peopleByRank$ = ref<PeopleByRank>(initialPeopleByRank);
 const allPeople = computed(() => Object.values(peopleByRank$.value).flat());
-const mapPersonGeneration = computed(() => {
-  const map = new Map<Person["id"], number>();
-  Object.entries(peopleByRank$.value).forEach(([key, people]) =>
-    people.forEach((person) => {
-      map.set(person.id, +key);
-    })
-  );
-  return map;
-});
 
 // https://nuxt.com/docs/4.x/api/components/client-only#accessing-html-elements
 const graphEl = useTemplateRef("graphEl");
@@ -87,7 +74,7 @@ const graphRef = ref<Graph>();
 let previousGraph: typeof graphRef.value;
 watch(graphEl, () => {
   if (!graphEl.value) return;
-  graphRef.value = graphInstance({
+  graphRef.value = createGraphInstance({
     container: graphEl.value, // The watch will be triggered when the component is available
     gridSize,
   });
@@ -103,75 +90,23 @@ watchEffect(() => {
   if (graph !== previousGraph) {
     previousGraph = graph;
 
-    animation({ graph });
+    addAnimation({ graph });
+    addInteraction({ graph });
     graph.positionContent("top");
   }
 });
 
-function getRandomInt(max: number) {
-  return Math.floor(Math.random() * max);
-}
+registerCells({ nodePersonDimension, handleNodePersonClick });
 
 const modalOpen = ref(false);
-const appPersonFormEl = useTemplateRef("appPersonFormEl");
+// const appPersonFormEl = useTemplateRef("appPersonFormEl");
 
-async function handleAddPerson() {
-  const validateFormResult = await appPersonFormEl.value?.validateForm();
-  if (!validateFormResult) return;
-  const formValue = validateFormResult as FormSchemaOutput;
-
-  // // TODO: Store to DB
-  // DEPRECATED
-
-  function getParentGenerationOrder(parent?: PersonParent) {
-    if (!parent) return -1;
-
-    let generationOrder = 0;
-    parent.forEach((parentId) => {
-      const order = mapPersonGeneration.value.get(parentId);
-      if (order && order > generationOrder) generationOrder = order;
-    });
-
-    return generationOrder;
-  }
-  function addPersonToGeneration(generation: number, person: Person) {
-    peopleByRank$.value[generation] ??= [];
-
-    peopleByRank$.value[generation].push(person);
-  }
-  function addPersonToParent(generation: number, parentId: number, id: number) {
-    peopleByRank$.value[generation] ??= [];
-
-    peopleByRank$.value[generation] = peopleByRank$.value[generation].map((person) => {
-      if (person.id !== parentId) return person;
-
-      person.childrenIds ??= [];
-
-      person.childrenIds.unshift(id);
-      return person;
-    }) ?? [];
-  }
-  function addChildrenToPerson(generation: number, parentId: number, id: number) {
-  }
-
-  const person: Person = {
-    id: getRandomInt(Number.MAX_SAFE_INTEGER),
-    title: formValue.title,
-    subtitle: formValue.subtitle,
-    parentIds: formValue.parent,
-    partnerIds: formValue.partner,
-    childrenIds: formValue.children,
-  };
-
-  const parentGeneration = getParentGenerationOrder(formValue.parent);
-  const generation = parentGeneration + 1;
-  if (generation > -1) {
-    addPersonToGeneration(generation, person);
-    if (person.parentIds) {
-      person.parentIds.forEach((parentId) => addPersonToParent(generation - 1, parentId, person.id));
-    }
-  }
-
-  modalOpen.value = false;
+const person = shallowRef();
+function handleNodePersonClick(data: Person) {
+  person.value = data;
+  modalOpen.value = true;
 }
+watch(modalOpen, (val) => {
+  if (!val) person.value = undefined;
+});
 </script>

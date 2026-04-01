@@ -4,9 +4,9 @@ import { ObjectExt } from "@antv/x6";
 export function resolveFillColor(options: { light?: boolean; gender?: Nullable<Gender>; isDead?: boolean }) {
   const { light, gender, isDead } = options;
 
-  if (isDead) return light ? "#e5e7eb" : "#99a1af"; // Gray (200/400)
-  if (gender === "M") return light ? "#bedbff" : "#51a2ff"; // Blue (200/400)
-  if (gender === "F") return light ? "#fccee8" : "#fb64b6"; // Pink (200/400)
+  if (isDead) return light ? "#e5e7eb" : "#9ca3af"; // Gray (200/400)
+  if (gender === "M") return light ? "#bfdbfe" : "#60a5fa"; // Blue (200/400)
+  if (gender === "F") return light ? "#fbcfe8" : "#f472b6"; // Pink (200/400)
 }
 
 function leftRoundedRectPath(height: number, radius: number): string {
@@ -31,8 +31,8 @@ function leftRoundedRectPath(height: number, radius: number): string {
   ].join(" ");
 }
 
-export default function nodePerson(options: { dimension: Dimension; radius?: number; isStack?: boolean }) {
-  const { dimension: { height, width }, radius = 8, isStack } = options;
+export default function nodePerson(options: { dimension: Dimension; radius: number; isStack?: boolean }) {
+  const { dimension: { height, width }, radius, isStack } = options;
 
   function contentAttrs(isTop?: boolean) {
     return {

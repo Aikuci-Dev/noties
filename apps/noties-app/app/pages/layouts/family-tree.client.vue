@@ -13,7 +13,7 @@
       </div>
 
       <template #body>
-        <AppPersonForm ref="appPersonFormEl" :people="allPeople">
+        <AppPersonForm ref="appPersonFormEl" :people="allPeople" :person>
           <template #action-buttons>
             &nbsp;
           </template>
@@ -21,7 +21,6 @@
       </template>
       <template #footer="{ close }">
         <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
-        <UButton label="Submit" color="success" @click="handleAddPerson" />
       </template>
     </UModal>
   </div>
@@ -33,8 +32,6 @@ const gridSize = 20;
 const nodePersonDimension = { height: gridSize * 3, width: gridSize * 9 }; // ratio (1:3)
 const dagreRankdir: DagreRankdir = "TB"; // vertical orientation
 // const dagreRankdir: DagreRankdir = "LR"; // horizontal orientation
-
-registration({ nodePersonDimension });
 
 const initialPeopleByGeneration: PeopleByRank = {
   0: [
@@ -95,7 +92,7 @@ const graphRef = ref<Graph>();
 let previousGraph: typeof graphRef.value;
 watch(graphEl, () => {
   if (!graphEl.value) return;
-  graphRef.value = graphInstance({
+  graphRef.value = createGraphInstance({
     container: graphEl.value, // The watch will be triggered when the component is available
     gridSize,
   });
@@ -112,20 +109,23 @@ watchEffect(() => {
   if (graph !== previousGraph) {
     previousGraph = graph;
 
-    animation({ graph });
+    addAnimation({ graph });
+    addInteraction({ graph });
     graph.positionContent("top");
   }
 });
 
+registerCells({ nodePersonDimension, handleNodePersonClick });
+
 const modalOpen = ref(false);
-const appPersonFormEl = useTemplateRef("appPersonFormEl");
+// const appPersonFormEl = useTemplateRef("appPersonFormEl");
 
-async function handleAddPerson() {
-  const validateFormResult = await appPersonFormEl.value?.validateForm();
-  if (!validateFormResult) return;
-
-  // TODO: Store to DB
-
-  modalOpen.value = false;
+const person = shallowRef();
+function handleNodePersonClick(data: Person) {
+  person.value = data;
+  modalOpen.value = true;
 }
+watch(modalOpen, (val) => {
+  if (!val) person.value = undefined;
+});
 </script>
