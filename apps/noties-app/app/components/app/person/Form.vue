@@ -79,14 +79,17 @@
 import * as v from "valibot";
 import { CalendarDate, parseDate } from "@internationalized/date";
 
-const ParentSchema = v.optional(v.union([v.tuple([v.number()]), v.tuple([v.number(), v.number()])]));
+const IntegerSchema = v.pipe(v.number(), v.integer("The number must be an integer."));
+const ParentSchema = exactOptionalUndefinedable(
+  v.union([v.tuple([IntegerSchema]), v.tuple([IntegerSchema, IntegerSchema])]),
+);
 
 const FormSchema = v.pipe(
   v.object({
-    id: v.optional(v.number(), 0),
+    id: exactOptionalUndefinedable(IntegerSchema, 0),
     name: v.pipe(exactOptionalUndefinedable(v.string(), ""), v.nonEmpty("Name is required")),
     life_span: v.pipe(
-      v.optional(v.object({
+      exactOptionalNullish(v.object({
         start: v.pipe(v.any(), v.title("birth_date")),
         end: v.pipe(v.any(), v.title("death_date")),
       })),
@@ -109,14 +112,14 @@ const FormSchema = v.pipe(
             };
           }
 
-          if (birth_date !== undefined && !(birth_date instanceof CalendarDate)) {
+          if (birth_date != null && !(birth_date instanceof CalendarDate)) {
             addIssue({
               message: "Invalid Date of Birth.",
               path: [getPath("start")],
             });
             return NEVER;
           }
-          if (death_date !== undefined && !(death_date instanceof CalendarDate)) {
+          if (death_date != null && !(death_date instanceof CalendarDate)) {
             addIssue({
               message: "Invalid Date of Death.",
               path: [getPath("end")],
@@ -128,10 +131,10 @@ const FormSchema = v.pipe(
         },
       ),
     ),
-    gender: v.optional(v.nullish(v.picklist(GENDER)), null),
+    gender: exactOptionalNullish(v.nullish(v.picklist(GENDER)), null),
     parent: ParentSchema,
-    partners: v.optional(v.array(v.number()), []),
-    children: v.optional(v.array(v.number()), []),
+    partners: exactOptionalUndefinedable(v.array(IntegerSchema), []),
+    children: exactOptionalUndefinedable(v.array(IntegerSchema), []),
   }),
   v.transform(({ name, life_span, parent, ...rest }) => ({
     ...rest,
