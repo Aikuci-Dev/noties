@@ -1,4 +1,3 @@
-// Reference: https://x6.antv.antgroup.com/en/examples/showcase/practices/#orgchart
 import type { Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
@@ -16,9 +15,9 @@ const main = (graphDep: GraphDep) => (cellDep: CellDep) => {
 };
 
 const getCells = (graphDep: BaseGraphDep) => (cellDep: CellDep) => {
-  const { nodes, nodeEntityMap } = registerCellNodes(graphDep)(cellDep);
+  const { nodes, nodePersonMap } = registerCellNodes(graphDep)(cellDep);
 
-  const nodesWithChildrenMap = getNodesWithChildren({ nodeEntityMap })(cellDep);
+  const nodesWithChildrenMap = getNodesWithChildren({ nodePersonMap })(cellDep);
   setNodesRelationship({ nodesWithChildrenMap });
 
   const edges = registerCellEdges(graphDep)({ nodesWithChildrenMap });
@@ -26,17 +25,17 @@ const getCells = (graphDep: BaseGraphDep) => (cellDep: CellDep) => {
   return [...nodes, ...edges];
 };
 const registerCellNodes = (graphDep: BaseGraphDep) => ({ people }: CellDep) => {
-  const nodeEntityMap = new BidirectionalNodeEntityMap<Person>();
+  const nodePersonMap: NodePersonMap = new Map();
   const nodes: X6Node[] = [];
 
   people.forEach((person) => {
     const entity = convertPersonToNodePerson(person);
     const node = createNodePerson(graphDep)({ value: entity, original: person });
-    nodeEntityMap.set("PERSON", node, person);
+    nodePersonMap.set(person.id, node);
     nodes.push(node);
   });
 
-  return { nodes, nodeEntityMap };
+  return { nodes, nodePersonMap };
 };
 const registerCellEdges = (graphDep: BaseGraphDep) => ({ nodesWithChildrenMap }: NodeWithChildrenNodeDep) => {
   return Array.from(nodesWithChildrenMap.values()).flatMap(({ node, nodeChildren }) =>

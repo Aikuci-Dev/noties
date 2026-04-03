@@ -5,30 +5,29 @@ export type GraphDep = BaseGraphDep & { options: GraphLayoutDep };
 
 export type CellDep = { people: People | PeopleWithMeta };
 
-export type NodeEntityDep<T extends { id: Id }> = { nodeEntityMap: TBidirectionalNodeEntityMap<T> };
+export type NodeDep = { nodePersonMap: NodePersonMap };
 export type NodeWithChildrenNodeDep = { nodesWithChildrenMap: NodeWithChildrenNodeMap<Person["id"]> };
 
-export const getNodesWithChildren =
-  <T extends { id: Id }>({ nodeEntityMap }: NodeEntityDep<T>) => ({ people }: CellDep) => {
-    const nodeWithChildrenMap: NodeWithChildrenNodeMap<Person["id"]> = new Map();
+export const getNodesWithChildren = ({ nodePersonMap }: NodeDep) => ({ people }: CellDep) => {
+  const nodeWithChildrenMap: NodeWithChildrenNodeMap<Person["id"]> = new Map();
 
-    people.forEach((person) => {
-      const node = nodeEntityMap.getNode("PERSON", person.id);
-      if (!node) return;
+  people.forEach((person) => {
+    const node = nodePersonMap.get(person.id);
+    if (!node) return;
 
-      if (person.childrenIds) {
-        const nodeChildren = person.childrenIds.flatMap((id) => {
-          const nodeChild = nodeEntityMap.getNode("PERSON", id);
-          if (!nodeChild) return [];
-          return [nodeChild];
-        });
+    if (person.childrenIds) {
+      const nodeChildren = person.childrenIds.flatMap((id) => {
+        const nodeChild = nodePersonMap.get(id);
+        if (!nodeChild) return [];
+        return [nodeChild];
+      });
 
-        if (nodeChildren.length) nodeWithChildrenMap.set(person.id, { node, nodeChildren });
-      }
-    });
+      if (nodeChildren.length) nodeWithChildrenMap.set(person.id, { node, nodeChildren });
+    }
+  });
 
-    return nodeWithChildrenMap;
-  };
+  return nodeWithChildrenMap;
+};
 
 export const setNodesRelationship = ({ nodesWithChildrenMap }: NodeWithChildrenNodeDep) => {
   // See: https://x6.antv.antgroup.com/en/api/model/cell#parentchildren-relationship

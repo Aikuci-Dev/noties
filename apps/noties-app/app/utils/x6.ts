@@ -8,8 +8,6 @@ export { default as familyTreeLayout } from "./x6/layouts/family-tree";
  * Internal exports — required to fully support Nuxt's auto-import mechanism.
  */
 export { addAnimation, addInteraction, createGraphInstance, registerCells } from "./x6/index";
-export type { TBidirectionalNodeEntityMap } from "./x6/bidirectional-node-entity-map";
-export { BidirectionalNodeEntityMap } from "./x6/bidirectional-node-entity-map";
 export { convertPersonToNodePerson } from "./x6/person";
 
 export type {
