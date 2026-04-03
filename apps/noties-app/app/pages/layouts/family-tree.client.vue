@@ -21,6 +21,8 @@
       </template>
       <template #footer="{ close }">
         <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
+        <UButton label="Reset" color="warning" variant="outline" @click="personForm.reset" />
+        <UButton label="Submit" color="success" @click="personForm.submit" :disabled="isDisabled" />
       </template>
     </UModal>
   </div>
@@ -73,6 +75,7 @@ const initialPeoplePartner: People = [
 
 <script setup lang="ts">
 import type { Graph } from "@antv/x6";
+import type { FormSchemaInput, FormSchemaOutput } from "~/components/app/person/Form.vue";
 
 definePageMeta({ layout: "simple" });
 
@@ -112,14 +115,29 @@ watchEffect(() => {
 registerCells({ nodePersonDimension, handleNodePersonClick });
 
 const modalOpen = ref(false);
-// const appPersonFormEl = useTemplateRef("appPersonFormEl");
-
 const person = shallowRef();
-function handleNodePersonClick(data: NodePersonData) {
-  person.value = data;
-  modalOpen.value = true;
-}
 watch(modalOpen, (val) => {
   if (!val) person.value = undefined;
 });
+function handleNodePersonClick(data: NodePersonData) {
+  const { original } = data;
+  person.value = original;
+  modalOpen.value = true;
+}
+
+const appPersonFormEl = useTemplateRef<FormInstance<FormSchemaInput, FormSchemaOutput> | null>("appPersonFormEl");
+const personForm = useFormAction<FormSchemaInput, FormSchemaOutput>(appPersonFormEl, {
+  onSubmit: async (values) => {
+    console.log(values, values.id);
+    if (values.id) console.log("Update");
+    else console.log("Add");
+    // TODO: Store to DB
+    // if(values.id) await updatePerson(id, values);
+    // else await addPerson(values);
+  },
+  onSettled: () => {
+    modalOpen.value = false;
+  },
+});
+const isDisabled = computed(() => toValue(personForm.isSubmitting));
 </script>

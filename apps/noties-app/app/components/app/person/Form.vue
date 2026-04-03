@@ -45,7 +45,7 @@
       </UFormField>
       <UFormField name="partner" label="Partner">
         <USelectMenu
-          v-model="state.partner"
+          v-model="state.partners"
           multiple
           value-key="id"
           label-key="name"
@@ -76,26 +76,30 @@
 </template>
 
 <script lang="ts">
-import { getLocalTimeZone, today } from "@internationalized/date";
 import * as v from "valibot";
-import { CalendarDate } from "@internationalized/date";
+import { CalendarDate, parseDate } from "@internationalized/date";
 
 const ParentSchema = v.optional(v.union([v.tuple([v.number()]), v.tuple([v.number(), v.number()])]));
 
 const FormSchema = v.pipe(
   v.object({
-    name: v.pipe(v.string(), v.nonEmpty("Name is required")),
+    id: v.optional(v.number(), 0),
+    name: v.pipe(exactOptionalUndefinedable(v.string(), ""), v.nonEmpty("Name is required")),
     life_span: v.pipe(
-      v.object({
+      v.optional(v.object({
         start: v.pipe(v.any(), v.title("birth_date")),
         end: v.pipe(v.any(), v.title("death_date")),
-      }),
+      })),
       v.rawTransform(
         ({ dataset, addIssue, NEVER }) => {
+          if (!dataset.value) return NEVER;
+
           const birth_date = dataset.value.start;
           const death_date = dataset.value.end;
 
           function getPath(key: "start" | "end"): v.IssuePathItem {
+            if (!dataset.value) return NEVER;
+
             return {
               type: "object",
               origin: "value",
@@ -105,21 +109,14 @@ const FormSchema = v.pipe(
             };
           }
 
-          if (!birth_date) {
-            addIssue({
-              message: "Date of Birth is required.",
-              path: [getPath("start")],
-            });
-            return NEVER;
-          }
-          if (!(birth_date instanceof CalendarDate)) {
+          if (birth_date !== undefined && !(birth_date instanceof CalendarDate)) {
             addIssue({
               message: "Invalid Date of Birth.",
               path: [getPath("start")],
             });
             return NEVER;
           }
-          if (!(death_date instanceof CalendarDate) && death_date !== undefined) {
+          if (death_date !== undefined && !(death_date instanceof CalendarDate)) {
             addIssue({
               message: "Invalid Date of Death.",
               path: [getPath("end")],
@@ -131,15 +128,18 @@ const FormSchema = v.pipe(
         },
       ),
     ),
-    gender: v.nullish(v.picklist(GENDER)),
+    gender: v.optional(v.nullish(v.picklist(GENDER)), null),
     parent: ParentSchema,
-    partner: v.array(v.number()),
-    children: v.array(v.number()),
+    partners: v.optional(v.array(v.number()), []),
+    children: v.optional(v.array(v.number()), []),
   }),
-  v.transform(({ name, life_span, ...rest }) => ({
+  v.transform(({ name, life_span, parent, ...rest }) => ({
     ...rest,
     title: name,
-    subtitle: `${life_span.birth_date.year}-${life_span.death_date === undefined ? "" : life_span.death_date.year}`,
+    subtitle: `${life_span?.birth_date?.year ?? ""}-${life_span?.death_date?.year ?? ""}`,
+    birthOfDate: life_span?.birth_date?.toString() ?? null,
+    deathOfDate: life_span?.death_date?.toString() ?? null,
+    parent: parent ?? null, // Since Nuxt UI does not support null value for array data, so manually transform undefined into null
   })),
 );
 
@@ -148,24 +148,34 @@ export type FormSchemaOutput = v.InferOutput<typeof FormSchema>;
 </script>
 
 <script setup lang="ts">
-const state = reactive<FormSchemaInput>({
-  name: "",
-  life_span: { start: today(getLocalTimeZone()), end: undefined },
-  gender: undefined,
-  parent: undefined,
-  partner: [],
-  children: [],
-});
-
 const { person, people } = defineProps<{ person?: Person | PersonWithMeta; people: People }>();
+
 const peopleOptions = computed(() => {
   if (person) return people.filter((p) => p.id !== person.id);
   else return people;
 });
 
+function getInitialState() {
+  return {
+    ...person,
+    parent: person?.parentIds ?? undefined,
+    partners: person?.partnerIds ?? [], // Nuxt UI does not support null value for array data
+    children: person?.childrenIds ?? [], // Nuxt UI does not support null value for array data
+    life_span: {
+      start: person?.dateOfBirth && parseDate(person?.dateOfBirth),
+      end: person?.dateOfDeath && parseDate(person?.dateOfDeath),
+    },
+  } satisfies FormSchemaInput;
+}
+const state = ref<Partial<FormSchemaInput>>(getInitialState());
+function resetForm() {
+  state.value = getInitialState();
+}
+
 const formEl = useTemplateRef("formEl");
 function validateForm({ transform }: { transform: boolean } = { transform: true }) {
   return formEl.value?.validate({ silent: true, transform });
 }
-defineExpose({ formEl, validateForm });
+
+defineExpose<FormInstance<FormSchemaInput, FormSchemaOutput>>({ resetForm, validateForm });
 </script>
