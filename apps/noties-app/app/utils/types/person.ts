@@ -16,32 +16,25 @@ export type PersonMeta = {
   generationOrder?: number;
 };
 export type PersonWithMeta = Person & { meta: PersonMeta };
+export type PersonMap = Map<Person["id"], Person>;
 
-export type PersonMap<T extends Person | PersonNode = Person> = Map<T["id"], T>;
-export type PersonRelationship<T extends Person | PersonNode = Person> = {
-  id: T["id"];
-  partnerId: T["id"];
-  partnerIds: T["id"][];
-  childrenIds: T["id"][];
-};
-export type PersonRelationshipMap<T extends Person | PersonNode = Person> = Map<
-  PersonRelationship<T>["id"],
-  PersonRelationship<T>
->;
-export type PersonRelationshipPartner<T extends Person | PersonNode = Person> = {
-  id: EntityPairKey<T>;
-  personId: T["id"];
-  partnerId: T["id"];
-  childrenIds: T["id"][];
-};
-export type PersonRelationshipPartnerMap<T extends Person | PersonNode = Person> = Map<
-  PersonRelationshipPartner<T>["id"],
-  PersonRelationshipPartner<T>
->;
+export type People = Person[];
+export type PeopleWithMeta = PersonWithMeta[];
 
-export type People<T extends Person | PersonNode = Person> = T[];
-export type PeopleWithMeta<T extends PersonWithMeta | PersonNodeWithMeta = PersonWithMeta> = T[];
-export type PeopleByRank<T extends Person | PersonNode = Person> = { [rank: number]: People<T> };
+export type PersonRelationship = {
+  id: Person["id"];
+  partnerId: Person["id"];
+  partnerIds: Person["id"][];
+  childrenIds: Person["id"][];
+};
+export type PersonRelationshipMap = Map<PersonRelationship["id"], PersonRelationship>;
+export type PersonRelationshipPartner = {
+  id: EntityPairKey<Person>;
+  personId: Person["id"];
+  partnerId: Person["id"];
+  childrenIds: Person["id"][];
+};
+export type PersonRelationshipPartnerMap = Map<PersonRelationshipPartner["id"], PersonRelationshipPartner>;
 
 /** ==== X6 ==== */
 // X6 Cell
