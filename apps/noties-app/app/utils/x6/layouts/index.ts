@@ -3,14 +3,13 @@ import type { BaseGraphDep } from "@/utils/x6/index";
 export type GraphLayoutDep = { gap: number; rankdir?: DagreRankdir };
 export type GraphDep = BaseGraphDep & { options: GraphLayoutDep };
 
-export type CellDep = { peopleByRank: PeopleByRank };
-export type CellInheritanceDep = { people: People };
+export type CellDep = { people: People | PeopleWithMeta };
 
 export type NodeEntityDep<T extends { id: Id }> = { nodeEntityMap: TBidirectionalNodeEntityMap<T> };
 export type NodeWithChildrenNodeDep = { nodesWithChildrenMap: NodeWithChildrenNodeMap<Person["id"]> };
 
 export const getNodesWithChildren =
-  <T extends { id: Id }>({ nodeEntityMap }: NodeEntityDep<T>) => ({ people }: CellInheritanceDep) => {
+  <T extends { id: Id }>({ nodeEntityMap }: NodeEntityDep<T>) => ({ people }: CellDep) => {
     const nodeWithChildrenMap: NodeWithChildrenNodeMap<Person["id"]> = new Map();
 
     people.forEach((person) => {

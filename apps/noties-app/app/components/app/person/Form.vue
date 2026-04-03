@@ -37,7 +37,7 @@
           v-model="state.parent"
           multiple
           value-key="id"
-          label-key="title"
+          label-key="name"
           :items="peopleOptions"
           class="tw:w-full"
           clear
@@ -48,7 +48,7 @@
           v-model="state.partner"
           multiple
           value-key="id"
-          label-key="title"
+          label-key="name"
           :items="peopleOptions"
           class="tw:w-full"
           clear
@@ -59,7 +59,7 @@
           v-model="state.children"
           multiple
           value-key="id"
-          label-key="title"
+          label-key="name"
           :items="peopleOptions"
           class="tw:w-full"
           clear
@@ -157,7 +157,7 @@ const state = reactive<FormSchemaInput>({
   children: [],
 });
 
-const { person, people } = defineProps<{ person?: Person; people: People }>();
+const { person, people } = defineProps<{ person?: Person | PersonWithMeta; people: People }>();
 const peopleOptions = computed(() => {
   if (person) return people.filter((p) => p.id !== person.id);
   else return people;

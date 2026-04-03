@@ -130,7 +130,7 @@ export default function nodePerson(options: { dimension: Dimension; radius: numb
     propHooks(metadata) {
       const { data, ...rest } = metadata;
       if (data) {
-        const value: Person = data.value;
+        const value: PersonNode = data.value;
         const { title, subtitle, gender, isDead } = value;
 
         ObjectExt.setByPath(rest, "attrs/.subtitle/text", subtitle);

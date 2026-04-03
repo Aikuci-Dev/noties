@@ -3,7 +3,7 @@ import type { Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
 import type { BaseGraphDep } from "@/utils/x6/index";
-import type { CellDep, CellInheritanceDep, GraphDep, GraphLayoutDep, NodeWithChildrenNodeDep } from "./index";
+import type { CellDep, GraphDep, GraphLayoutDep, NodeWithChildrenNodeDep } from "./index";
 import { getNodesWithChildren, setNodesRelationship } from "./index";
 
 const main = (graphDep: GraphDep) => (cellDep: CellDep) => {
@@ -15,24 +15,23 @@ const main = (graphDep: GraphDep) => (cellDep: CellDep) => {
   layout({ graph })(graphOptions);
 };
 
-const getCells = (graphDep: BaseGraphDep) => ({ peopleByRank }: CellDep) => {
-  const people = Object.values(peopleByRank).flatMap((people) => people);
+const getCells = (graphDep: BaseGraphDep) => (cellDep: CellDep) => {
+  const { nodes, nodeEntityMap } = registerCellNodes(graphDep)(cellDep);
 
-  const { nodes, nodeEntityMap } = registerCellNodes(graphDep)({ people });
-
-  const nodesWithChildrenMap = getNodesWithChildren({ nodeEntityMap })({ people });
+  const nodesWithChildrenMap = getNodesWithChildren({ nodeEntityMap })(cellDep);
   setNodesRelationship({ nodesWithChildrenMap });
 
   const edges = registerCellEdges(graphDep)({ nodesWithChildrenMap });
 
   return [...nodes, ...edges];
 };
-const registerCellNodes = (graphDep: BaseGraphDep) => ({ people }: CellInheritanceDep) => {
+const registerCellNodes = (graphDep: BaseGraphDep) => ({ people }: CellDep) => {
   const nodeEntityMap = new BidirectionalNodeEntityMap<Person>();
   const nodes: X6Node[] = [];
 
   people.forEach((person) => {
-    const node = createNodePerson(graphDep)({ data: person });
+    const entity = convertPersonToNodePerson(person);
+    const node = createNodePerson(graphDep)({ value: entity, original: person });
     nodeEntityMap.set("PERSON", node, person);
     nodes.push(node);
   });
@@ -41,7 +40,7 @@ const registerCellNodes = (graphDep: BaseGraphDep) => ({ people }: CellInheritan
 };
 const registerCellEdges = (graphDep: BaseGraphDep) => ({ nodesWithChildrenMap }: NodeWithChildrenNodeDep) => {
   return Array.from(nodesWithChildrenMap.values()).flatMap(({ node, nodeChildren }) =>
-    nodeChildren.map((nodeChild) => createEdgeLine(graphDep)({ data: { source: node, target: nodeChild } }))
+    nodeChildren.map((nodeChild) => createEdgePerson(graphDep)({ value: { source: node, target: nodeChild } }))
   );
 };
 

@@ -7,6 +7,8 @@ export type AllowedCellData = PersonCellData;
 export const NODE_PLACEHOLDER = "node-placeholder";
 export const NODE_INTERMEDIARY = "node-intermediary";
 
+export type NodePersonMap = Map<Person["id"], X6Node>;
+export type NodePersonRelationshipMap = Map<string, X6Node>; // `relationship-${T['id']}`
 export type NodeWithChildrenNodeMap<T extends Id> = Map<T, { node: X6Node; nodeChildren: X6Node[] }>;
 
 // Edge

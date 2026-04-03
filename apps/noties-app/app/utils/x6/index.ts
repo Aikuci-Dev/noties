@@ -14,7 +14,7 @@ export function registerCells(
   { nodePersonDimension, nodePersonRadius, handleNodePersonClick }: {
     nodePersonDimension: Dimension;
     nodePersonRadius?: { default?: number; placeholder?: number; intermediary?: number };
-    handleNodePersonClick?: (data: Person) => void;
+    handleNodePersonClick?: (data: NodePersonData) => void;
   },
 ) {
   const nodePersonOptions = { dimension: nodePersonDimension, radius: nodePersonRadius?.default ?? 8 };
@@ -65,23 +65,21 @@ export function createGraphInstance({ container, gridSize }: { gridSize: number;
 export function addAnimation({ graph }: { graph: Graph }) {
   graph.on("node:mouseenter", ({ node }) => {
     const { type } = node.data as AllowedCellData;
-    if (type === "PERSON") animateNodePerson({ node, options: { fill: true } });
+    if (type === "NODE_PERSON") animateNodePerson({ node })({ options: { fill: true } });
   });
   graph.on("node:mouseleave", ({ node }) => {
     const { type } = node.data as AllowedCellData;
-    if (type === "PERSON") animateNodePerson({ node, options: { fill: false } });
+    if (type === "NODE_PERSON") animateNodePerson({ node })({ options: { fill: false } });
   });
 }
 
 export function addInteraction({ graph }: { graph: Graph }) {
   graph.on("node:mouseenter", ({ node }) => {
     const { type } = node.data as AllowedCellData;
-    if (type === "PERSON") {
-      node.addTools(BUTTON_NODE_EDIT_PERSON);
-    }
+    if (type === "NODE_PERSON") node.addTools(BUTTON_NODE_EDIT_PERSON);
   });
   graph.on("node:mouseleave", ({ node }) => {
     const { type } = node.data as AllowedCellData;
-    if (type === "PERSON") node.removeTools();
+    if (type === "NODE_PERSON") node.removeTools();
   });
 }

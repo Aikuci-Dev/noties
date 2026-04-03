@@ -1,12 +1,12 @@
 import type { Cell, Graph } from "@antv/x6";
 
-export default function buttonNodeEditPerson({ handleClick }: { handleClick?: (data: Person) => void }) {
+export default function buttonNodeEditPerson({ handleClick }: { handleClick?: (data: NodePersonData) => void }) {
   const defaultAttrs = { fill: "none", stroke: "#000" };
 
   return {
     inherit: "button",
     onClick({ cell }: { cell: Cell }) {
-      handleClick?.(cell.data.value as Person);
+      handleClick?.(cell.data);
     },
     x: "100%",
     y: 0,

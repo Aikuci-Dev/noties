@@ -1,35 +1,53 @@
 import type { Node as X6Node } from "@antv/x6";
 
-import type { BaseGraphDep as GraphDep, BaseNodeDep } from "@/utils/x6/index";
+import type { BaseGraphDep as GraphDep, BaseNodeDep as NodeDep } from "@/utils/x6/index";
 
-type NodePersonDep = { data: Person; meta?: NodePersonMeta };
-type NodePersonPlaceholderDep = { type: NodeType; data: { nodes: [X6Node] } };
-type NodePersonRelationshipDep = { data: { nodes: [X6Node, X6Node] } };
+// EDGE
+export type EdgePersonData = { value: BaseEdgeValue; meta?: PersonEdgeMeta };
+type EdgePersonDep = { personType?: AllowedPersonEdgeType } & EdgePersonData;
+export const createEdgePerson = ({ graph }: GraphDep) => ({ personType = "PERSON", value, meta }: EdgePersonDep) => {
+  const { source, target } = value;
 
-type AnimationNodePersonDep = BaseNodeDep & { options?: { fill?: boolean } };
+  return graph.createEdge({
+    shape: meta?.type === "dash" ? EDGE_LINE_DASH : EDGE_LINE,
+    source: { cell: source.id },
+    target: { cell: target.id },
+    data: { type: "EDGE_LINE", personType, value, meta } satisfies PersonEdgeData,
+  });
+};
 
-export const createNodePerson = ({ graph }: GraphDep) => ({ data, meta }: NodePersonDep) => {
+// NODE
+export type NodePersonData = { value: PersonNode; original: Person | PersonWithMeta; meta?: PersonNodeMeta };
+type NodePersonDep = NodePersonData;
+export const createNodePerson = ({ graph }: GraphDep) => ({ value, original, meta }: NodePersonDep) => {
   return graph.createNode({
     shape: meta?.isStack ? NODE_PERSON_STACK : NODE_PERSON,
-    data: { cellType: "NODE", type: "PERSON", value: data, meta } satisfies PersonCellData,
+    data: { type: "NODE_PERSON", personType: "PERSON", value, original, meta } satisfies PersonNodeData,
   });
 };
 
-export const createNodePersonPlaceholder = ({ graph }: GraphDep) => ({ type, data }: NodePersonPlaceholderDep) => {
-  return graph.createNode({
-    shape: NODE_PERSON_PLACEHOLDER,
-    data: { cellType: "NODE", type, value: data } satisfies PersonCellData,
-  });
-};
+export type NodePersonPlaceholderData = { value: { nodes: [X6Node] } };
+type NodePersonPlaceholderDep = { personType: AllowedPersonNodeType } & NodePersonPlaceholderData;
+export const createNodePersonPlaceholder =
+  ({ graph }: GraphDep) => ({ personType, value }: NodePersonPlaceholderDep) => {
+    return graph.createNode({
+      shape: NODE_PERSON_PLACEHOLDER,
+      data: { type: "NODE_PERSON_PLACEHOLDER", personType, value } satisfies PersonNodeData,
+    });
+  };
 
-export const createNodePersonRelationship = ({ graph }: GraphDep) => ({ data }: NodePersonRelationshipDep) => {
+export type NodePersonRelationshipData = { value: { nodes: [X6Node, X6Node] } };
+type NodePersonRelationshipDep = NodePersonRelationshipData;
+export const createNodePersonRelationship = ({ graph }: GraphDep) => ({ value }: NodePersonRelationshipDep) => {
   return graph.createNode({
     shape: NODE_PERSON_INTERMEDIARY,
-    data: { cellType: "NODE", type: "PERSON_RELATIONSHIP", value: data } satisfies PersonCellData,
+    data: { type: "NODE_PERSON_RELATIONSHIP", personType: "PERSON_RELATIONSHIP", value } satisfies PersonNodeData,
   });
 };
 
-export const animateNodePerson = ({ node, options = {} }: AnimationNodePersonDep) => {
+export type AnimationNodePersonOptions = { options?: { fill?: boolean } };
+type AnimationNodePersonDep = AnimationNodePersonOptions;
+export const animateNodePerson = ({ node }: NodeDep) => ({ options = {} }: AnimationNodePersonDep) => {
   const targetWidth = options.fill ? "100%" : "0%";
 
   node.animate({ "attrs/.content-t/refWidth": targetWidth }, { duration: 1000, iterations: 1 });
