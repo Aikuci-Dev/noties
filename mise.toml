@@ -10,3 +10,6 @@ MISE_EXPERIMENTAL = 1
 
 [tasks.dev]
 depends = ["//apps/...:dev"]
+
+[tasks."shared:dev"]
+depends = ["//packages/shared/...:dev"]
