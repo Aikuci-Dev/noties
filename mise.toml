@@ -13,3 +13,6 @@ depends = ["//apps/...:dev"]
 
 [tasks."shared:dev"]
 depends = ["//packages/shared/...:dev"]
+
+[tasks."shared:test"]
+depends = ["//packages/shared/...:test"]

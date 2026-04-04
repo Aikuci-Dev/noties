@@ -1,2 +1,5 @@
 [tasks.dev]
 run = "pnpm dev"
+
+[tasks.test]
+run = "pnpm test"
