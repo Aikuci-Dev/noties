@@ -1,6 +1,9 @@
 import type { Edge, Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
+import type { EntityPairKey } from "@noties/shared-type";
+import { intersectionBy, minMax } from "@noties/shared-util";
+
 import type { BaseGraphDep } from "@/utils/x6/index";
 import type { CellDep, GraphDep, GraphLayoutDep, NodeDep } from "./index";
 import { getNodesWithChildren, setNodesRelationship } from "./index";

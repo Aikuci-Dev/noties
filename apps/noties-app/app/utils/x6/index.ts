@@ -1,6 +1,7 @@
 import type { Node as X6Node } from "@antv/x6";
-
 import { Graph } from "@antv/x6";
+
+import type { Dimension } from "@noties/shared-type";
 
 import edgeLine from "~/components/x6/default/edge-line";
 import nodePlaceholder from "~/components/x6/default/node-placeholder";

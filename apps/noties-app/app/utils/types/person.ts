@@ -1,3 +1,5 @@
+import type { EntityPairKey } from "@noties/shared-type";
+
 export const GENDER = ["M", "F"] as const;
 export type Gender = typeof GENDER[number];
 export type PersonParent = [number] | [number, number];

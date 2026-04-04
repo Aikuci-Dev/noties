@@ -1,3 +1,5 @@
+import type { Id } from "@noties/shared-type";
+
 type UseFormActionHandlers<TInput, TOutput> = {
   onSubmit: (values: TInput | TOutput) => Promise<void> | void;
   onSuccess?: (values: TInput | TOutput) => Promise<void> | void;

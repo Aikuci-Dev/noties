@@ -1,5 +1,7 @@
 import type { Cell, Node as X6Node } from "@antv/x6";
 
+import type { Id } from "@noties/shared-type";
+
 // Cell
 export type AllowedCellData = PersonCellData;
 

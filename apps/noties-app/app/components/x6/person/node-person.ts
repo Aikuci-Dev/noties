@@ -1,6 +1,8 @@
 import type { Graph } from "@antv/x6";
 import { ObjectExt } from "@antv/x6";
 
+import type { Dimension, Nullable } from "@noties/shared-type";
+
 export function resolveFillColor(options: { light?: boolean; gender?: Nullable<Gender>; isDead?: boolean }) {
   const { light, gender, isDead } = options;
 
