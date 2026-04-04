@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
 
-import { intersectionBy, removeFalsy } from "./array";
+import { intersectionBy, removeFalsy } from "@/common";
 
 describe("removeFalsy (property-based)", () => {
   it("returns only truthy values", () => {

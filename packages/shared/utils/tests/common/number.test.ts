@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
 
-import { minMax } from "./number";
+import { minMax } from "@/common";
 
 const safeNumber = fc.double({ noNaN: true, noDefaultInfinity: true });
 
