@@ -1,3 +1,14 @@
 packages:
   - apps/*
   - packages/**/*
+
+catalog:
+  typescript: ^6.0.2
+
+catalogs:
+  lib:
+    tsdown: ^0.21.7
+
+  test:
+    fast-check: ^4.6.0
+    vitest: ^4.1.2

@@ -19,9 +19,9 @@
     "@noties/shared-type": "workspace:*"
   },
   "devDependencies": {
-    "fast-check": "^4.6.0",
-    "tsdown": "^0.21.7",
-    "typescript": "^6.0.2",
-    "vitest": "^4.1.2"
+    "fast-check": "catalog:test",
+    "tsdown": "catalog:lib",
+    "typescript": "catalog:",
+    "vitest": "catalog:test"
   }
 }
