@@ -1,3 +1,7 @@
+import type { Person, PersonWithMeta } from "@noties/shared-type";
+
+import type { Node as PersonNode } from "../types";
+
 function isPersonWithMeta(person: Person | PersonWithMeta): person is PersonWithMeta {
   return "meta" in person;
 }

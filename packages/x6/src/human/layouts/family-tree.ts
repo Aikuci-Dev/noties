@@ -1,14 +1,32 @@
 import type { Edge, Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
-import type { EntityPairKey } from "@noties/shared-type";
+import type {
+  EntityPairKey,
+  People,
+  Person,
+  PersonId,
+  PersonMap,
+  PersonRelationshipMap,
+  PersonRelationshipPartner,
+  PersonRelationshipPartnerMap,
+  PersonWithMeta,
+} from "@noties/shared-type";
 import { intersectionBy, minMax } from "@noties/shared-util";
 
-import type { BaseGraphDep } from "@/utils/x6/index";
-import type { CellDep, GraphDep, GraphLayoutDep, NodeDep } from "./index";
-import { getNodesWithChildren, setNodesRelationship } from "./index";
+import type { BaseGraphDep, GraphDep, GraphLayoutDep } from "@/common/types";
 
-export type FamilyTreeCellDep = CellDep & { peoplePartner: People };
+import type { CellDep, EdgeData, NodeData, NodeDep, NodePersonMap, NodePersonRelationshipMap } from "../types";
+import {
+  convertPersonToNodePerson,
+  createEdgePerson,
+  createNodePerson,
+  createNodePersonPlaceholder,
+  createNodePersonRelationship,
+} from "../utils";
+import { getNodesWithChildren, setNodesRelationship } from "./layouts";
+
+export type FamilyTreeCellDep = CellDep<PersonWithMeta> & { peoplePartner: People };
 type CellNodeDep = { partnerMap: PersonMap };
 type CellEdgeDep =
   & NodeDep
@@ -46,82 +64,85 @@ const getCells = (graphDep: BaseGraphDep) => ({ people, peoplePartner }: FamilyT
 
   return [...nodes, ...edges];
 };
-const registerCellNodes = (graphDep: BaseGraphDep) => ({ partnerMap }: CellNodeDep) => ({ people }: CellDep) => {
-  const nodePersonMap: NodePersonMap = new Map();
-  const nodePersonRelationshipMap: NodePersonRelationshipMap = new Map();
-  const personRelationshipMap: PersonRelationshipMap = new Map();
-  const personRelationshipPartnerMap: PersonRelationshipPartnerMap = new Map();
-  const nodes: X6Node[] = [];
+const registerCellNodes =
+  (graphDep: BaseGraphDep) => ({ partnerMap }: CellNodeDep) => ({ people }: CellDep<PersonWithMeta>) => {
+    const nodePersonMap: NodePersonMap = new Map();
+    const nodePersonRelationshipMap: NodePersonRelationshipMap = new Map();
+    const personRelationshipMap: PersonRelationshipMap = new Map();
+    const personRelationshipPartnerMap: PersonRelationshipPartnerMap = new Map();
+    const nodes: X6Node[] = [];
 
-  // NODE-PERSON
-  people.forEach((person) => {
-    const entity = convertPersonToNodePerson(person);
-    const nodePerson = createNodePerson(graphDep)({ value: entity, original: person });
-    nodePersonMap.set(person.id, nodePerson);
-    nodes.push(nodePerson);
+    // NODE-PERSON
+    people.forEach((person) => {
+      const entity = convertPersonToNodePerson(person);
+      const nodePerson = createNodePerson(graphDep)({ value: entity, original: person });
+      nodePersonMap.set(person.id, nodePerson);
+      nodes.push(nodePerson);
 
-    const partnerId = person.partnerId ?? 0;
-    const partnerIds = person.partnerIds ?? [];
-    const childrenIds = person.childrenIds ?? [];
+      const partnerId = person.meta.partnerId ?? 0 as PersonId;
+      const partnerIds = person.partnerIds ?? [];
+      const childrenIds = person.childrenIds ?? [];
 
-    personRelationshipMap.set(person.id, { id: person.id, partnerId, partnerIds, childrenIds });
+      personRelationshipMap.set(person.id, { id: person.id, partnerId, partnerIds, childrenIds });
 
-    if (partnerId) {
-      const partner = partnerMap.get(partnerId);
-      if (partner) {
-        const entityPartner = convertPersonToNodePerson(partner);
-        const nodePartner = createNodePerson(graphDep)({
-          value: entityPartner,
-          original: partner,
-          meta: { isStack: partnerIds.length > 1 },
-        });
-        nodePersonMap.set(partner.id, nodePartner);
-        nodes.push(nodePartner);
-      }
-    }
-  });
-
-  // NODE-PERSON-RELATIONSHIP
-  personRelationshipMap.values().forEach((personRelationship) => {
-    const { id, partnerId, childrenIds } = personRelationship;
-
-    const nodePerson = nodePersonMap.get(id);
-    if (!nodePerson) return;
-
-    let nodeRelationship;
-    if (partnerId) {
-      const nodePartner = nodePersonMap.get(partnerId);
-      if (nodePartner) {
-        nodeRelationship = createNodePersonRelationship(graphDep)({ value: { nodes: [nodePerson, nodePartner] } });
-
-        const key: EntityPairKey<Person> = `${id}-${partnerId}`;
+      if (partnerId) {
         const partner = partnerMap.get(partnerId);
-        const personRelationshipPartner = {
-          id: key,
-          personId: id,
-          partnerId,
-          childrenIds: partner?.childrenIds ? intersectionBy(childrenIds, partner.childrenIds, (x) => x) : childrenIds,
-        };
-        personRelationshipPartnerMap.set(key, personRelationshipPartner);
-        nodePersonRelationshipMap.set(`relationship-${personRelationshipPartner.id}`, nodeRelationship);
+        if (partner) {
+          const entityPartner = convertPersonToNodePerson(partner);
+          const nodePartner = createNodePerson(graphDep)({
+            value: entityPartner,
+            original: partner,
+            meta: { isStack: partnerIds.length > 1 },
+          });
+          nodePersonMap.set(partner.id, nodePartner);
+          nodes.push(nodePartner);
+        }
       }
-    }
-    if (!nodeRelationship) {
-      const hasChildrenNodes = childrenIds.some((id) => nodePersonMap.get(id));
-      if (hasChildrenNodes) {
-        nodeRelationship = createNodePersonPlaceholder(graphDep)({
-          personType: "PERSON_RELATIONSHIP",
-          value: { nodes: [nodePerson] },
-        });
-        nodePersonRelationshipMap.set(`relationship-${personRelationship.id}`, nodeRelationship);
+    });
+
+    // NODE-PERSON-RELATIONSHIP
+    personRelationshipMap.values().forEach((personRelationship) => {
+      const { id, partnerId, childrenIds } = personRelationship;
+
+      const nodePerson = nodePersonMap.get(id);
+      if (!nodePerson) return;
+
+      let nodeRelationship;
+      if (partnerId) {
+        const nodePartner = nodePersonMap.get(partnerId);
+        if (nodePartner) {
+          nodeRelationship = createNodePersonRelationship(graphDep)({ value: { nodes: [nodePerson, nodePartner] } });
+
+          const key: EntityPairKey<Person> = `${id}-${partnerId}`;
+          const partner = partnerMap.get(partnerId);
+          const personRelationshipPartner = {
+            id: key,
+            personId: id,
+            partnerId,
+            childrenIds: partner?.childrenIds
+              ? intersectionBy(childrenIds, partner.childrenIds, (x) => x)
+              : childrenIds,
+          };
+          personRelationshipPartnerMap.set(key, personRelationshipPartner);
+          nodePersonRelationshipMap.set(`relationship-${personRelationshipPartner.id}`, nodeRelationship);
+        }
       }
-    }
+      if (!nodeRelationship) {
+        const hasChildrenNodes = childrenIds.some((id) => nodePersonMap.get(id));
+        if (hasChildrenNodes) {
+          nodeRelationship = createNodePersonPlaceholder(graphDep)({
+            personType: "PERSON_RELATIONSHIP",
+            value: { nodes: [nodePerson] },
+          });
+          nodePersonRelationshipMap.set(`relationship-${personRelationship.id}`, nodeRelationship);
+        }
+      }
 
-    if (nodeRelationship) nodes.push(nodeRelationship);
-  });
+      if (nodeRelationship) nodes.push(nodeRelationship);
+    });
 
-  return { nodes, nodePersonMap, nodePersonRelationshipMap, personRelationshipPartnerMap, personRelationshipMap };
-};
+    return { nodes, nodePersonMap, nodePersonRelationshipMap, personRelationshipPartnerMap, personRelationshipMap };
+  };
 const registerCellEdges =
   (graphDep: BaseGraphDep) =>
   ({ nodePersonMap, nodePersonRelationshipMap, personRelationshipMap, personRelationshipPartnerMap }: CellEdgeDep) => {
@@ -203,7 +224,7 @@ const layout = ({ graph }: BaseGraphDep) => ({ gap, rankdir = "TB" }: GraphLayou
     if (!node) return;
 
     const dagreNode = g.node(id);
-    const data: PersonNodeData = node.data;
+    const data: NodeData = node.data;
     const nodeType = data.type;
 
     switch (nodeType) {
@@ -243,7 +264,7 @@ const layout = ({ graph }: BaseGraphDep) => ({ gap, rankdir = "TB" }: GraphLayou
     }
   });
   edges.forEach((edge) => {
-    const data: PersonEdgeData = edge.data;
+    const data: EdgeData = edge.data;
     if (data.personType === "PARTNER") return;
 
     const source = edge.getSourceNode();

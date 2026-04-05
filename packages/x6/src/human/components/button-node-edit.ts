@@ -1,6 +1,10 @@
 import type { Cell, Graph } from "@antv/x6";
 
-export default function buttonNodeEditPerson({ handleClick }: { handleClick?: (data: NodePersonData) => void }) {
+import type { NodePersonData } from "../types";
+
+export const BUTTON_NODE_EDIT = "button-node-edit-person";
+
+export default function nodeTool({ handleClick }: { handleClick?: (data: NodePersonData) => void }) {
   const defaultAttrs = { fill: "none", stroke: "#000" };
 
   return {

@@ -1,9 +1,13 @@
 import type { Node as X6Node } from "@antv/x6";
 import dagre from "@dagrejs/dagre";
 
-import type { BaseGraphDep } from "@/utils/x6/index";
-import type { CellDep, GraphDep, GraphLayoutDep, NodeWithChildrenNodeDep } from "./index";
-import { getNodesWithChildren, setNodesRelationship } from "./index";
+import type { BaseGraphDep, GraphDep, GraphLayoutDep } from "@/common/types";
+
+import type { CellDep, NodePersonMap, NodeWithChildrenNodeDep } from "../types";
+import { convertPersonToNodePerson, createEdgePerson, createNodePerson } from "../utils";
+import { getNodesWithChildren, setNodesRelationship } from "./layouts";
+
+export type SimpleCellDep = CellDep;
 
 const main = (graphDep: GraphDep) => (cellDep: CellDep) => {
   const { graph, options: graphOptions } = graphDep;

@@ -1,9 +1,16 @@
 import type { Graph } from "@antv/x6";
 import { ObjectExt } from "@antv/x6";
 
-import type { Dimension, Nullable } from "@noties/shared-type";
+import type { Dimension, Gender, Nullable } from "@noties/shared-type";
 
-export function resolveFillColor(options: { light?: boolean; gender?: Nullable<Gender>; isDead?: boolean }) {
+import type { Node as PersonNode } from "../types";
+
+export const NODE_PERSON = "node-person";
+export const NODE_PERSON_STACK = "node-person-stack";
+export const NODE_PERSON_PLACEHOLDER = "node-person-placeholder";
+export const NODE_PERSON_INTERMEDIARY = "node-person-intermediary";
+
+function resolveFillColor(options: { light?: boolean; gender?: Nullable<Gender>; isDead?: boolean }) {
   const { light, gender, isDead } = options;
 
   if (isDead) return light ? "#e5e7eb" : "#9ca3af"; // Gray (200/400)
@@ -33,7 +40,7 @@ function leftRoundedRectPath(height: number, radius: number): string {
   ].join(" ");
 }
 
-export default function nodePerson(options: { dimension: Dimension; radius: number; isStack?: boolean }) {
+export default function node(options: { dimension: Dimension; radius: number; isStack?: boolean }) {
   const { dimension: { height, width }, radius, isStack } = options;
 
   function contentAttrs(isTop?: boolean) {

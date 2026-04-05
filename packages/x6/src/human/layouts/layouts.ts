@@ -1,15 +1,7 @@
-import type { BaseGraphDep } from "@/utils/x6/index";
-
-export type GraphLayoutDep = { gap: number; rankdir?: DagreRankdir };
-export type GraphDep = BaseGraphDep & { options: GraphLayoutDep };
-
-export type CellDep = { people: People | PeopleWithMeta };
-
-export type NodeDep = { nodePersonMap: NodePersonMap };
-export type NodeWithChildrenNodeDep = { nodesWithChildrenMap: NodeWithChildrenNodeMap<Person["id"]> };
+import type { CellDep, NodeDep, NodePersonWithChildrenNodeMap, NodeWithChildrenNodeDep } from "../types";
 
 export const getNodesWithChildren = ({ nodePersonMap }: NodeDep) => ({ people }: CellDep) => {
-  const nodeWithChildrenMap: NodeWithChildrenNodeMap<Person["id"]> = new Map();
+  const nodeWithChildrenMap: NodePersonWithChildrenNodeMap = new Map();
 
   people.forEach((person) => {
     const node = nodePersonMap.get(person.id);

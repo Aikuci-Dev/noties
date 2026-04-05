@@ -1,6 +1,9 @@
 import type { Graph } from "@antv/x6";
 
-export default function nodePlaceholder(options: { radius?: number } = {}) {
+export const NODE_PLACEHOLDER = "node-placeholder";
+export const NODE_INTERMEDIARY = "node-intermediary";
+
+export default function node(options: { radius?: number } = {}) {
   const { radius = 0 } = options;
 
   return {
