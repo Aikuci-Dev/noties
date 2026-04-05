@@ -1,5 +1,5 @@
 {
-  "name": "noties-app",
+  "name": "nuxt",
   "type": "module",
   "private": true,
   "scripts": {

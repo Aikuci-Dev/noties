@@ -28,7 +28,7 @@ importers:
 
   .: {}
 
-  apps/noties-app:
+  apps/nuxt:
     dependencies:
       '@noties/shared-schema':
         specifier: workspace:*
