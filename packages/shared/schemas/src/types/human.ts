@@ -1,14 +1,8 @@
 import * as v from "valibot";
 
-import {
-  PersonGenderSchema,
-  PersonIdSchema,
-  PersonMetaSchema,
-  PersonSchema,
-  PersonWithMetaSchema,
-} from "@noties/shared-schema";
+import { PersonGenderSchema, PersonIdSchema, PersonMetaSchema, PersonSchema, PersonWithMetaSchema } from "../human";
 
-import type { EntityPairKey } from "../common";
+import { EntityPairKey } from "./app";
 
 /**
  * =========================

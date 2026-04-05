@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@internationalized/date": "^3.12.0",
-    "@noties/shared-type": "workspace:*",
     "valibot": "catalog:"
   },
   "devDependencies": {
