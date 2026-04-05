@@ -2,7 +2,7 @@
   <UNavigationMenu :items="items" />
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
 
 const items: NavigationMenuItem[] = [
@@ -27,8 +27,4 @@ const items: NavigationMenuItem[] = [
     ],
   },
 ];
-</script>
-
-<script setup lang="ts">
-definePageMeta({ middleware: "layout-default" });
 </script>

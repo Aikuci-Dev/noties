@@ -2,7 +2,7 @@
   <UTree :items="items" />
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { TreeItem } from "@nuxt/ui";
 
 const items: TreeItem[] = [
@@ -23,8 +23,4 @@ const items: TreeItem[] = [
     ],
   },
 ];
-</script>
-
-<script setup lang="ts">
-definePageMeta({ layout: "simple" });
 </script>

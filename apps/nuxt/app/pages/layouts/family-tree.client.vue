@@ -120,8 +120,6 @@ import { addAnimation, addInteraction, createGraphInstance, familyTreeLayout, re
 
 import type { PersonFormSchemaInput, PersonFormSchemaOutput } from "@noties/shared-schema";
 
-definePageMeta({ layout: "simple" });
-
 // TODO: Get from DB
 const people = ref(parsedPeople);
 const peoplePartner = ref(parsedPeoplePartner);

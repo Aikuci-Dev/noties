@@ -63,8 +63,6 @@ import { addAnimation, addInteraction, createGraphInstance, registerCells, simpl
 
 import type { PersonFormSchemaInput, PersonFormSchemaOutput } from "@noties/shared-schema";
 
-definePageMeta({ layout: "simple" });
-
 // TODO: Get from DB
 const people = ref(parsedPeople);
 
