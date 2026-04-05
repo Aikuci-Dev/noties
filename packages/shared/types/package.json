@@ -16,6 +16,15 @@
   },
   "devDependencies": {
     "tsdown": "catalog:lib",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "valibot": "catalog:"
+  },
+  "peerDependencies": {
+    "valibot": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "valibot": {
+      "optional": true
+    }
   }
 }
