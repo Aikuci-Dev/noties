@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@noties/shared-schema": "workspace:*",
     "@noties/shared-type": "workspace:*",
     "@noties/shared-util": "workspace:*",
     "@noties/x6": "workspace:*",
