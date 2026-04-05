@@ -78,63 +78,74 @@
 <script lang="ts">
 import * as v from "valibot";
 import { CalendarDate, parseDate } from "@internationalized/date";
+import { GENDER, type People, type Person, type PersonWithMeta } from "@noties/shared-type";
 
 const IntegerSchema = v.pipe(v.number(), v.integer("The number must be an integer."));
+const PersonIdSchema = v.pipe(IntegerSchema, v.brand("PersonId"));
 const ParentSchema = exactOptionalUndefinedable(
-  v.union([v.tuple([IntegerSchema]), v.tuple([IntegerSchema, IntegerSchema])]),
+  v.union([v.tuple([PersonIdSchema]), v.tuple([PersonIdSchema, PersonIdSchema])]),
 );
+
+const defaultId = v.parse(PersonIdSchema, 0);
+
+const FormIdSchema = v.object({
+  id: v.exactOptional(PersonIdSchema, defaultId),
+  parent: ParentSchema,
+  partners: exactOptionalUndefinedable(v.array(PersonIdSchema), []),
+  children: exactOptionalUndefinedable(v.array(PersonIdSchema), []),
+});
+const FormDataSchema = v.object({
+  name: v.pipe(v.exactOptional(v.string(), ""), v.nonEmpty("Name is required")),
+  gender: exactOptionalNullish(v.nullish(v.picklist(GENDER)), null),
+  life_span: v.pipe(
+    exactOptionalNullish(v.object({
+      start: v.pipe(v.any(), v.title("birth_date")),
+      end: v.pipe(v.any(), v.title("death_date")),
+    })),
+    v.rawTransform(
+      ({ dataset, addIssue, NEVER }) => {
+        if (!dataset.value) return NEVER;
+
+        const birth_date = dataset.value.start;
+        const death_date = dataset.value.end;
+
+        function getPath(key: "start" | "end"): v.IssuePathItem {
+          if (!dataset.value) return NEVER;
+
+          return {
+            type: "object",
+            origin: "value",
+            input: dataset.value,
+            key,
+            value: dataset.value[key],
+          };
+        }
+
+        if (birth_date != null && !(birth_date instanceof CalendarDate)) {
+          addIssue({
+            message: "Invalid Date of Birth.",
+            path: [getPath("start")],
+          });
+          return NEVER;
+        }
+        if (death_date != null && !(death_date instanceof CalendarDate)) {
+          addIssue({
+            message: "Invalid Date of Death.",
+            path: [getPath("end")],
+          });
+          return NEVER;
+        }
+
+        return { birth_date, death_date };
+      },
+    ),
+  ),
+});
 
 const FormSchema = v.pipe(
   v.object({
-    id: exactOptionalUndefinedable(IntegerSchema, 0),
-    name: v.pipe(exactOptionalUndefinedable(v.string(), ""), v.nonEmpty("Name is required")),
-    life_span: v.pipe(
-      exactOptionalNullish(v.object({
-        start: v.pipe(v.any(), v.title("birth_date")),
-        end: v.pipe(v.any(), v.title("death_date")),
-      })),
-      v.rawTransform(
-        ({ dataset, addIssue, NEVER }) => {
-          if (!dataset.value) return NEVER;
-
-          const birth_date = dataset.value.start;
-          const death_date = dataset.value.end;
-
-          function getPath(key: "start" | "end"): v.IssuePathItem {
-            if (!dataset.value) return NEVER;
-
-            return {
-              type: "object",
-              origin: "value",
-              input: dataset.value,
-              key,
-              value: dataset.value[key],
-            };
-          }
-
-          if (birth_date != null && !(birth_date instanceof CalendarDate)) {
-            addIssue({
-              message: "Invalid Date of Birth.",
-              path: [getPath("start")],
-            });
-            return NEVER;
-          }
-          if (death_date != null && !(death_date instanceof CalendarDate)) {
-            addIssue({
-              message: "Invalid Date of Death.",
-              path: [getPath("end")],
-            });
-            return NEVER;
-          }
-
-          return { birth_date, death_date };
-        },
-      ),
-    ),
-    gender: exactOptionalNullish(v.nullish(v.picklist(GENDER)), null),
-    parent: ParentSchema,
-    partners: exactOptionalUndefinedable(v.array(IntegerSchema), []),
-    children: exactOptionalUndefinedable(v.array(IntegerSchema), []),
+    ...FormIdSchema.entries,
+    ...FormDataSchema.entries,
   }),
   v.transform(({ name, life_span, parent, ...rest }) => ({
     ...rest,
@@ -146,7 +157,9 @@ const FormSchema = v.pipe(
   })),
 );
 
-export type FormSchemaInput = v.InferInput<typeof FormSchema>;
+export type FormSchemaInput =
+  & v.InferOutput<typeof FormIdSchema> // correctly infers branded type
+  & v.InferInput<typeof FormDataSchema>;
 export type FormSchemaOutput = v.InferOutput<typeof FormSchema>;
 </script>
 
@@ -161,6 +174,7 @@ const peopleOptions = computed(() => {
 function getInitialState() {
   return {
     ...person,
+    id: person?.id ?? defaultId,
     parent: person?.parentIds ?? undefined,
     partners: person?.partnerIds ?? [], // Nuxt UI does not support null value for array data
     children: person?.childrenIds ?? [], // Nuxt UI does not support null value for array data
@@ -180,5 +194,10 @@ function validateForm({ transform }: { transform: boolean } = { transform: true 
   return formEl.value?.validate({ silent: true, transform });
 }
 
-defineExpose<FormInstance<FormSchemaInput, FormSchemaOutput>>({ resetForm, validateForm });
+defineExpose<FormInstance<FormSchemaInput, FormSchemaOutput>>({
+  resetForm,
+  // @ts-expect-error Valibot branded type inferred via InferOutput (Nuxt UI Form uses InferInput)
+  // See: https://valibot.dev/guides/infer-types/#infer-output-types
+  validateForm,
+});
 </script>
