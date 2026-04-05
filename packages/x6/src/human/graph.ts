@@ -1,6 +1,6 @@
 import { Graph } from "@antv/x6";
 
-import type { Dimension } from "@noties/shared-type";
+import type { Dimension } from "@noties/shared-schema";
 
 import { EDGE_LINE, EDGE_LINE_DASH, edgeLine, nodePlaceholder } from "@/common/components";
 

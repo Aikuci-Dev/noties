@@ -1,6 +1,6 @@
 import type { Node as X6Node } from "@antv/x6";
 
-import type { Person, PersonId } from "@noties/shared-type";
+import type { Person, PersonId } from "@noties/shared-schema";
 
 import type { BaseEdgeMeta, NodeWithChildrenNodeMap } from "@/common/types";
 

@@ -1,4 +1,4 @@
-import type { Id } from "@noties/shared-type";
+import type { Id } from "@noties/shared-schema";
 
 type UseFormActionHandlers<TInput, TOutput> = {
   onSubmit: (values: TInput | TOutput) => Promise<void> | void;

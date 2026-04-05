@@ -21,7 +21,14 @@
   "dependencies": {
     "@antv/x6": "^3.1.6",
     "@dagrejs/dagre": "^2.0.4",
-    "@noties/shared-type": "workspace:*",
     "@noties/shared-util": "workspace:*"
+  },
+  "peerDependencies": {
+    "@noties/shared-schema": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@noties/shared-schema": {
+      "optional": true
+    }
   }
 }

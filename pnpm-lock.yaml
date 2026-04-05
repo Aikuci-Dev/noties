@@ -33,9 +33,6 @@ importers:
       '@noties/shared-schema':
         specifier: workspace:*
         version: link:../../packages/shared/schemas
-      '@noties/shared-type':
-        specifier: workspace:*
-        version: link:../../packages/shared/types
       '@noties/shared-util':
         specifier: workspace:*
         version: link:../../packages/shared/utils
@@ -79,9 +76,9 @@ importers:
 
   packages/shared/utils:
     dependencies:
-      '@noties/shared-type':
+      '@noties/shared-schema':
         specifier: workspace:*
-        version: link:../types
+        version: link:../schemas
     devDependencies:
       fast-check:
         specifier: catalog:test
@@ -104,9 +101,9 @@ importers:
       '@dagrejs/dagre':
         specifier: ^2.0.4
         version: 2.0.4
-      '@noties/shared-type':
+      '@noties/shared-schema':
         specifier: workspace:*
-        version: link:../shared/types
+        version: link:../shared/schemas
       '@noties/shared-util':
         specifier: workspace:*
         version: link:../shared/utils

@@ -11,7 +11,7 @@ import type {
   PersonRelationshipPartner,
   PersonRelationshipPartnerMap,
   PersonWithMeta,
-} from "@noties/shared-type";
+} from "@noties/shared-schema";
 import { intersectionBy, minMax } from "@noties/shared-util";
 
 import type { BaseGraphDep, GraphDep, GraphLayoutDep } from "@/common/types";

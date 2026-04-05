@@ -78,7 +78,7 @@
 <script setup lang="ts">
 import { parseDate } from "@internationalized/date";
 
-import type { People, Person, PersonWithMeta } from "@noties/shared-type";
+import type { People, Person, PersonWithMeta } from "@noties/shared-schema";
 import type { PersonFormSchemaInput, PersonFormSchemaOutput } from "@noties/shared-schema";
 import { defaultPersonId, PersonFormSchema } from "@noties/shared-schema";
 

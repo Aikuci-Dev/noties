@@ -15,13 +15,18 @@
     "dev": "tsdown --watch",
     "test": "vitest"
   },
-  "dependencies": {
-    "@noties/shared-type": "workspace:*"
-  },
   "devDependencies": {
     "fast-check": "catalog:test",
     "tsdown": "catalog:lib",
     "typescript": "catalog:",
     "vitest": "catalog:test"
+  },
+  "peerDependencies": {
+    "@noties/shared-schema": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@noties/shared-schema": {
+      "optional": true
+    }
   }
 }

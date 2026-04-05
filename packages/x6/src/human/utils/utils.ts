@@ -1,4 +1,4 @@
-import type { Person, PersonWithMeta } from "@noties/shared-type";
+import type { Person, PersonWithMeta } from "@noties/shared-schema";
 
 import type { Node as PersonNode } from "../types";
 
