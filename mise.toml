@@ -8,11 +8,24 @@ pnpm = "10.30.3"
 [env]
 MISE_EXPERIMENTAL = 1
 
+[monorepo]
+config_roots = [
+    "apps/*",
+    "packages/*",
+    "packages/shared/*",
+]
+
 [tasks.dev]
 depends = ["//apps/...:dev"]
 
+[tasks."packages:dev"]
+depends = ["//packages/...:dev"]
+
+[tasks."libs:dev"]
+depends = ["//packages/*:dev"]
+
 [tasks."shared:dev"]
-depends = ["//packages/shared/...:dev"]
+depends = ["//packages/shared/*:dev"]
 
 [tasks."shared:test"]
-depends = ["//packages/shared/...:test"]
+depends = ["//packages/shared/*:test"]
