@@ -9,7 +9,7 @@
       :ui='{ footer: "tw:justify-end" }'
     >
       <div class="tw:right-4 tw:bottom-4 tw:absolute">
-        <AppX6FABAddPerson />
+        <AppFABAddPerson />
       </div>
 
       <template #body>
@@ -30,6 +30,7 @@
 
 <script lang="ts">
 import type { People, PersonId, PersonWithMeta } from "@noties/shared-type";
+import type { DagreRankdir } from "@noties/x6";
 
 const gridSize = 20;
 // const nodePersonDimension = { height: gridSize * 3, width: gridSize * 12 }; // ratio (1:4)
@@ -71,7 +72,8 @@ const initialPeople: People<PersonWithMeta> = [
 </script>
 
 <script setup lang="ts">
-import type { Graph } from "@antv/x6";
+import type { Graph, NodePersonData } from "@noties/x6";
+import { addAnimation, addInteraction, createGraphInstance, registerCells, simpleLayout } from "@noties/x6";
 
 import type { FormSchemaInput, FormSchemaOutput } from "~/components/app/person/Form.vue";
 
