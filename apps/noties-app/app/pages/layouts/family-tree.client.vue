@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import type { People, PersonWithMeta } from "@noties/shared-type";
+import { parsePeople, parsePeopleWithMeta } from "@noties/shared-schema";
 import type { DagreRankdir } from "@noties/x6";
 
 const gridSize = 20;
@@ -38,16 +38,16 @@ const nodePersonDimension = { height: gridSize * 3, width: gridSize * 9 }; // ra
 const dagreRankdir: DagreRankdir = "TB"; // vertical orientation
 // const dagreRankdir: DagreRankdir = "LR"; // horizontal orientation
 
-const initialPeople: People<PersonWithMeta> = [
-  // { id: 0, name: "0",  partnerIds: [1, 2], childrenIds: [9, 8, 7, 6], meta: { partnerId: 1,generationOrder: 0 } } as PersonWithMeta,
-  // { id: 0, name: "0", childrenIds: [9, 8, 7, 6, 5, 4, 3], meta: { generationOrder: 0 } } as PersonWithMeta,
+const initialPeople = [
+  // { id: 0, name: "0",  partnerIds: [1, 2], childrenIds: [9, 8, 7, 6], meta: { partnerId: 1,generationOrder: 0 } },
+  // { id: 0, name: "0", childrenIds: [9, 8, 7, 6, 5, 4, 3], meta: { generationOrder: 0 } },
   {
     id: 0,
     name: "0",
     partnerIds: [1, 2],
     childrenIds: [8, 7, 6, 5, 4, 3],
     meta: { partnerId: 1, generationOrder: 0 },
-  } as PersonWithMeta,
+  },
   {
     id: 3,
     name: "1",
@@ -55,74 +55,76 @@ const initialPeople: People<PersonWithMeta> = [
     partnerIds: [31],
     childrenIds: [33],
     meta: { partnerId: 31, generationOrder: 1 },
-  } as PersonWithMeta,
-  { id: 4, name: "2", meta: { generationOrder: 1 } } as PersonWithMeta,
+  },
+  { id: 4, name: "2", meta: { generationOrder: 1 } },
   {
     id: 5,
     name: "3",
     partnerIds: [51],
     childrenIds: [54, 53, 52],
     meta: { partnerId: 51, generationOrder: 1 },
-  } as PersonWithMeta,
-  { id: 6, name: "4", meta: { generationOrder: 1 } } as PersonWithMeta,
+  },
+  { id: 6, name: "4", meta: { generationOrder: 1 } },
   {
     id: 7,
     name: "5",
     partnerIds: [71],
     childrenIds: [72],
     meta: { partnerId: 71, generationOrder: 1 },
-  } as PersonWithMeta,
-  { id: 8, name: "6", meta: { generationOrder: 1 } } as PersonWithMeta,
-  { id: 33, name: "1-2", partnerIds: [331], meta: { partnerId: 331, generationOrder: 2 } } as PersonWithMeta,
-  { id: 52, name: "3-1", meta: { generationOrder: 2 } } as PersonWithMeta,
+  },
+  { id: 8, name: "6", meta: { generationOrder: 1 } },
+  { id: 33, name: "1-2", partnerIds: [331], meta: { partnerId: 331, generationOrder: 2 } },
+  { id: 52, name: "3-1", meta: { generationOrder: 2 } },
   {
     id: 53,
     name: "3-2",
     partnerIds: [531],
     childrenIds: [532],
     meta: { partnerId: 531, generationOrder: 2 },
-  } as PersonWithMeta,
-  { id: 54, name: "3-3", meta: { generationOrder: 2 } } as PersonWithMeta,
+  },
+  { id: 54, name: "3-3", meta: { generationOrder: 2 } },
   {
     id: 72,
     name: "5-1",
     partnerIds: [721],
     childrenIds: [722],
     meta: { partnerId: 721, generationOrder: 2 },
-  } as PersonWithMeta,
-  { id: 532, name: "3-1-1", partnerIds: [5321], meta: { partnerId: 5321, generationOrder: 3 } } as PersonWithMeta,
-  { id: 722, name: "5-1-1", partnerIds: [7221], meta: { partnerId: 7221, generationOrder: 3 } } as PersonWithMeta,
+  },
+  { id: 532, name: "3-1-1", partnerIds: [5321], meta: { partnerId: 5321, generationOrder: 3 } },
+  { id: 722, name: "5-1-1", partnerIds: [7221], meta: { partnerId: 7221, generationOrder: 3 } },
 ];
-const initialPeoplePartner: People = [
-  { id: 1, name: "Current 0'", childrenIds: [9, 8, 7, 6] } as PersonWithMeta,
-  { id: 2, name: "0'", childrenIds: [5, 4, 3] } as PersonWithMeta,
-  // { id: 1, name: "Current 0'", childrenIds: [8, 7, 6, 5, 4, 3]  } as PersonWithMeta,
-  // { id: 1, name: "Current 0'", childrenIds: [9, 3, 6]  } as PersonWithMeta,
-  // { id: 2, name: "0'", childrenIds: [5, 4, 3]  } as PersonWithMeta,
+const initialPeoplePartner = [
+  { id: 1, name: "Current 0'", childrenIds: [9, 8, 7, 6] },
+  { id: 2, name: "0'", childrenIds: [5, 4, 3] },
+  // { id: 1, name: "Current 0'", childrenIds: [8, 7, 6, 5, 4, 3]  },
+  // { id: 1, name: "Current 0'", childrenIds: [9, 3, 6]  },
+  // { id: 2, name: "0'", childrenIds: [5, 4, 3]  },
 
-  { id: 31, name: "1'", gender: "F", childrenIds: [33] } as PersonWithMeta,
-  // { id: 51, name: "3'", childrenIds: [59, 58, 57, 56, 55, 54, 53, 52]  } as PersonWithMeta,
-  { id: 71, name: "5'", childrenIds: [79, 78, 77, 76, 75, 74, 73, 72] } as PersonWithMeta,
+  { id: 31, name: "1'", gender: "F", childrenIds: [33] },
+  // { id: 51, name: "3'", childrenIds: [59, 58, 57, 56, 55, 54, 53, 52]  },
+  { id: 71, name: "5'", childrenIds: [79, 78, 77, 76, 75, 74, 73, 72] },
 
-  { id: 331, name: "1-2'", childrenIds: [339, 338, 337, 336, 335, 334, 333, 332] } as PersonWithMeta,
-  { id: 531, name: "3-2'", childrenIds: [539, 538, 537, 536, 535, 534, 533, 532] } as PersonWithMeta,
+  { id: 331, name: "1-2'", childrenIds: [339, 338, 337, 336, 335, 334, 333, 332] },
+  { id: 531, name: "3-2'", childrenIds: [539, 538, 537, 536, 535, 534, 533, 532] },
 
-  { id: 5321, name: "3-1-1'" } as PersonWithMeta,
-  { id: 7221, name: "5-1-1'" } as PersonWithMeta,
+  { id: 5321, name: "3-1-1'" },
+  { id: 7221, name: "5-1-1'" },
 ];
+const parsedPeople = parsePeopleWithMeta(initialPeople);
+const parsedPeoplePartner = parsePeople(initialPeoplePartner);
 </script>
 
 <script setup lang="ts">
 import type { Graph, NodePersonData } from "@noties/x6";
 import { addAnimation, addInteraction, createGraphInstance, familyTreeLayout, registerCells } from "@noties/x6";
 
-import type { FormSchemaInput, FormSchemaOutput } from "~/components/app/person/Form.vue";
+import type { PersonFormSchemaInput, PersonFormSchemaOutput } from "@noties/shared-schema";
 
 definePageMeta({ layout: "simple" });
 
 // TODO: Get from DB
-const people = ref(initialPeople);
-const peoplePartner = ref(initialPeoplePartner);
+const people = ref(parsedPeople);
+const peoplePartner = ref(parsedPeoplePartner);
 const allPeople = computed(() => [...people.value, ...peoplePartner.value]);
 
 // https://nuxt.com/docs/4.x/api/components/client-only#accessing-html-elements
@@ -166,8 +168,10 @@ function handleNodePersonClick(data: NodePersonData) {
   modalOpen.value = true;
 }
 
-const appPersonFormEl = useTemplateRef<FormInstance<FormSchemaInput, FormSchemaOutput> | null>("appPersonFormEl");
-const personForm = useFormAction<FormSchemaInput, FormSchemaOutput>(appPersonFormEl, {
+const appPersonFormEl = useTemplateRef<FormInstance<PersonFormSchemaInput, PersonFormSchemaOutput> | null>(
+  "appPersonFormEl",
+);
+const personForm = useFormAction<PersonFormSchemaInput, PersonFormSchemaOutput>(appPersonFormEl, {
   onSubmit: async (values) => {
     console.log(values, values.id);
     if (values.id) console.log("Update");

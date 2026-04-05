@@ -1,42 +1,25 @@
-import type { Brand } from "valibot";
+import * as v from "valibot";
 
-import type { EntityId, EntityPairKey } from "../common";
+import {
+  PersonGenderSchema,
+  PersonIdSchema,
+  PersonMetaSchema,
+  PersonSchema,
+  PersonWithMetaSchema,
+} from "@noties/shared-schema";
 
-/**
- * =========================
- * PROPERTIES
- * =========================
- */
-export type PersonId = EntityId<number> & Brand<"PersonId">;
-
-export const GENDER = ["M", "F"] as const;
-export type Gender = typeof GENDER[number];
-
-export type PersonParent = [PersonId] | [PersonId, PersonId];
+import type { EntityPairKey } from "../common";
 
 /**
  * =========================
  * ENTITY
  * =========================
  */
-export type Person = {
-  id: PersonId;
-
-  parentIds?: PersonParent | null;
-  partnerIds?: PersonId[] | null;
-  childrenIds?: PersonId[] | null;
-
-  name: string;
-
-  gender?: Gender | null;
-  dateOfBirth?: string | null;
-  dateOfDeath?: string | null;
-};
-export type PersonMeta = {
-  partnerId?: PersonId; // Current Partner
-  generationOrder?: number;
-};
-export type PersonWithMeta = Person & { meta: PersonMeta };
+export type PersonId = v.InferOutput<typeof PersonIdSchema>;
+export type PersonGender = v.InferOutput<typeof PersonGenderSchema>;
+export type Person = v.InferOutput<typeof PersonSchema>;
+export type PersonMeta = v.InferOutput<typeof PersonMetaSchema>;
+export type PersonWithMeta = v.InferOutput<typeof PersonWithMetaSchema>;
 
 /**
  * =========================
@@ -44,7 +27,6 @@ export type PersonWithMeta = Person & { meta: PersonMeta };
  * =========================
  */
 export type PersonMap = Map<PersonId, Person>;
-
 export type People<T extends Person | PersonWithMeta = Person> = T[];
 
 /**

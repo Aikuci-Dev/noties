@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import type { People, PersonId, PersonWithMeta } from "@noties/shared-type";
+import { parsePeopleWithMeta } from "@noties/shared-schema";
 import type { DagreRankdir } from "@noties/x6";
 
 const gridSize = 20;
@@ -38,49 +38,35 @@ const nodePersonDimension = { height: gridSize * 3, width: gridSize * 9 }; // ra
 const dagreRankdir: DagreRankdir = "TB"; // vertical orientation
 // const dagreRankdir: DagreRankdir = "LR"; // horizontal orientation
 
-const initialPeople: People<PersonWithMeta> = [
-  { id: 0 as PersonId, name: "0", childrenIds: [9, 8, 7, 6, 5, 4, 3] as PersonId[], meta: { generationOrder: 0 } },
-  { id: 3 as PersonId, name: "1", gender: "M", childrenIds: [33] as PersonId[], meta: { generationOrder: 1 } },
-  { id: 4 as PersonId, name: "2", meta: { generationOrder: 1 } },
-  {
-    id: 5 as PersonId,
-    name: "3",
-    childrenIds: [59, 58, 57, 56, 55, 54, 53, 52] as PersonId[],
-    meta: { generationOrder: 1 },
-  },
-  { id: 6 as PersonId, name: "4", meta: { generationOrder: 1 } },
-  {
-    id: 7 as PersonId,
-    name: "5",
-    childrenIds: [79, 78, 77, 76, 75, 74, 73, 72] as PersonId[],
-    meta: { generationOrder: 1 },
-  },
-  { id: 8 as PersonId, name: "6", meta: { generationOrder: 1 } },
-  {
-    id: 33 as PersonId,
-    name: "1-2",
-    childrenIds: [339, 338, 337, 336, 335, 334, 333, 332] as PersonId[],
-    meta: { generationOrder: 2 },
-  },
-  { id: 52 as PersonId, name: "3-1", meta: { generationOrder: 2 } },
-  { id: 53 as PersonId, name: "3-2", childrenIds: [532] as PersonId[], meta: { generationOrder: 2 } },
-  { id: 54 as PersonId, name: "3-3", meta: { generationOrder: 2 } },
-  { id: 72 as PersonId, name: "5-1", childrenIds: [722] as PersonId[], meta: { generationOrder: 2 } },
-  { id: 532 as PersonId, name: "3-1-1", meta: { generationOrder: 3 } },
-  { id: 722 as PersonId, name: "5-1-1", meta: { generationOrder: 3 } },
+const initialPeople = [
+  { id: 0, name: "0", childrenIds: [9, 8, 7, 6, 5, 4, 3], meta: { generationOrder: 0 } },
+  { id: 3, name: "1", gender: "M", childrenIds: [33], meta: { generationOrder: 1 } },
+  { id: 4, name: "2", meta: { generationOrder: 1 } },
+  { id: 5, name: "3", childrenIds: [59, 58, 57, 56, 55, 54, 53, 52], meta: { generationOrder: 1 } },
+  { id: 6, name: "4", meta: { generationOrder: 1 } },
+  { id: 7, name: "5", childrenIds: [79, 78, 77, 76, 75, 74, 73, 72], meta: { generationOrder: 1 } },
+  { id: 8, name: "6", meta: { generationOrder: 1 } },
+  { id: 33, name: "1-2", childrenIds: [339, 338, 337, 336, 335, 334, 333, 332], meta: { generationOrder: 2 } },
+  { id: 52, name: "3-1", meta: { generationOrder: 2 } },
+  { id: 53, name: "3-2", childrenIds: [532], meta: { generationOrder: 2 } },
+  { id: 54, name: "3-3", meta: { generationOrder: 2 } },
+  { id: 72, name: "5-1", childrenIds: [722], meta: { generationOrder: 2 } },
+  { id: 532, name: "3-1-1", meta: { generationOrder: 3 } },
+  { id: 722, name: "5-1-1", meta: { generationOrder: 3 } },
 ];
+const parsedPeople = parsePeopleWithMeta(initialPeople);
 </script>
 
 <script setup lang="ts">
 import type { Graph, NodePersonData } from "@noties/x6";
 import { addAnimation, addInteraction, createGraphInstance, registerCells, simpleLayout } from "@noties/x6";
 
-import type { FormSchemaInput, FormSchemaOutput } from "~/components/app/person/Form.vue";
+import type { PersonFormSchemaInput, PersonFormSchemaOutput } from "@noties/shared-schema";
 
 definePageMeta({ layout: "simple" });
 
 // TODO: Get from DB
-const people = ref(initialPeople);
+const people = ref(parsedPeople);
 
 // https://nuxt.com/docs/4.x/api/components/client-only#accessing-html-elements
 const graphEl = useTemplateRef("graphEl");
@@ -120,8 +106,10 @@ function handleNodePersonClick(data: NodePersonData) {
   modalOpen.value = true;
 }
 
-const appPersonFormEl = useTemplateRef<FormInstance<FormSchemaInput, FormSchemaOutput> | null>("appPersonFormEl");
-const personForm = useFormAction<FormSchemaInput, FormSchemaOutput>(appPersonFormEl, {
+const appPersonFormEl = useTemplateRef<FormInstance<PersonFormSchemaInput, PersonFormSchemaOutput> | null>(
+  "appPersonFormEl",
+);
+const personForm = useFormAction<PersonFormSchemaInput, PersonFormSchemaOutput>(appPersonFormEl, {
   onSubmit: async (values) => {
     console.log(values, values.id);
     if (values.id) console.log("Update");

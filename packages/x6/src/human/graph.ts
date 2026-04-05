@@ -4,6 +4,7 @@ import type { Dimension } from "@noties/shared-type";
 
 import { EDGE_LINE, EDGE_LINE_DASH, edgeLine, nodePlaceholder } from "@/common/components";
 
+import type { BaseGraphDep } from "../common";
 import type { NodeData, NodePersonData } from "./types";
 import {
   BUTTON_NODE_EDIT,
@@ -15,7 +16,6 @@ import {
   NODE_PERSON_STACK,
 } from "./components";
 import { animateNodePerson } from "./utils";
-import type { BaseGraphDep } from "../common";
 
 export function registerCells(options: {
   nodePersonDimension: Dimension;

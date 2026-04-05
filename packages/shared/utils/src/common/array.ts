@@ -1,6 +1,6 @@
-import type { Nullable } from "@noties/shared-type";
+import type { Nullish } from "@noties/shared-type";
 
-export function removeFalsy<T>(array: Nullable<T>[]): T[] {
+export function removeFalsy<T>(array: Nullish<T>[]): T[] {
   return array.filter((item): item is T => Boolean(item));
 }
 

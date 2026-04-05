@@ -14,17 +14,12 @@
     "build": "tsdown",
     "dev": "tsdown --watch"
   },
+  "dependencies": {
+    "@noties/shared-schema": "workspace:*",
+    "valibot": "catalog:"
+  },
   "devDependencies": {
     "tsdown": "catalog:lib",
-    "typescript": "catalog:",
-    "valibot": "catalog:"
-  },
-  "peerDependencies": {
-    "valibot": "catalog:"
-  },
-  "peerDependenciesMeta": {
-    "valibot": {
-      "optional": true
-    }
+    "typescript": "catalog:"
   }
 }
