@@ -12,15 +12,7 @@ export default defineNuxtConfig({
   ui: {
     theme: {
       // https://ui.nuxt.com/docs/getting-started/theme/design-system#extend-colors
-      colors: [
-        "primary",
-        "secondary",
-        "tertiary",
-        "info",
-        "success",
-        "warning",
-        "error",
-      ],
+      colors: ["primary", "secondary", "tertiary", "info", "success", "warning", "error"],
       defaultVariants: { size: "sm" },
       prefix: "tw",
     },

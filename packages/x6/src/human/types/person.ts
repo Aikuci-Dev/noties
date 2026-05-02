@@ -33,15 +33,13 @@ export type NodePersonWithChildrenNodeMap = NodeWithChildrenNodeMap<PersonId>;
 
 // DATA
 const NODE_TYPE = ["PERSON", "PERSON_RELATIONSHIP"] as const;
-export type NodeType = typeof NODE_TYPE[number];
+export type NodeType = (typeof NODE_TYPE)[number];
 
-export type NodeData =
-  & { personType: NodeType }
-  & (
-    | { type: "NODE_PERSON" } & NodePersonData
-    | { type: "NODE_PERSON_PLACEHOLDER" } & NodePersonPlaceholderData
-    | { type: "NODE_PERSON_RELATIONSHIP" } & NodePersonRelationshipData
-  );
+export type NodeData = { personType: NodeType } & (
+  | ({ type: "NODE_PERSON" } & NodePersonData)
+  | ({ type: "NODE_PERSON_PLACEHOLDER" } & NodePersonPlaceholderData)
+  | ({ type: "NODE_PERSON_RELATIONSHIP" } & NodePersonRelationshipData)
+);
 
 /**
  * =========================
@@ -57,6 +55,6 @@ export type EdgeMeta = BaseEdgeMeta & {
 
 // DATA
 const EDGE_TYPE = ["PERSON", "PARTNER"] as const;
-export type EdgeType = typeof EDGE_TYPE[number];
+export type EdgeType = (typeof EDGE_TYPE)[number];
 
 export type EdgeData = { personType: EdgeType } & { type: "EDGE_LINE" } & EdgePersonData;

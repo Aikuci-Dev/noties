@@ -1,6 +1,6 @@
 // This file was written with AI assistance (ChatGPT)
-import { describe, expect, it } from "vitest";
 import fc from "fast-check";
+import { describe, expect, it } from "vitest";
 
 import { intersectionBy, removeFalsy } from "@/common";
 
@@ -22,41 +22,32 @@ describe("removeFalsy (property-based)", () => {
 
   it("keeps all original truthy values", () => {
     fc.assert(
-      fc.property(
-        fc.array(fc.anything()),
-        (arr) => {
-          const result = removeFalsy(arr);
+      fc.property(fc.array(fc.anything()), (arr) => {
+        const result = removeFalsy(arr);
 
-          arr.filter(Boolean).forEach((truthyItem) => {
-            expect(result).toContain(truthyItem);
-          });
-        },
-      ),
+        arr.filter(Boolean).forEach((truthyItem) => {
+          expect(result).toContain(truthyItem);
+        });
+      }),
     );
   });
 
   it("never increases array length", () => {
     fc.assert(
-      fc.property(
-        fc.array(fc.anything()),
-        (arr) => {
-          const result = removeFalsy(arr);
-          expect(result.length).toBeLessThanOrEqual(arr.length);
-        },
-      ),
+      fc.property(fc.array(fc.anything()), (arr) => {
+        const result = removeFalsy(arr);
+        expect(result.length).toBeLessThanOrEqual(arr.length);
+      }),
     );
   });
 
   it("is idempotent", () => {
     fc.assert(
-      fc.property(
-        fc.array(fc.anything()),
-        (arr) => {
-          const firstPass = removeFalsy(arr);
-          const secondPass = removeFalsy(firstPass);
-          expect(secondPass).toEqual(firstPass);
-        },
-      ),
+      fc.property(fc.array(fc.anything()), (arr) => {
+        const firstPass = removeFalsy(arr);
+        const secondPass = removeFalsy(firstPass);
+        expect(secondPass).toEqual(firstPass);
+      }),
     );
   });
 
@@ -68,49 +59,34 @@ describe("removeFalsy (property-based)", () => {
 describe("intersectionBy (property-based)", () => {
   it("all results are from first array", () => {
     fc.assert(
-      fc.property(
-        fc.array(fc.anything()),
-        fc.array(fc.anything()),
-        fc.func(fc.anything()),
-        (a, b, selector) => {
-          const result = intersectionBy(a, b, selector);
-          result.forEach((item) => {
-            expect(a).toContain(item);
-          });
-        },
-      ),
+      fc.property(fc.array(fc.anything()), fc.array(fc.anything()), fc.func(fc.anything()), (a, b, selector) => {
+        const result = intersectionBy(a, b, selector);
+        result.forEach((item) => {
+          expect(a).toContain(item);
+        });
+      }),
     );
   });
 
   it("all results exist in second array under selector", () => {
     fc.assert(
-      fc.property(
-        fc.array(fc.anything()),
-        fc.array(fc.anything()),
-        fc.func(fc.anything()),
-        (a, b, selector) => {
-          const setB = new Set(b.map(selector));
-          const result = intersectionBy(a, b, selector);
-          result.forEach((item) => {
-            expect(setB.has(selector(item))).toBe(true);
-          });
-        },
-      ),
+      fc.property(fc.array(fc.anything()), fc.array(fc.anything()), fc.func(fc.anything()), (a, b, selector) => {
+        const setB = new Set(b.map(selector));
+        const result = intersectionBy(a, b, selector);
+        result.forEach((item) => {
+          expect(setB.has(selector(item))).toBe(true);
+        });
+      }),
     );
   });
 
   it("is idempotent", () => {
     fc.assert(
-      fc.property(
-        fc.array(fc.anything()),
-        fc.array(fc.anything()),
-        fc.func(fc.anything()),
-        (a, b, selector) => {
-          const firstPass = intersectionBy(a, b, selector);
-          const secondPass = intersectionBy(firstPass, b, selector);
-          expect(secondPass).toEqual(firstPass);
-        },
-      ),
+      fc.property(fc.array(fc.anything()), fc.array(fc.anything()), fc.func(fc.anything()), (a, b, selector) => {
+        const firstPass = intersectionBy(a, b, selector);
+        const secondPass = intersectionBy(firstPass, b, selector);
+        expect(secondPass).toEqual(firstPass);
+      }),
     );
   });
 

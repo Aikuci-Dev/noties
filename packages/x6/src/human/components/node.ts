@@ -1,4 +1,5 @@
 import type { Graph } from "@antv/x6";
+
 import { ObjectExt } from "@antv/x6";
 
 import type { Dimension, Nullish, PersonGender } from "@noties/shared-schema";
@@ -41,7 +42,11 @@ function leftRoundedRectPath(height: number, radius: number): string {
 }
 
 export default function node(options: { dimension: Dimension; radius: number; isStack?: boolean }) {
-  const { dimension: { height, width }, radius, isStack } = options;
+  const {
+    dimension: { height, width },
+    radius,
+    isStack,
+  } = options;
 
   function contentAttrs(isTop?: boolean) {
     return {

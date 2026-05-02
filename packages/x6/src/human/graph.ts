@@ -6,6 +6,7 @@ import { EDGE_LINE, EDGE_LINE_DASH, edgeLine, nodePlaceholder } from "@/common/c
 
 import type { BaseGraphDep } from "../common";
 import type { NodeData, NodePersonData } from "./types";
+
 import {
   BUTTON_NODE_EDIT,
   buttonNodeEdit,

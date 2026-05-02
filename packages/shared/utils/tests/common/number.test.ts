@@ -1,6 +1,6 @@
 // This file was written with AI assistance (ChatGPT)
-import { describe, expect, it } from "vitest";
 import fc from "fast-check";
+import { describe, expect, it } from "vitest";
 
 import { minMax } from "@/common";
 

@@ -1,15 +1,15 @@
 {
   "name": "@noties/shared-schema",
-  "type": "module",
   "version": "0.0.0",
   "private": true,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch"
