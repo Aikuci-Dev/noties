@@ -1,9 +1,3 @@
 {
-  "recommendations": [
-    "ayonli.deno-tools",
-    "bradlc.vscode-tailwindcss",
-    "dejmedus.tailwind-sorter",
-    "donjayamanne.githistory",
-    "vue.volar"
-  ]
+  "recommendations": ["bradlc.vscode-tailwindcss", "donjayamanne.githistory", "oxc.oxc-vscode", "vue.volar"]
 }

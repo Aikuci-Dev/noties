@@ -3,5 +3,14 @@
   "version": "0.0.1",
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@10.30.3"
+  "scripts": {
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.47.0",
+    "oxlint": "^1.62.0"
+  }
 }
