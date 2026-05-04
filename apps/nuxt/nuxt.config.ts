@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite";
 import { isDevelopment } from "std-env";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -8,19 +9,22 @@ export default defineNuxtConfig({
   future: { compatibilityVersion: 5 },
   experimental: { nitroAutoImports: true },
   imports: { dirs: ["utils/types"] },
-  modules: ["@nuxt/ui"],
-  ui: {
-    theme: {
-      // https://ui.nuxt.com/docs/getting-started/theme/design-system#extend-colors
-      colors: ["primary", "secondary", "tertiary", "info", "success", "warning", "error"],
-      defaultVariants: { size: "sm" },
-      prefix: "tw",
+
+  vite: {
+    // @ts-expect-error any
+    plugins: [tailwindcss()],
+  },
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag === "wc-datepicker",
     },
-    content: true,
-    experimental: { componentDetection: true },
   },
-  fonts: {
-    processCSSVariables: true,
+
+  css: ["~/assets/css/main.css", "~/assets/css/wc-datepicker.css"],
+  modules: ["@vueuse/nuxt", "@nuxt/icon", "@formkit/auto-animate/nuxt"],
+  icon: {
+    serverBundle: {
+      collections: ["lucide"],
+    },
   },
-  css: ["~/assets/css/main.css"],
 });

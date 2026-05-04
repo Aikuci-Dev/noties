@@ -10,14 +10,26 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
+    "@formisch/vue": "^0.7.5",
+    "@formkit/auto-animate": "^0.9.0",
     "@noties/shared-schema": "workspace:*",
     "@noties/shared-util": "workspace:*",
     "@noties/x6": "workspace:*",
+    "@nuxt/icon": "2.2.2",
     "@nuxt/ui": "^4.5.1",
+    "@tailwindcss/vite": "^4.2.4",
+    "daisyui": "^5.5.19",
     "nuxt": "^4.3.1",
+    "std-env": "^4.1.0",
     "tailwindcss": "^4.2.1",
     "valibot": "catalog:",
     "vue": "^3.5.29",
-    "vue-router": "^4.6.4"
+    "vue-router": "^4.6.4",
+    "wc-datepicker": "^0.11.0"
+  },
+  "devDependencies": {
+    "@iconify-json/lucide": "^1.2.105",
+    "@vueuse/core": "^14.3.0",
+    "@vueuse/nuxt": "14.3.0"
   }
 }

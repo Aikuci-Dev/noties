@@ -1,0 +1,88 @@
+@import "./main.css";
+
+@layer components {
+  /* Root */
+  .wc-datepicker {
+    @apply tw:block tw:w-96 tw:max-w-screen tw:space-y-4 tw:rounded-box tw:border tw:bg-base-100 tw:p-4 tw:text-base tw:text-base-content;
+  }
+
+  /* Shared styles */
+  .wc-datepicker__previous-month-button,
+  .wc-datepicker__next-month-button,
+  .wc-datepicker__previous-year-button,
+  .wc-datepicker__next-year-button,
+  .wc-datepicker__month-select,
+  .wc-datepicker__year-select,
+  .wc-datepicker__clear-button,
+  .wc-datepicker__today-button {
+    @apply tw:flex tw:rounded-box tw:bg-base-200;
+  }
+
+  .wc-datepicker__previous-month-button,
+  .wc-datepicker__next-month-button,
+  .wc-datepicker__previous-year-button,
+  .wc-datepicker__next-year-button,
+  .wc-datepicker__clear-button,
+  .wc-datepicker__today-button {
+    @apply tw:cursor-pointer;
+  }
+
+  /* Header */
+  .wc-datepicker__header {
+    @apply tw:flex tw:space-x-1;
+  }
+
+  .wc-datepicker__current-month {
+    @apply tw:flex tw:grow tw:justify-center tw:space-x-1;
+  }
+
+  .wc-datepicker__month-select,
+  .wc-datepicker__year-select {
+    @apply tw:px-2;
+  }
+
+  /* Body */
+  .wc-datepicker__body {
+    @apply tw:px-8;
+  }
+
+  .wc-datepicker__calendar {
+    @apply tw:w-full tw:table-fixed tw:border-collapse;
+  }
+
+  /* Footer */
+  .wc-datepicker__footer {
+    @apply tw:flex tw:space-x-1;
+  }
+
+  .wc-datepicker__clear-button,
+  .wc-datepicker__today-button {
+    @apply tw:p-2;
+  }
+
+  /* Date cell */
+  .wc-datepicker__date {
+    @apply tw:cursor-pointer;
+  }
+
+  .wc-datepicker__date > * {
+    @apply tw:grid tw:aspect-square tw:place-content-center tw:rounded-xs;
+  }
+
+  .wc-datepicker__date:hover > * {
+    @apply tw:bg-neutral/40 tw:text-sm tw:font-light;
+  }
+
+  /* Date states */
+  .wc-datepicker__date--overflowing > * {
+    @apply tw:text-neutral;
+  }
+
+  .wc-datepicker__date--in-range > * {
+    @apply tw:bg-neutral/50;
+  }
+
+  .wc-datepicker__date--selected > * {
+    @apply tw:bg-neutral tw:text-lg tw:font-bold tw:text-neutral-content;
+  }
+}
