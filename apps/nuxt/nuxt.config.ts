@@ -8,7 +8,6 @@ export default defineNuxtConfig({
   sourcemap: isDevelopment,
   future: { compatibilityVersion: 5 },
   experimental: { nitroAutoImports: true },
-  imports: { dirs: ["utils/types"] },
 
   vite: {
     // @ts-expect-error any
