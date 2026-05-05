@@ -7,7 +7,7 @@ function isPersonWithMeta(person: Person | PersonWithMeta): person is PersonWith
 }
 
 export function convertPersonToNodePerson(person: Person | PersonWithMeta): PersonNode {
-  const base = isPersonWithMeta(person) ? (({ meta: _, ...r }) => r)(person) : person;
+  const base = isPersonWithMeta(person) ? (({ meta: _meta, ...r }) => r)(person) : person;
   const { name, dateOfBirth, dateOfDeath, ...rest } = base;
 
   return {
@@ -15,6 +15,6 @@ export function convertPersonToNodePerson(person: Person | PersonWithMeta): Pers
     title: name,
     subtitle: [dateOfBirth, dateOfDeath].map((d) => (d ? new Date(d).getFullYear() : "")).join("-"),
     generationOrder: isPersonWithMeta(person) ? person.meta.generationOrder : undefined,
-    isDead: !!dateOfDeath,
+    isDead: Boolean(dateOfDeath),
   };
 }

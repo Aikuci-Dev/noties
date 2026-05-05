@@ -183,7 +183,7 @@ const registerCellEdges =
         const nodeChild = nodePersonMap.get(id);
         if (!nodeChild) return;
 
-        const hasPartner = !!nodePartner;
+        const hasPartner = Boolean(nodePartner);
         const isChildOfCurrentMarriage = relationshipPartner ? relationshipPartner.childrenIds.includes(id) : false;
         edges.push(
           createEdgePerson(graphDep)({
