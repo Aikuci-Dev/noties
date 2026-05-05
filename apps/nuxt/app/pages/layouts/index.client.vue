@@ -1,24 +1,27 @@
 <template>
-  <UTree :items="items" />
+  <div>
+    <UiMenuTree :tree-items />
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { TreeItem } from "@nuxt/ui";
+import type { TreeItem } from "~/components/ui/menu/Tree.vue";
 
-const items: TreeItem[] = [
+const treeItems: TreeItem[] = [
   {
     label: "Layouts",
-    defaultExpanded: true,
+    icon: "lucide:box",
+    isOpen: true,
     children: [
       {
         label: "Simple",
-        icon: "i-lucide-share-2",
-        onSelect: () => navigateTo("/layouts/simple", { open: { target: "_blank" } }),
+        icon: "lucide:share-2",
+        onClick: () => navigateTo("/layouts/simple", { open: { target: "_blank" } }),
       },
       {
         label: "Family Tree",
-        icon: "i-lucide-git-fork",
-        onSelect: () => navigateTo("/layouts/family-tree", { open: { target: "_blank" } }),
+        icon: "lucide:git-fork",
+        onClick: () => navigateTo("/layouts/family-tree", { open: { target: "_blank" } }),
       },
     ],
   },
