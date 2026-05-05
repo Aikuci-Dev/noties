@@ -2,12 +2,12 @@ import type { DateLike } from "@vueuse/core";
 
 import type { Id } from "@noties/shared-schema";
 
-import type { CustomSelectProps } from "./VariantCustomSelect.vue";
 import type { DatePickerProps } from "./VariantDatePicker.vue";
 import type { InputProps } from "./VariantInput.vue";
+import type { SelectProps } from "./VariantSelect.vue";
 import type { WrapperVariantProps } from "./WrapperVariant.vue";
 
-type FormFieldVariant = "date-picker" | "input" | "custom-select";
+type FormFieldVariant = "date-picker" | "input" | "select";
 type FormFieldVariantPropsMap<T> = {
   "date-picker": T extends DateLike[]
     ? DatePickerProps & { range: true }
@@ -15,11 +15,7 @@ type FormFieldVariantPropsMap<T> = {
       ? DatePickerProps & { range?: never }
       : never;
   input: InputProps;
-  "custom-select": T extends Id[]
-    ? CustomSelectProps & { multiple: true }
-    : T extends Id
-      ? CustomSelectProps & { multiple?: never }
-      : never;
+  select: T extends Id[] ? SelectProps & { multiple: true } : T extends Id ? SelectProps & { multiple?: never } : never;
 };
 export type FormFieldVariantProps<T> = {
   [V in FormFieldVariant]: {
@@ -31,12 +27,12 @@ export type FormFieldVariantProps<T> = {
 
 // END Type
 
-import FormFieldCustomSelect from "./VariantCustomSelect.vue";
 import FormFieldDatePicker from "./VariantDatePicker.vue";
 import FormFieldInput from "./VariantInput.vue";
+import FormFieldSelect from "./VariantSelect.vue";
 
 export const FormFieldVariantComponentMap: { [V in FormFieldVariant]: Component } = {
   "date-picker": FormFieldDatePicker,
   input: FormFieldInput,
-  "custom-select": FormFieldCustomSelect,
+  select: FormFieldSelect,
 } as const;

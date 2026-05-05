@@ -109,7 +109,7 @@ import type { Id } from "@noties/shared-schema";
 import type { WrapperVariantProps } from "./WrapperVariant.vue";
 
 type Option = { value: Id; label: string };
-export type CustomSelectProps = {
+export type SelectProps = {
   multiple?: true;
   placeholder?: string;
   required?: boolean;
@@ -130,7 +130,7 @@ const {
   placeholder,
   required = true,
   options: items = [],
-} = defineProps<CustomSelectProps & { wrapperProps?: WrapperVariantProps; field: FieldStore }>();
+} = defineProps<SelectProps & { wrapperProps?: WrapperVariantProps; field: FieldStore }>();
 const model = defineModel<Id | Id[] | null | undefined>({ required: true });
 
 const wrapperProps = computed(() => ({ ...wrapper, required, name: field.props.name, errors: field.errors }));

@@ -14,28 +14,28 @@
           :of
           :path="['gender']"
           :wrapperProps="{ label: 'Gender' }"
-          variant="custom-select"
+          variant="select"
           :props="{ options: [...PERSON_GENDERS], required: false }"
         />
         <UiFormFieldSet
           :of
           :path="['parent']"
           :wrapperProps="{ label: 'Parent' }"
-          variant="custom-select"
+          variant="select"
           :props="{ options: peopleOptions, multiple: true, required: false }"
         />
         <UiFormFieldSet
           :of
           :path="['partners']"
           :wrapperProps="{ label: 'Partners' }"
-          variant="custom-select"
+          variant="select"
           :props="{ options: peopleOptions, multiple: true, required: false }"
         />
         <UiFormFieldSet
           :of
           :path="['children']"
           :wrapperProps="{ label: 'Children' }"
-          variant="custom-select"
+          variant="select"
           :props="{ options: peopleOptions, multiple: true, required: false }"
         />
       </template>
