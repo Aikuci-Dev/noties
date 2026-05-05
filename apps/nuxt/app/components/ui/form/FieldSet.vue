@@ -7,7 +7,13 @@
           v-bind="props"
           v-model="field.input"
           :wrapperProps
-          :field
+          :field="{
+            ...field,
+            props: {
+              ...field.props,
+              onFocus: composeEventHandlers(field.props.onFocus, clearActiveFloatingUi),
+            },
+          }"
         />
       </slot>
     </field>
