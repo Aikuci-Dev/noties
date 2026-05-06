@@ -2,18 +2,18 @@ import * as v from "valibot";
 
 import { PersonSchema, PersonWithMetaSchema } from "./person";
 
-export function parsePersonWithMeta(person: unknown) {
-  return v.parse(PersonWithMetaSchema, person);
+export function parsePersonWithMeta(input: unknown) {
+  return v.parse(PersonWithMetaSchema, input);
 }
 
-export function parsePeopleWithMeta(people: unknown) {
-  return v.parse(v.array(PersonWithMetaSchema), people);
+export function parsePeopleWithMeta(input: unknown) {
+  return v.parse(v.array(PersonWithMetaSchema), input);
 }
 
-export function parsePerson(person: unknown) {
-  return v.parse(PersonSchema, person);
+export function parsePerson(input: unknown) {
+  return v.parse(PersonSchema, input);
 }
 
-export function parsePeople(people: unknown) {
-  return v.parse(v.array(PersonSchema), people);
+export function parsePeople(input: unknown) {
+  return v.parse(v.array(PersonSchema), input);
 }

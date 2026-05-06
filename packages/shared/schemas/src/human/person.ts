@@ -1,7 +1,7 @@
 import * as v from "valibot";
 
 import { IntegerSchema, IsoDateSchema } from "../schemas";
-import { exactOptionalUndefinedable } from "../utils";
+import { exactOptionalUndefinable } from "../utils";
 
 /**
  * =========================
@@ -9,10 +9,10 @@ import { exactOptionalUndefinedable } from "../utils";
  * =========================
  */
 export const PersonIdSchema = v.pipe(IntegerSchema, v.brand("PersonId"));
-export const PersonParentSchema = exactOptionalUndefinedable(
-  v.union([v.tuple([PersonIdSchema]), v.tuple([PersonIdSchema, PersonIdSchema])]),
-);
-export const PersonGenderSchema = v.picklist(["M", "F"]);
+export const PersonIdsSchema = v.pipe(v.array(PersonIdSchema));
+export const PersonParentSchema = v.pipe(PersonIdsSchema, v.maxLength(2));
+export const PERSON_GENDERS = ["M", "F"] as const;
+export const PersonGenderSchema = v.picklist(PERSON_GENDERS);
 
 /**
  * =========================
@@ -41,6 +41,9 @@ export const PersonSchema = v.object({
 });
 export const PersonMetaSchema = v.object({
   partnerId: v.exactOptional(PersonIdSchema), // Current Partner
-  generationOrder: exactOptionalUndefinedable(v.number()),
+  generationOrder: exactOptionalUndefinable(v.number()),
 });
 export const PersonWithMetaSchema = v.object({ ...PersonSchema.entries, meta: PersonMetaSchema });
+
+export type PersonSchemaInput = v.InferInput<typeof PersonSchema>;
+export type PersonSchemaOutput = v.InferOutput<typeof PersonSchema>;

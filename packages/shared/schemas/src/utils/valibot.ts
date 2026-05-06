@@ -13,7 +13,7 @@ export function normalizeEmptyToNull<TSchema extends TBaseSchema>(schema: TSchem
   );
 }
 
-export function exactOptionalUndefinedable<TWrapped extends TBaseSchema>(
+export function exactOptionalUndefinable<TWrapped extends TBaseSchema>(
   wrappedSchema: TWrapped,
   defaultValue?: v.InferOutput<TWrapped>,
 ) {
