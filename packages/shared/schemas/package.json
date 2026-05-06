@@ -15,6 +15,7 @@
     "dev": "tsdown --watch"
   },
   "dependencies": {
+    "@evolu/common": "^7.4.1",
     "valibot": "catalog:"
   },
   "devDependencies": {
