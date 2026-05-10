@@ -13,18 +13,18 @@ export function normalizeEmptyToNull<TSchema extends TBaseSchema>(schema: TSchem
   );
 }
 
-export function exactOptionalUndefinable<TWrapped extends TBaseSchema>(
-  wrappedSchema: TWrapped,
-  defaultValue?: v.InferOutput<TWrapped>,
-) {
+export function exactOptionalUndefinable<
+  TWrapped extends TBaseSchema,
+  TDefault extends v.Default<TWrapped, null | undefined>,
+>(wrappedSchema: TWrapped, defaultValue?: TDefault) {
   const withUndefined = v.undefinedable(wrappedSchema, defaultValue);
   return v.exactOptional(withUndefined, defaultValue);
 }
 
-export function exactOptionalNullish<TWrapped extends TBaseSchema>(
-  wrappedSchema: TWrapped,
-  defaultValue?: v.InferOutput<TWrapped>,
-) {
+export function exactOptionalNullish<
+  TWrapped extends TBaseSchema,
+  TDefault extends v.Default<TWrapped, null | undefined>,
+>(wrappedSchema: TWrapped, defaultValue?: TDefault) {
   const withNullish = v.nullish(wrappedSchema, defaultValue);
   return v.exactOptional(withNullish, defaultValue);
 }
