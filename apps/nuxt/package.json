@@ -10,6 +10,9 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
+    "@evolu/common": "^7.4.1",
+    "@evolu/vue": "^1.4.0",
+    "@evolu/web": "^2.4.0",
     "@floating-ui/vue": "^1.1.11",
     "@formisch/vue": "^0.7.5",
     "@formkit/auto-animate": "^0.9.0",

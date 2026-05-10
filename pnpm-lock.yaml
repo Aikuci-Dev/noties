@@ -37,6 +37,15 @@ importers:
 
   apps/nuxt:
     dependencies:
+      '@evolu/common':
+        specifier: ^7.4.1
+        version: 7.4.1
+      '@evolu/vue':
+        specifier: ^1.4.0
+        version: 1.4.0(@evolu/common@7.4.1)(vue@3.5.29(typescript@6.0.2))
+      '@evolu/web':
+        specifier: ^2.4.0
+        version: 2.4.0(@evolu/common@7.4.1)
       '@floating-ui/vue':
         specifier: ^1.1.11
         version: 1.1.11(vue@3.5.29(typescript@6.0.2))
@@ -661,6 +670,23 @@ packages:
   '@evolu/common@7.4.1':
     resolution: {integrity: sha512-aTSJN9GXvoN5FXo8DRiYdbMVFvBUG6N7Ygu7n5viyauPKBwylyAazZuDcBlQg5MxVv6YrF5c6w2LRG/OR2UIHA==}
     engines: {node: '>=22.0.0'}
+
+  '@evolu/sqlite-wasm@2.2.4':
+    resolution: {integrity: sha512-/JOYGFN93QspD2C8HVxVgBUlFWqJ1IpaVuIhEB53u4+ZvE+D3LjpNHDYiwZgf0n7VaH2U85OY5eV3wUrWc3scg==}
+    hasBin: true
+
+  '@evolu/vue@1.4.0':
+    resolution: {integrity: sha512-ydT8VxDOIXqfC6n6NQxXPsDX+Jvqg/CP+2Tj8hzZgqFO6PZpIBqOX8pS6ceqVCv+9FI4pC+LGyz4X9idrdX87g==}
+    engines: {node: '>=22.0.0'}
+    peerDependencies:
+      '@evolu/common': ^7.4.0
+      vue: '>=3.5.24'
+
+  '@evolu/web@2.4.0':
+    resolution: {integrity: sha512-yba/zpcsf5qu4NEup/rx8j+M/7DmF53/EZXKe8NRJefPJxrCxjzteOgUqUMkHQwYDRdH3u81KMoPlhvdBgSFuQ==}
+    engines: {node: '>=22.0.0'}
+    peerDependencies:
+      '@evolu/common': ^7.4.0
 
   '@fastify/busboy@2.1.1':
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
@@ -5197,6 +5223,19 @@ snapshots:
       msgpackr: 1.11.12
       random: 5.4.1
 
+  '@evolu/sqlite-wasm@2.2.4': {}
+
+  '@evolu/vue@1.4.0(@evolu/common@7.4.1)(vue@3.5.29(typescript@6.0.2))':
+    dependencies:
+      '@evolu/common': 7.4.1
+      vue: 3.5.29(typescript@6.0.2)
+
+  '@evolu/web@2.4.0(@evolu/common@7.4.1)':
+    dependencies:
+      '@evolu/common': 7.4.1
+      '@evolu/sqlite-wasm': 2.2.4
+      idb-keyval: 6.2.2
+
   '@fastify/busboy@2.1.1':
     optional: true
 
@@ -7355,8 +7394,7 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  idb-keyval@6.2.2:
-    optional: true
+  idb-keyval@6.2.2: {}
 
   ieee754@1.2.1: {}
 
