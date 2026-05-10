@@ -15,7 +15,7 @@
           :path="['gender']"
           :wrapperProps="{ label: 'Gender' }"
           variant="select"
-          :props="{ options: [...PERSON_GENDERS], required: false }"
+          :props="{ options: [...Human.GENDERS], required: false }"
         />
         <UiFormFieldSet
           :of
@@ -49,11 +49,12 @@
 <script setup lang="ts">
 import { reset, submit, useForm } from "@formisch/vue";
 
-import type { People, Person, PersonFormSchemaInput, PersonWithMeta } from "@noties/shared-schema";
+import { Human } from "@noties/shared-schema";
 
-import { defaultPersonId, PERSON_GENDERS, PersonFormSchema } from "@noties/shared-schema";
+type PersonSchema = Human.FamilyTree.Schema;
+type FormSchema = Human.FamilyTree.FormSchemaInput;
 
-const { person, people } = defineProps<{ person?: Person | PersonWithMeta; people: People }>();
+const { person, people } = defineProps<{ person?: PersonSchema; people: Human.People<PersonSchema> }>();
 
 const peopleOptions = computed(() => {
   const filtered = person ? people.filter((p) => p.id !== person.id) : people;
@@ -61,10 +62,20 @@ const peopleOptions = computed(() => {
 });
 
 function getInitialState() {
-  return { ...person, id: person?.id ?? defaultPersonId } satisfies PersonFormSchemaInput;
+  if (person) {
+    const { meta, dateOfBirth, dateOfDeath, parentIds, partnerIds, childrenIds, ...rest } = person;
+    return {
+      ...rest,
+      life_span: dateOfBirth ? (dateOfDeath ? [dateOfBirth, dateOfDeath] : [dateOfBirth]) : [],
+      parent: parentIds,
+      partners: partnerIds,
+      children: childrenIds,
+      id: rest.id,
+    } satisfies FormSchema;
+  }
 }
 const personForm = useForm({
-  schema: PersonFormSchema,
+  schema: Human.FamilyTree.FormSchemaOutput,
   initialInput: getInitialState(),
 });
 
@@ -75,7 +86,7 @@ function submitForm() {
   if (personForm.isSubmitting) return;
   submit(personForm);
 }
-const handleSubmitForm = (values: typeof PersonFormSchema) => {
+const handleSubmitForm = (values: Human.FamilyTree.FormSchemaOutput) => {
   // TODO: Store to DB
   console.log("values", values);
 };
