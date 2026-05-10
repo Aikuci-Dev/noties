@@ -1,8 +1,10 @@
+import { Human } from "@noties/shared-schema";
+
 import type { CellDep, NodeDep, NodePersonWithChildrenNodeMap, NodeWithChildrenNodeDep } from "../types";
 
 export const getNodesWithChildren =
-  ({ nodePersonMap }: NodeDep) =>
-  ({ people }: CellDep) => {
+  ({ nodePersonMap }: NodeDep<Human.PersonWithChildrenLike>) =>
+  ({ people }: CellDep<Human.PersonWithChildrenLike>) => {
     const nodeWithChildrenMap: NodePersonWithChildrenNodeMap = new Map();
 
     people.forEach((person) => {

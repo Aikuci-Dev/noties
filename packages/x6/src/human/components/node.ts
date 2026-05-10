@@ -2,7 +2,7 @@ import type { Graph } from "@antv/x6";
 
 import { ObjectExt } from "@antv/x6";
 
-import type { Dimension, Nullish, PersonGender } from "@noties/shared-schema";
+import type { Dimension, Nullish, Human } from "@noties/shared-schema";
 
 import type { Node as PersonNode } from "../types";
 
@@ -11,10 +11,10 @@ export const NODE_PERSON_STACK = "node-person-stack";
 export const NODE_PERSON_PLACEHOLDER = "node-person-placeholder";
 export const NODE_PERSON_INTERMEDIARY = "node-person-intermediary";
 
-function resolveFillColor(options: { light?: boolean; gender?: Nullish<PersonGender>; isDead?: boolean }) {
-  const { light, gender, isDead } = options;
+function resolveFillColor(options: { light?: boolean; gender?: Nullish<Human.GenderSchema>; isAccent?: boolean }) {
+  const { light, gender, isAccent } = options;
 
-  if (isDead) return light ? "#e5e7eb" : "#9ca3af"; // Gray (200/400)
+  if (isAccent) return light ? "#e5e7eb" : "#9ca3af"; // Gray (200/400)
   if (gender === "M") return light ? "#bfdbfe" : "#60a5fa"; // Blue (200/400)
   if (gender === "F") return light ? "#fbcfe8" : "#f472b6"; // Pink (200/400)
 }
@@ -145,18 +145,18 @@ export default function node(options: { dimension: Dimension; radius: number; is
       const { data, ...rest } = metadata;
       if (data) {
         const value: PersonNode = data.value;
-        const { title, subtitle, gender, isDead } = value;
+        const { title, subtitle, gender, isAccent } = value;
 
         ObjectExt.setByPath(rest, "attrs/.subtitle/text", subtitle);
         ObjectExt.setByPath(rest, "attrs/.title/text", title);
 
         const genderOrMale = gender ?? "M";
         const genderOrFemale = gender ?? "F";
-        ObjectExt.setByPath(rest, "attrs/.subtitle/fill", resolveFillColor({ gender, isDead }));
+        ObjectExt.setByPath(rest, "attrs/.subtitle/fill", resolveFillColor({ gender, isAccent }));
         ObjectExt.setByPath(rest, "attrs/.content-t/fill", resolveFillColor({ light: true, gender: genderOrMale }));
         ObjectExt.setByPath(rest, "attrs/.content-b/fill", resolveFillColor({ light: true, gender: genderOrFemale }));
-        ObjectExt.setByPath(rest, "attrs/.bar-t/fill", resolveFillColor({ gender: genderOrMale, isDead }));
-        ObjectExt.setByPath(rest, "attrs/.bar-b/fill", resolveFillColor({ gender: genderOrFemale, isDead }));
+        ObjectExt.setByPath(rest, "attrs/.bar-t/fill", resolveFillColor({ gender: genderOrMale, isAccent }));
+        ObjectExt.setByPath(rest, "attrs/.bar-b/fill", resolveFillColor({ gender: genderOrFemale, isAccent }));
       }
       return { ...rest, data };
     },

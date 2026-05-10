@@ -1,10 +1,12 @@
 import type { Node as X6Node } from "@antv/x6";
 
-import type { Person, PersonId } from "@noties/shared-schema";
+import type { EntityId, Human, Nullish } from "@noties/shared-schema";
 
 import type { BaseEdgeMeta, NodeWithChildrenNodeMap } from "@/common/types";
 
 import type { EdgePersonData, NodePersonData, NodePersonPlaceholderData, NodePersonRelationshipData } from "./x6";
+
+export type PersonSchema = Human.WithMetaSchema;
 
 /**
  * =========================
@@ -12,13 +14,15 @@ import type { EdgePersonData, NodePersonData, NodePersonPlaceholderData, NodePer
  * =========================
  */
 // Entity
-export type Node = Omit<Person, "name" | "dateOfBirth" | "dateOfDeath"> & {
+export type Node = {
+  id: EntityId<Human.PersonLike["id"]>;
   title: string;
   subtitle?: string;
-  generationOrder?: number;
-  isDead?: boolean;
+  gender?: Nullish<Human.GenderSchema>;
+  isAccent?: boolean;
+  // generationOrder?: number;
   meta?: {
-    original?: Person;
+    original?: Human.PersonLike;
   };
 };
 export type NodeMeta = {
@@ -27,9 +31,13 @@ export type NodeMeta = {
 export type NodeWithMeta = Node & { meta: NodeMeta };
 
 // Collections
-export type NodePersonMap = Map<PersonId, X6Node>;
-export type NodePersonRelationshipMap = Map<string, X6Node>; // `relationship-${T['id']}`
-export type NodePersonWithChildrenNodeMap = NodeWithChildrenNodeMap<PersonId>;
+export type NodePersonMap<T extends Human.PersonLike = PersonSchema> = Map<T["id"], X6Node>;
+export type NodePersonRelationshipMap = Map<
+  `relationship-${Human.FamilyTree.Relationship["id"] | Human.FamilyTree.RelationshipPartner["id"]}`,
+  X6Node
+>; // `relationship-${T['id']}`
+export type NodePersonWithChildrenNodeMap<T extends Human.PersonWithChildrenLike = Human.Simple.Schema> =
+  NodeWithChildrenNodeMap<T["id"]>;
 
 // DATA
 const NODE_TYPE = ["PERSON", "PERSON_RELATIONSHIP"] as const;

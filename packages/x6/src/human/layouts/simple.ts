@@ -2,6 +2,8 @@ import type { Node as X6Node } from "@antv/x6";
 
 import dagre from "@dagrejs/dagre";
 
+import type { Human } from "@noties/shared-schema";
+
 import type { BaseGraphDep, GraphDep, GraphLayoutDep } from "@/common/types";
 
 import type { CellDep, NodePersonMap, NodeWithChildrenNodeDep } from "../types";
@@ -9,9 +11,9 @@ import type { CellDep, NodePersonMap, NodeWithChildrenNodeDep } from "../types";
 import { convertPersonToNodePerson, createEdgePerson, createNodePerson } from "../utils";
 import { getNodesWithChildren, setNodesRelationship } from "./layouts";
 
-export type SimpleCellDep = CellDep;
+export type SimpleCellDep = CellDep<Human.Simple.Schema>;
 
-const main = (graphDep: GraphDep) => (cellDep: CellDep) => {
+const main = (graphDep: GraphDep) => (cellDep: SimpleCellDep) => {
   const { graph, options: graphOptions } = graphDep;
 
   const cells = getCells({ graph })(cellDep);
@@ -20,7 +22,7 @@ const main = (graphDep: GraphDep) => (cellDep: CellDep) => {
   layout({ graph })(graphOptions);
 };
 
-const getCells = (graphDep: BaseGraphDep) => (cellDep: CellDep) => {
+const getCells = (graphDep: BaseGraphDep) => (cellDep: SimpleCellDep) => {
   const { nodes, nodePersonMap } = registerCellNodes(graphDep)(cellDep);
 
   const nodesWithChildrenMap = getNodesWithChildren({ nodePersonMap })(cellDep);
@@ -32,7 +34,7 @@ const getCells = (graphDep: BaseGraphDep) => (cellDep: CellDep) => {
 };
 const registerCellNodes =
   (graphDep: BaseGraphDep) =>
-  ({ people }: CellDep) => {
+  ({ people }: SimpleCellDep) => {
     const nodePersonMap: NodePersonMap = new Map();
     const nodes: X6Node[] = [];
 

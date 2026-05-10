@@ -1,17 +1,24 @@
 import type { Node as X6Node } from "@antv/x6";
 
-import type { People, Person, PersonWithMeta } from "@noties/shared-schema";
+import type { Human } from "@noties/shared-schema";
 
 import type { BaseEdgeValue } from "@/common/types";
 
-import type { EdgeMeta, Node as PersonNode, NodeMeta, NodePersonMap, NodePersonWithChildrenNodeMap } from "./person";
+import type {
+  EdgeMeta,
+  Node as PersonNode,
+  NodeMeta,
+  NodePersonMap,
+  NodePersonWithChildrenNodeMap,
+  PersonSchema,
+} from "./person";
 
 /**
  * =========================
  * NODE
  * =========================
  */
-export type NodePersonData = { value: PersonNode; original: Person | PersonWithMeta; meta?: NodeMeta };
+export type NodePersonData = { value: PersonNode; original: Human.PersonLike; meta?: NodeMeta };
 export type NodePersonPlaceholderData = { value: { nodes: [X6Node] } };
 export type NodePersonRelationshipData = { value: { nodes: [X6Node, X6Node] } };
 
@@ -31,8 +38,10 @@ export type EdgePersonData = { value: BaseEdgeValue; meta?: EdgeMeta };
  * =========================
  */
 // Cell
-export type CellDep<T extends Person | PersonWithMeta = Person> = { people: People<T> };
+export type CellDep<T extends Human.PersonLike = PersonSchema> = { people: Human.People<T> };
 
 // Node
-export type NodeDep = { nodePersonMap: NodePersonMap };
-export type NodeWithChildrenNodeDep = { nodesWithChildrenMap: NodePersonWithChildrenNodeMap };
+export type NodeDep<T extends Human.PersonLike = PersonSchema> = { nodePersonMap: NodePersonMap<T> };
+export type NodeWithChildrenNodeDep<T extends Human.PersonWithChildrenLike = Human.Simple.Schema> = {
+  nodesWithChildrenMap: NodePersonWithChildrenNodeMap<T>;
+};

@@ -2,17 +2,7 @@ import type { Edge, Node as X6Node } from "@antv/x6";
 
 import dagre from "@dagrejs/dagre";
 
-import type {
-  EntityPairKey,
-  People,
-  Person,
-  PersonId,
-  PersonMap,
-  PersonRelationshipMap,
-  PersonRelationshipPartner,
-  PersonRelationshipPartnerMap,
-  PersonWithMeta,
-} from "@noties/shared-schema";
+import type { EntityPairKey, Human } from "@noties/shared-schema";
 
 import { intersectionBy, minMax } from "@noties/shared-util";
 
@@ -29,11 +19,13 @@ import {
 } from "../utils";
 import { getNodesWithChildren, setNodesRelationship } from "./layouts";
 
-export type FamilyTreeCellDep = CellDep<PersonWithMeta> & { peoplePartner: People };
-type CellNodeDep = { partnerMap: PersonMap };
+export type FamilyTreeCellDep = CellDep<Human.FamilyTree.Schema> & {
+  peoplePartner: Human.People<Human.FamilyTree.Schema>;
+};
+type CellNodeDep = { partnerMap: Human.PersonMap<Human.FamilyTree.Schema> };
 type CellEdgeDep = NodeDep & { nodePersonRelationshipMap?: NodePersonRelationshipMap } & {
-  personRelationshipMap: PersonRelationshipMap;
-  personRelationshipPartnerMap: PersonRelationshipPartnerMap;
+  familyTreeRelationshipMap: Human.FamilyTree.RelationshipMap;
+  familyTreeRelationshipPartnerMap: Human.FamilyTree.RelationshipPartnerMap;
 };
 
 const main = (graphDep: GraphDep) => (cellDep: FamilyTreeCellDep) => {
@@ -49,8 +41,13 @@ const getCells =
   (graphDep: BaseGraphDep) =>
   ({ people, peoplePartner }: FamilyTreeCellDep) => {
     const partnerMap = new Map(peoplePartner.map((person) => [person.id, person]));
-    const { nodes, nodePersonMap, nodePersonRelationshipMap, personRelationshipMap, personRelationshipPartnerMap } =
-      registerCellNodes(graphDep)({ partnerMap })({ people });
+    const {
+      nodes,
+      nodePersonMap,
+      nodePersonRelationshipMap,
+      familyTreeRelationshipMap,
+      familyTreeRelationshipPartnerMap,
+    } = registerCellNodes(graphDep)({ partnerMap })({ people });
 
     setNodesRelationship({ nodesWithChildrenMap: getNodesWithChildren({ nodePersonMap })({ people }) });
     setNodesRelationship({ nodesWithChildrenMap: getNodesWithChildren({ nodePersonMap })({ people: peoplePartner }) });
@@ -58,8 +55,8 @@ const getCells =
     const edges = registerCellEdges(graphDep)({
       nodePersonMap,
       nodePersonRelationshipMap,
-      personRelationshipMap,
-      personRelationshipPartnerMap,
+      familyTreeRelationshipMap,
+      familyTreeRelationshipPartnerMap,
     });
 
     return [...nodes, ...edges];
@@ -67,11 +64,11 @@ const getCells =
 const registerCellNodes =
   (graphDep: BaseGraphDep) =>
   ({ partnerMap }: CellNodeDep) =>
-  ({ people }: CellDep<PersonWithMeta>) => {
-    const nodePersonMap: NodePersonMap = new Map();
+  ({ people }: CellDep<Human.FamilyTree.Schema>) => {
+    const nodePersonMap: NodePersonMap<Human.FamilyTree.Schema> = new Map();
     const nodePersonRelationshipMap: NodePersonRelationshipMap = new Map();
-    const personRelationshipMap: PersonRelationshipMap = new Map();
-    const personRelationshipPartnerMap: PersonRelationshipPartnerMap = new Map();
+    const familyTreeRelationshipMap: Human.FamilyTree.RelationshipMap = new Map();
+    const familyTreeRelationshipPartnerMap: Human.FamilyTree.RelationshipPartnerMap = new Map();
     const nodes: X6Node[] = [];
 
     // NODE-PERSON
@@ -81,11 +78,11 @@ const registerCellNodes =
       nodePersonMap.set(person.id, nodePerson);
       nodes.push(nodePerson);
 
-      const partnerId = person.meta.partnerId ?? (0 as PersonId);
+      const partnerId = person.meta.partnerId ?? (0 as Human.FamilyTree.Schema["id"]);
       const partnerIds = person.partnerIds ?? [];
       const childrenIds = person.childrenIds ?? [];
 
-      personRelationshipMap.set(person.id, { id: person.id, partnerId, partnerIds, childrenIds });
+      familyTreeRelationshipMap.set(person.id, { id: person.id, partnerId, partnerIds, childrenIds });
 
       if (partnerId) {
         const partner = partnerMap.get(partnerId);
@@ -103,7 +100,7 @@ const registerCellNodes =
     });
 
     // NODE-PERSON-RELATIONSHIP
-    personRelationshipMap.values().forEach((personRelationship) => {
+    familyTreeRelationshipMap.values().forEach((personRelationship) => {
       const { id, partnerId, childrenIds } = personRelationship;
 
       const nodePerson = nodePersonMap.get(id);
@@ -115,9 +112,9 @@ const registerCellNodes =
         if (nodePartner) {
           nodeRelationship = createNodePersonRelationship(graphDep)({ value: { nodes: [nodePerson, nodePartner] } });
 
-          const key: EntityPairKey<Person> = `${id}-${partnerId}`;
+          const key: EntityPairKey<Human.FamilyTree.Schema> = `${id}-${partnerId}`;
           const partner = partnerMap.get(partnerId);
-          const personRelationshipPartner = {
+          const familyTreeRelationshipPartner = {
             id: key,
             personId: id,
             partnerId,
@@ -125,8 +122,8 @@ const registerCellNodes =
               ? intersectionBy(childrenIds, partner.childrenIds, (x) => x)
               : childrenIds,
           };
-          personRelationshipPartnerMap.set(key, personRelationshipPartner);
-          nodePersonRelationshipMap.set(`relationship-${personRelationshipPartner.id}`, nodeRelationship);
+          familyTreeRelationshipPartnerMap.set(key, familyTreeRelationshipPartner);
+          nodePersonRelationshipMap.set(`relationship-${familyTreeRelationshipPartner.id}`, nodeRelationship);
         }
       }
       if (!nodeRelationship) {
@@ -143,24 +140,35 @@ const registerCellNodes =
       if (nodeRelationship) nodes.push(nodeRelationship);
     });
 
-    return { nodes, nodePersonMap, nodePersonRelationshipMap, personRelationshipPartnerMap, personRelationshipMap };
+    return {
+      nodes,
+      nodePersonMap,
+      nodePersonRelationshipMap,
+      familyTreeRelationshipPartnerMap,
+      familyTreeRelationshipMap,
+    };
   };
 const registerCellEdges =
   (graphDep: BaseGraphDep) =>
-  ({ nodePersonMap, nodePersonRelationshipMap, personRelationshipMap, personRelationshipPartnerMap }: CellEdgeDep) => {
+  ({
+    nodePersonMap,
+    nodePersonRelationshipMap,
+    familyTreeRelationshipMap,
+    familyTreeRelationshipPartnerMap,
+  }: CellEdgeDep) => {
     const edges: Edge[] = [];
 
-    personRelationshipMap.values().forEach((personRelationship) => {
+    familyTreeRelationshipMap.values().forEach((personRelationship) => {
       const { id, partnerId, childrenIds } = personRelationship;
 
       const nodePerson = nodePersonMap.get(id);
       if (!nodePerson) return;
 
       let nodePartner: X6Node | undefined;
-      let relationshipPartner: PersonRelationshipPartner | undefined;
+      let relationshipPartner: Human.FamilyTree.RelationshipPartner | undefined;
       if (partnerId) {
         nodePartner = nodePersonMap.get(partnerId);
-        relationshipPartner = personRelationshipPartnerMap.get(`${id}-${partnerId}`);
+        relationshipPartner = familyTreeRelationshipPartnerMap.get(`${id}-${partnerId}`);
       }
 
       const nodePersonRelationship = nodePersonRelationshipMap?.get(
