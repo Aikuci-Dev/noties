@@ -1,6 +1,6 @@
 import * as v from "valibot";
 
-import { DimensionSchema, IdSchema } from "../schemas";
+import { DimensionSchema, IdSchema } from "@/schemas/app";
 
 // APP
 export type Id = v.InferOutput<typeof IdSchema>;

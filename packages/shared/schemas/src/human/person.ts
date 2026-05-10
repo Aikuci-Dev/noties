@@ -1,7 +1,7 @@
 import * as v from "valibot";
 
-import { IntegerSchema, IsoDateSchema } from "../schemas";
-import { exactOptionalUndefinable } from "../utils";
+import { IntegerSchema, IsoDateSchema } from "@/schemas";
+import { exactOptionalUndefinable } from "@/utils";
 
 /**
  * =========================

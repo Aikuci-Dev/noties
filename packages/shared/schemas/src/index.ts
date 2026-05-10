@@ -1,4 +1,5 @@
-export * from "./human";
+// CORE
+export type * from "@/types/app";
 
-export * from "./schemas";
-export * from "./types";
+// DOMAIN
+export * as Human from "@/human";

@@ -1,7 +1,5 @@
 import * as v from "valibot";
 
-export const IntegerSchema = v.pipe(v.number(), v.safeInteger("The number must be an integer."));
-
 // DATE
 export const IsoDateSchema = v.pipe(v.string(), v.isoDate("The date is badly formatted."));
 export const IsoTimestampSchema = v.pipe(v.string(), v.isoTimestamp("The timestamp is badly formatted."));
@@ -22,6 +20,8 @@ export const TransformedUnionDateRangeToIsoSchema = v.pipe(
   v.maxLength(2),
 );
 
+// APP
+export const IntegerSchema = v.pipe(v.number(), v.safeInteger("The number must be an integer."));
 export const IdSchema = v.union([IntegerSchema, v.string()]);
 
 // SIZE
