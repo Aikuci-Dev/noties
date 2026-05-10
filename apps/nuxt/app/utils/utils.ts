@@ -11,9 +11,9 @@ export function composeEventHandlers<TEvent extends Event, TArgs extends unknown
   };
 }
 
-export const move = <T>(arr: T[], from: number, to: number) => {
+export function move<T>(arr: T[], from: number, to: number) {
   const copy = [...arr];
   const [item] = copy.splice(from, 1);
   copy.splice(to, 0, item as T);
   return copy;
-};
+}
