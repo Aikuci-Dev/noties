@@ -21,7 +21,7 @@
             <span class="tw:d-indicator-item tw:rounded tw:bg-base-100">
               <Icon name="lucide:x" @click.stop="removeSelectedValue(value)" class="tw:text-error" />
             </span>
-            <p class="tw:w-4/5 tw:truncate">{{ label }}</p>
+            <p class="tw:truncate">{{ label }}</p>
           </div>
         </div>
       </div>
@@ -199,19 +199,15 @@ const open = computed(() => activeFloatingUi.value === field.props.name);
 
 const referenceWidth = ref(0);
 const { width: windowWidth } = useWindowSize();
-watch(
-  windowWidth,
-  async () => {
-    if (!multiple) return;
+watch(windowWidth, async () => {
+  if (!multiple) return;
 
-    // Tradeoff: UI flickers because Floating UI must be mounted to measure width.
-    referenceWidth.value = 0;
-    setActiveFloatingUi(field.props.name);
-    await nextTick();
-    clearActiveFloatingUi();
-  },
-  { immediate: true },
-);
+  // Tradeoff: UI flickers because Floating UI must be mounted to measure width.
+  referenceWidth.value = 0;
+  setActiveFloatingUi(field.props.name);
+  await nextTick();
+  clearActiveFloatingUi();
+});
 useFloating(inputWrapperEl, floatingEl, {
   open,
   transform: false,
