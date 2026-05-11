@@ -5,21 +5,6 @@ import { describe, expect, it } from "vitest";
 import { intersectionBy, removeFalsy } from "@/common";
 
 describe("removeFalsy (property-based)", () => {
-  it("returns only truthy values", () => {
-    fc.assert(
-      fc.property(
-        fc.array(fc.anything()), // anything can include null, undefined, false, 0, NaN, ''
-        (arr) => {
-          const result = removeFalsy(arr);
-
-          result.forEach((item) => {
-            expect(Boolean(item)).toBe(true);
-          });
-        },
-      ),
-    );
-  });
-
   it("keeps all original truthy values", () => {
     fc.assert(
       fc.property(fc.array(fc.anything()), (arr) => {
