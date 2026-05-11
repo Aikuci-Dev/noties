@@ -1,6 +1,6 @@
 import type { Cell, Graph, Node as X6Node } from "@antv/x6";
 
-import type { Id } from "@noties/shared-schema";
+import type { Id } from "@relaverse/shared-schema";
 
 import type { DagreRankdir } from "./dagre";
 

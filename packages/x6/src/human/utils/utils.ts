@@ -1,4 +1,4 @@
-import { Human } from "@noties/shared-schema";
+import { Human } from "@relaverse/shared-schema";
 
 import type { Node as PersonNode } from "../types";
 

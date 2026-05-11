@@ -25,7 +25,7 @@
 <script lang="ts">
 import type { FieldStore, RequiredPath, Schema } from "@formisch/vue";
 
-import type { Id } from "@noties/shared-schema";
+import type { Id } from "@relaverse/shared-schema";
 
 import type { WrapperVariantProps } from "./WrapperVariant.vue";
 

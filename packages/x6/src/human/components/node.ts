@@ -2,7 +2,7 @@ import type { Graph } from "@antv/x6";
 
 import { ObjectExt } from "@antv/x6";
 
-import type { Dimension, Nullish, Human } from "@noties/shared-schema";
+import type { Dimension, Nullish, Human } from "@relaverse/shared-schema";
 
 import type { Node as PersonNode } from "../types";
 

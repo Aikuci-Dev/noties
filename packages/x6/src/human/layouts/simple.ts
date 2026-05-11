@@ -2,7 +2,7 @@ import type { Node as X6Node } from "@antv/x6";
 
 import dagre from "@dagrejs/dagre";
 
-import type { Human } from "@noties/shared-schema";
+import type { Human } from "@relaverse/shared-schema";
 
 import type { BaseGraphDep, GraphDep, GraphLayoutDep } from "@/common/types";
 

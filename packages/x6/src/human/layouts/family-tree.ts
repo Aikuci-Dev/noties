@@ -2,9 +2,9 @@ import type { Edge, Node as X6Node } from "@antv/x6";
 
 import dagre from "@dagrejs/dagre";
 
-import type { EntityPairKey, Human } from "@noties/shared-schema";
+import type { EntityPairKey, Human } from "@relaverse/shared-schema";
 
-import { intersectionBy, minMax } from "@noties/shared-util";
+import { intersectionBy, minMax } from "@relaverse/shared-util";
 
 import type { BaseGraphDep, GraphDep, GraphLayoutDep } from "@/common/types";
 

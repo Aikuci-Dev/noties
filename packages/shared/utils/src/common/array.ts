@@ -1,4 +1,4 @@
-import type { Nullish } from "@noties/shared-schema";
+import type { Nullish } from "@relaverse/shared-schema";
 
 export function removeFalsy<T>(array: Nullish<T>[]): T[] {
   return array.filter((item): item is T => Boolean(item));

@@ -1,6 +1,6 @@
 import type { Node as X6Node } from "@antv/x6";
 
-import type { EntityId, Human, Nullish } from "@noties/shared-schema";
+import type { EntityId, Human, Nullish } from "@relaverse/shared-schema";
 
 import type { BaseEdgeMeta, NodeWithChildrenNodeMap } from "@/common/types";
 

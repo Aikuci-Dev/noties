@@ -1,6 +1,6 @@
-import { Graph } from "@antv/x6";
+import type { Dimension } from "@relaverse/shared-schema";
 
-import type { Dimension } from "@noties/shared-schema";
+import { Graph } from "@antv/x6";
 
 import { EDGE_LINE, EDGE_LINE_DASH, edgeLine, nodePlaceholder } from "@/common/components";
 

@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { reset, submit, useForm } from "@formisch/vue";
 
-import { Human } from "@noties/shared-schema";
+import { Human } from "@relaverse/shared-schema";
 
 type PersonSchema = Human.Simple.Schema;
 

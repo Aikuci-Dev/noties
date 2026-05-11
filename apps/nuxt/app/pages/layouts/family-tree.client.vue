@@ -54,11 +54,11 @@ const dagreRankdir: DagreRankdir = "TB"; // vertical orientation
 <script setup lang="ts">
 import { useLiveQuery } from "@tanstack/vue-db";
 
-import type { DagreRankdir, Graph, NodePersonData } from "@noties/x6";
+import type { DagreRankdir, Graph, NodePersonData } from "@relaverse/x6";
 
-import { Human } from "@noties/shared-schema";
-import { isEmpty } from "@noties/shared-util";
-import { addAnimation, addInteraction, createGraphInstance, familyTreeLayout, registerCells } from "@noties/x6";
+import { Human } from "@relaverse/shared-schema";
+import { isEmpty } from "@relaverse/shared-util";
+import { addAnimation, addInteraction, createGraphInstance, familyTreeLayout, registerCells } from "@relaverse/x6";
 
 const { data } = useLiveQuery(useHumanFamilyTreeQuery);
 

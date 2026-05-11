@@ -51,7 +51,7 @@ import type { FieldStore, RequiredPath, Schema } from "@formisch/vue";
 import type { DateLike } from "@vueuse/core";
 import type { ShallowRef } from "vue";
 
-import { isDefined, removeFalsy } from "@noties/shared-util";
+import { isDefined, removeFalsy } from "@relaverse/shared-util";
 
 import type { WrapperVariantProps } from "./WrapperVariant.vue";
 

@@ -1,6 +1,6 @@
 import type { DateLike } from "@vueuse/core";
 
-import type { Id } from "@noties/shared-schema";
+import type { Id } from "@relaverse/shared-schema";
 
 import type { CheckboxProps } from "./VariantCheckbox.vue";
 import type { DatePickerProps } from "./VariantDatePicker.vue";

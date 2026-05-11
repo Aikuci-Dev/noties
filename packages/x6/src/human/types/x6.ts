@@ -1,6 +1,6 @@
 import type { Node as X6Node } from "@antv/x6";
 
-import type { Human } from "@noties/shared-schema";
+import type { Human } from "@relaverse/shared-schema";
 
 import type { BaseEdgeValue } from "@/common/types";
 

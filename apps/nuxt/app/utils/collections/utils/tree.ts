@@ -1,6 +1,6 @@
-import type { Id, Nullish } from "@noties/shared-schema";
+import type { Id, Nullish } from "@relaverse/shared-schema";
 
-import { isEmpty } from "@noties/shared-util";
+import { isEmpty } from "@relaverse/shared-util";
 
 export function collectTree<T extends { id: Id; childrenIds?: Nullish<Id[]> }>(
   items: T[],
