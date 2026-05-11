@@ -54,7 +54,13 @@ import { Human } from "@noties/shared-schema";
 type PersonSchema = Human.FamilyTree.Schema;
 type FormSchema = Human.FamilyTree.FormSchemaInput;
 
-const { person, people } = defineProps<{ person?: PersonSchema; people: Human.People<PersonSchema> }>();
+const { fallbackId, person, people } = defineProps<{
+  fallbackId?: Human.IdSchema;
+  person?: PersonSchema;
+  people: Human.People<PersonSchema>;
+}>();
+
+const emits = defineEmits(["settled"]);
 
 const peopleOptions = computed(() => {
   const filtered = person ? people.filter((p) => p.id !== person.id) : people;
@@ -87,8 +93,21 @@ function submitForm() {
   submit(personForm);
 }
 const handleSubmitForm = (values: Human.FamilyTree.FormSchemaOutput) => {
-  // TODO: Store to DB
-  console.log("values", values);
+  const { parent, partners, children, life_span, ...rest } = values;
+  const payload = {
+    ...rest,
+    dateOfBirth: life_span?.[0] ? new Date(life_span[0]).toISOString() : null,
+    dateOfDeath: life_span?.[1] ? new Date(life_span[1]).toISOString() : null,
+    parentIds: parent,
+    partnerIds: partners,
+    childrenIds: children,
+    meta: { kind: Human.KINDS.FamilyTree, partnerId: partners?.[0] },
+  } satisfies Human.FamilyTree.Schema;
+
+  if (payload.id) familyTreeCollection.update(payload.id, (draft) => Object.assign(draft, payload));
+  else familyTreeCollection.insert({ ...payload, id: fallbackId as Human.IdSchema });
+
+  emits("settled");
 };
 
 const formWrapperEl = useTemplateRef("formWrapperEl");

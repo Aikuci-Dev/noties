@@ -40,7 +40,13 @@ import { Human } from "@noties/shared-schema";
 type PersonSchema = Human.Simple.Schema;
 type FormSchema = Human.Simple.FormSchemaInput;
 
-const { person, people } = defineProps<{ person?: PersonSchema; people: Human.People<PersonSchema> }>();
+const { fallbackId, person, people } = defineProps<{
+  fallbackId?: Human.IdSchema;
+  person?: PersonSchema;
+  people: Human.People<PersonSchema>;
+}>();
+
+const emits = defineEmits(["settled"]);
 
 const peopleOptions = computed(() => {
   const filtered = person ? people.filter((p) => p.id !== person.id) : people;
@@ -66,8 +72,13 @@ function submitForm() {
   submit(personForm);
 }
 const handleSubmitForm = (values: Human.Simple.FormSchemaOutput) => {
-  // TODO: Store to DB
-  console.log("values", values);
+  const { children, ...rest } = values;
+  const payload = { ...rest, childrenIds: children, meta: { kind: Human.KINDS.Simple } } satisfies Human.Simple.Schema;
+
+  if (payload.id) simpleCollection.update(payload.id, (draft) => Object.assign(draft, payload));
+  else simpleCollection.insert({ ...payload, id: fallbackId as Human.IdSchema });
+
+  emits("settled");
 };
 
 const formWrapperEl = useTemplateRef("formWrapperEl");
