@@ -30,6 +30,7 @@
       <div ref="floatingEl" v-if="open" class="w-full tw:absolute tw:z-10 tw:bg-accent" :style="floatingStyles">
         <wc-datepicker
           ref="datepickerEl"
+          :value="datePickerValue"
           :range
           :start-date
           show-clear-button
@@ -78,11 +79,6 @@ const model = defineModel<DateLike | [DateLike, DateLike] | null | undefined>({ 
 
 const wrapperProps = computed(() => ({ ...wrapper, required, name: field.props.name, errors: field.errors }));
 
-const startDate = computed(() => {
-  if (Array.isArray(model.value)) return model.value[0];
-  return model.value;
-});
-
 const formattedDate = computed(() => {
   if (!isDefined(model.value)) return;
 
@@ -92,7 +88,6 @@ const formattedDate = computed(() => {
   }
   return formatDate(model.value);
 });
-
 const formatDate = (dateValue: NonNullable<DateLike>) =>
   new Intl.DateTimeFormat("id-ID", {
     day: "numeric",
@@ -102,6 +97,19 @@ const formatDate = (dateValue: NonNullable<DateLike>) =>
 
 // Date Picker
 const datepickerEl: Readonly<ShallowRef> = useTemplateRef("datepickerEl");
+
+const datePickerValue = computed(() => {
+  if (!isDefined(model.value)) return;
+
+  if (Array.isArray(model.value)) return removeFalsy(model.value).map((v) => new Date(v));
+  return new Date(model.value);
+});
+
+const startDate = computed(() => {
+  if (Array.isArray(model.value)) return model.value[0];
+  return model.value;
+});
+
 const onSelect = (event: { detail?: string | [string, string] }) => {
   model.value = event.detail;
 };
