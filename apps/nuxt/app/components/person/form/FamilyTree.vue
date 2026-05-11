@@ -52,7 +52,6 @@ import { reset, submit, useForm } from "@formisch/vue";
 import { Human } from "@noties/shared-schema";
 
 type PersonSchema = Human.FamilyTree.Schema;
-type FormSchema = Human.FamilyTree.FormSchemaInput;
 
 const { fallbackId, person, people } = defineProps<{
   fallbackId?: Human.IdSchema;
@@ -67,22 +66,9 @@ const peopleOptions = computed(() => {
   return filtered.map(({ id, name: label }) => ({ value: +id, label }));
 });
 
-function getInitialState() {
-  if (person) {
-    const { meta, dateOfBirth, dateOfDeath, parentIds, partnerIds, childrenIds, ...rest } = person;
-    return {
-      ...rest,
-      life_span: dateOfBirth ? (dateOfDeath ? [dateOfBirth, dateOfDeath] : [dateOfBirth]) : [],
-      parent: parentIds,
-      partners: partnerIds,
-      children: childrenIds,
-      id: rest.id,
-    } satisfies FormSchema;
-  }
-}
 const personForm = useForm({
   schema: Human.FamilyTree.FormSchemaOutput,
-  initialInput: getInitialState(),
+  initialInput: person ? Human.schemaToFormSchema(Human.KINDS.FamilyTree, person) : undefined,
 });
 
 function resetForm() {

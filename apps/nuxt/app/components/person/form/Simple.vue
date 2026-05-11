@@ -38,7 +38,6 @@ import { reset, submit, useForm } from "@formisch/vue";
 import { Human } from "@noties/shared-schema";
 
 type PersonSchema = Human.Simple.Schema;
-type FormSchema = Human.Simple.FormSchemaInput;
 
 const { fallbackId, person, people } = defineProps<{
   fallbackId?: Human.IdSchema;
@@ -53,15 +52,9 @@ const peopleOptions = computed(() => {
   return filtered.map(({ id, name: label }) => ({ value: +id, label }));
 });
 
-function getInitialState() {
-  if (person) {
-    const { meta, childrenIds, ...rest } = person;
-    return { ...rest, children: childrenIds, id: rest.id } satisfies FormSchema;
-  }
-}
 const personForm = useForm({
   schema: Human.Simple.FormSchemaOutput,
-  initialInput: getInitialState(),
+  initialInput: person ? Human.schemaToFormSchema(Human.KINDS.Simple, person) : undefined,
 });
 
 function resetForm() {
