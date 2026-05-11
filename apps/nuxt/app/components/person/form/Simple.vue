@@ -46,7 +46,7 @@ const { fallbackId, person, people } = defineProps<{
   people: Human.People<PersonSchema>;
 }>();
 
-const emits = defineEmits(["settled"]);
+const emits = defineEmits(["error", "success"]);
 
 const peopleOptions = computed(() => {
   const filtered = person ? people.filter((p) => p.id !== person.id) : people;
@@ -72,13 +72,14 @@ function submitForm() {
   submit(personForm);
 }
 const handleSubmitForm = (values: Human.Simple.FormSchemaOutput) => {
-  const { children, ...rest } = values;
-  const payload = { ...rest, childrenIds: children, meta: { kind: Human.KINDS.Simple } } satisfies Human.Simple.Schema;
-
-  if (payload.id) simpleCollection.update(payload.id, (draft) => Object.assign(draft, payload));
-  else simpleCollection.insert({ ...payload, id: fallbackId as Human.IdSchema });
-
-  emits("settled");
+  try {
+    const payload = Human.formToSchema(Human.KINDS.Simple, values);
+    if (payload.id) simpleCollection.update(payload.id, (draft) => Object.assign(draft, payload));
+    else simpleCollection.insert({ ...payload, id: fallbackId as Human.IdSchema });
+    emits("success");
+  } catch (error) {
+    emits("error", error);
+  }
 };
 
 const formWrapperEl = useTemplateRef("formWrapperEl");

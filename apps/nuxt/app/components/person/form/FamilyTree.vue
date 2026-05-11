@@ -60,7 +60,7 @@ const { fallbackId, person, people } = defineProps<{
   people: Human.People<PersonSchema>;
 }>();
 
-const emits = defineEmits(["settled"]);
+const emits = defineEmits(["error", "success"]);
 
 const peopleOptions = computed(() => {
   const filtered = person ? people.filter((p) => p.id !== person.id) : people;
@@ -93,21 +93,14 @@ function submitForm() {
   submit(personForm);
 }
 const handleSubmitForm = (values: Human.FamilyTree.FormSchemaOutput) => {
-  const { parent, partners, children, life_span, ...rest } = values;
-  const payload = {
-    ...rest,
-    dateOfBirth: life_span?.[0] ? new Date(life_span[0]).toISOString() : null,
-    dateOfDeath: life_span?.[1] ? new Date(life_span[1]).toISOString() : null,
-    parentIds: parent,
-    partnerIds: partners,
-    childrenIds: children,
-    meta: { kind: Human.KINDS.FamilyTree, partnerId: partners?.[0] },
-  } satisfies Human.FamilyTree.Schema;
-
-  if (payload.id) familyTreeCollection.update(payload.id, (draft) => Object.assign(draft, payload));
-  else familyTreeCollection.insert({ ...payload, id: fallbackId as Human.IdSchema });
-
-  emits("settled");
+  try {
+    const payload = Human.formToSchema(Human.KINDS.FamilyTree, values);
+    if (payload.id) familyTreeCollection.update(payload.id, (draft) => Object.assign(draft, payload));
+    else familyTreeCollection.insert({ ...payload, id: fallbackId as Human.IdSchema });
+    emits("success");
+  } catch (error) {
+    emits("error", error);
+  }
 };
 
 const formWrapperEl = useTemplateRef("formWrapperEl");

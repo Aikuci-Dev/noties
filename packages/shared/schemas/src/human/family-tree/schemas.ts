@@ -1,6 +1,7 @@
 import * as v from "valibot";
 
 import { IsoDateSchema } from "@/schemas/app";
+import { exactOptionalUndefinable } from "@/utils/valibot";
 
 import { IdSchema, IdsSchema, WithMetaSchema as BaseSchema, KINDS } from "../schemas";
 
@@ -18,7 +19,7 @@ export const ParentSchema = v.pipe(IdsSchema, v.maxLength(2));
  */
 const MetaSchema = v.object({
   kind: v.literal(KINDS.FamilyTree),
-  partnerId: v.exactOptional(IdSchema), // Current Partner
+  partnerId: exactOptionalUndefinable(IdSchema), // Current Partner
   // generationOrder: exactOptionalUndefinable(v.number()),
 });
 export const Schema = v.object({

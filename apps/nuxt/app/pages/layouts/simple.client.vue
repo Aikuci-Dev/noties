@@ -15,7 +15,8 @@
         :people="data"
         :person
         :fallback-id="fallbackId"
-        @settled="handleSettled"
+        @error="console.error"
+        @success="handleSuccess"
       >
         <template #action-buttons> &nbsp; </template>
       </PersonFormSimple>
@@ -60,7 +61,7 @@ const fallbackId = ref<Human.IdSchema>((1 + (data.value[data.value.length - 1]?.
 
 const people = computed(() => {
   if (isEmpty(data.value)) return [];
-  return Human.parsePeople(collectTree(data.value), { kind: Human.KINDS.Simple });
+  return Human.parsePeople(Human.KINDS.Simple, collectTree(data.value));
 });
 
 // https://nuxt.com/docs/4.x/api/components/client-only#accessing-html-elements
@@ -120,7 +121,7 @@ const personFormEl = useTemplateRef("personFormEl");
 
 const isActionDisabled = computed(() => personFormEl.value?.isSubmitting);
 
-const handleSettled = () => {
+const handleSuccess = () => {
   fallbackId.value++;
   showDialog.value = false;
 };

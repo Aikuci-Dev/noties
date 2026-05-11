@@ -20,7 +20,8 @@
         :people="data"
         :person
         :fallback-id="fallbackId"
-        @settled="handleSettled"
+        @error="console.error"
+        @success="handleSuccess"
       >
         <template #action-buttons> &nbsp; </template>
       </PersonFormFamilyTree>
@@ -65,7 +66,7 @@ const fallbackId = ref<Human.IdSchema>((1 + (data.value[data.value.length - 1]?.
 
 const people = computed(() => {
   if (isEmpty(data.value)) return [];
-  return Human.parsePeople(collectTree(data.value), { kind: Human.KINDS.FamilyTree });
+  return Human.parsePeople(Human.KINDS.FamilyTree, collectTree(data.value));
 });
 const peoplePartner = computed(() => {
   const partners = new Set(people.value.map((person) => person.meta.partnerId));
@@ -132,7 +133,7 @@ const personFormEl = useTemplateRef("personFormEl");
 
 const isActionDisabled = computed(() => personFormEl.value?.isSubmitting);
 
-const handleSettled = () => {
+const handleSuccess = () => {
   fallbackId.value++;
   showDialog.value = false;
 };
