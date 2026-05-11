@@ -9,16 +9,13 @@ export const IsoDateRangeSchema = v.pipe(v.array(IsoDateSchema), v.maxLength(2))
 export const IsoTimestampRangeSchema = v.pipe(v.array(IsoTimestampSchema), v.maxLength(2));
 export const UnionDateRangeSchema = v.pipe(v.array(UnionDateSchema), v.maxLength(2));
 
-export const TransformedUnionDateRangeSchema = v.pipe(v.array(v.pipe(UnionDateSchema, v.toDate())), v.maxLength(2));
-export const TransformedUnionDateRangeToIsoSchema = v.pipe(
-  v.array(
-    v.pipe(
-      UnionDateSchema,
-      v.transform((input) => new Date(input).toISOString()),
-    ),
-  ),
-  v.maxLength(2),
+export const TransformedDateSchema = v.pipe(UnionDateSchema, v.toDate());
+export const TransformedDateToIsoSchema = v.pipe(
+  UnionDateSchema,
+  v.transform((input) => new Date(input).toISOString()),
 );
+export const TransformedUnionDateRangeSchema = v.pipe(v.array(TransformedDateSchema), v.maxLength(2));
+export const TransformedUnionDateRangeToIsoSchema = v.pipe(v.array(TransformedDateToIsoSchema), v.maxLength(2));
 
 // APP
 export const IntegerSchema = v.pipe(v.number(), v.safeInteger("The number must be an integer."));

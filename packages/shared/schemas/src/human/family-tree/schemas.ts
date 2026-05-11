@@ -1,6 +1,6 @@
 import * as v from "valibot";
 
-import { IsoDateSchema } from "@/schemas/app";
+import { IsoTimestampSchema } from "@/schemas/app";
 import { exactOptionalUndefinable } from "@/utils/valibot";
 
 import { IdSchema, IdsSchema, WithMetaSchema as BaseSchema, KINDS } from "../schemas";
@@ -26,8 +26,8 @@ export const Schema = v.object({
   ...BaseSchema.entries,
   meta: MetaSchema,
 
-  dateOfBirth: v.nullish(IsoDateSchema),
-  dateOfDeath: v.nullish(IsoDateSchema),
+  dateOfBirth: v.nullish(IsoTimestampSchema),
+  dateOfDeath: v.nullish(IsoTimestampSchema),
   parentIds: v.nullish(ParentSchema),
   partnerIds: v.nullish(IdsSchema),
   childrenIds: v.nullish(IdsSchema),
