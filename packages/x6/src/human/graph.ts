@@ -2,9 +2,10 @@ import type { Dimension } from "@relaverse/shared-schema";
 
 import { Graph } from "@antv/x6";
 
+import type { BaseGraphDep } from "@/common/types";
+
 import { EDGE_LINE, EDGE_LINE_DASH, edgeLine, nodePlaceholder } from "@/common/components";
 
-import type { BaseGraphDep } from "../common";
 import type { NodeData, NodePersonData } from "./types";
 
 import {
