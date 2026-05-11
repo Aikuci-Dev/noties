@@ -24,9 +24,7 @@ const schemas = {
 
   [KINDS.Simple]: SimpleSchema,
   [KINDS.FamilyTree]: FamilyTreeSchema,
-} satisfies {
-  [K in PersonKind]: v.BaseSchema<unknown, SchemaMap[K], any>;
-};
+} satisfies { [K in PersonKind]: v.BaseSchema<unknown, SchemaMap[K], v.BaseIssue<unknown>> };
 
 export function parsePerson<K extends PersonKind>(kind: K, input: unknown): SchemaMap[K] {
   return v.parse(schemas[kind], input) as SchemaMap[K];
@@ -79,9 +77,7 @@ const formToSchemaMappers = {
       meta: { kind: KINDS.FamilyTree, partnerId: partners?.[0] },
     };
   },
-} satisfies {
-  [K in PersonKind]: (input: FormSchemaMap[K]) => SchemaMap[K];
-};
+} satisfies { [K in PersonKind]: (input: FormSchemaMap[K]) => SchemaMap[K] };
 
 export function formToSchema<K extends PersonKind>(kind: K, input: FormSchemaMap[K]): SchemaMap[K] {
   return formToSchemaMappers[kind](input as never) as SchemaMap[K];
@@ -89,4 +85,38 @@ export function formToSchema<K extends PersonKind>(kind: K, input: FormSchemaMap
 
 export function bulkFormToSchema<K extends PersonKind>(kind: K, inputs: FormSchemaMap[K][]): SchemaMap[K][] {
   return inputs.map((input) => formToSchema(kind, input));
+}
+
+/**
+ * schema -> form schema converters
+ */
+const schemaToFormMappers = {
+  [DEFAULT_KINDS.Default]: (input: Schema): Schema => input,
+
+  [DEFAULT_KINDS.WithMeta]: (input: WithMetaSchema): WithMetaSchema => input,
+
+  [KINDS.Simple]: (input: SimpleSchema): SimpleFormSchema => {
+    const { meta: _meta, childrenIds, ...rest } = input;
+    return { ...rest, children: childrenIds };
+  },
+
+  [KINDS.FamilyTree]: (input: FamilyTreeSchema): FamilyTreeFormSchema => {
+    const { meta: _meta, dateOfBirth, dateOfDeath, parentIds, partnerIds, childrenIds, ...rest } = input;
+    return {
+      ...rest,
+      life_span: dateOfBirth ? (dateOfDeath ? [dateOfBirth, dateOfDeath] : [dateOfBirth]) : [],
+
+      parent: parentIds,
+      partners: partnerIds,
+      children: childrenIds,
+    };
+  },
+} satisfies { [K in PersonKind]: (input: SchemaMap[K]) => FormSchemaMap[K] };
+
+export function schemaToFormSchema<K extends PersonKind>(kind: K, input: SchemaMap[K]): FormSchemaMap[K] {
+  return schemaToFormMappers[kind](input as never) as FormSchemaMap[K];
+}
+
+export function bulkSchemaToFormSchema<K extends PersonKind>(kind: K, inputs: SchemaMap[K][]): FormSchemaMap[K][] {
+  return inputs.map((input) => schemaToFormSchema(kind, input));
 }
