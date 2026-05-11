@@ -1,5 +1,5 @@
 {
-  "name": "@noties/shared-util",
+  "name": "@relaverse/shared-util",
   "version": "0.0.0",
   "private": true,
   "files": [
@@ -22,10 +22,10 @@
     "vitest": "catalog:test"
   },
   "peerDependencies": {
-    "@noties/shared-schema": "workspace:*"
+    "@relaverse/shared-schema": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@noties/shared-schema": {
+    "@relaverse/shared-schema": {
       "optional": true
     }
   }

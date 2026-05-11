@@ -16,6 +16,13 @@ catalogs:
     tsdown:
       specifier: ^0.21.7
       version: 0.21.7
+  test:
+    fast-check:
+      specifier: ^4.6.0
+      version: 4.6.0
+    vitest:
+      specifier: ^4.1.2
+      version: 4.1.2
 
 importers:
 
@@ -39,18 +46,18 @@ importers:
       '@formkit/auto-animate':
         specifier: ^0.9.0
         version: 0.9.0
-      '@noties/shared-schema':
-        specifier: workspace:*
-        version: link:../../packages/shared/schemas
-      '@noties/shared-util':
-        specifier: workspace:*
-        version: link:../../packages/shared/utils
-      '@noties/x6':
-        specifier: workspace:*
-        version: link:../../packages/x6
       '@nuxt/icon':
         specifier: 2.2.2
         version: 2.2.2(magicast@0.5.1)(vite@7.3.1(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.19.2)(yaml@2.8.2))(vue@3.5.29(typescript@6.0.2))
+      '@relaverse/shared-schema':
+        specifier: workspace:*
+        version: link:../../packages/shared/schemas
+      '@relaverse/shared-util':
+        specifier: workspace:*
+        version: link:../../packages/shared/utils
+      '@relaverse/x6':
+        specifier: workspace:*
+        version: link:../../packages/x6
       '@tailwindcss/vite':
         specifier: ^4.2.4
         version: 4.2.4(vite@7.3.1(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.19.2)(yaml@2.8.2))
@@ -116,7 +123,7 @@ importers:
 
   packages/shared/utils:
     dependencies:
-      '@noties/shared-schema':
+      '@relaverse/shared-schema':
         specifier: workspace:*
         version: link:../schemas
     devDependencies:
@@ -141,10 +148,10 @@ importers:
       '@dagrejs/dagre':
         specifier: ^2.0.4
         version: 2.0.4
-      '@noties/shared-schema':
+      '@relaverse/shared-schema':
         specifier: workspace:*
         version: link:../shared/schemas
-      '@noties/shared-util':
+      '@relaverse/shared-util':
         specifier: workspace:*
         version: link:../shared/utils
     devDependencies:
@@ -4969,7 +4976,7 @@ snapshots:
       '@nuxt/kit': 4.3.1(magicast@0.5.1)
       chokidar: 5.0.0
       pathe: 2.0.3
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
     transitivePeerDependencies:
       - magicast
 
@@ -5378,7 +5385,7 @@ snapshots:
       simple-git: 3.30.0
       sirv: 3.0.2
       structured-clone-es: 1.0.0
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       vite: 7.3.1(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.19.2)(yaml@2.8.2)
       vite-plugin-inspect: 11.3.3(@nuxt/kit@4.3.1(magicast@0.5.1))(vite@7.3.1(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.19.2)(yaml@2.8.2))
       vite-plugin-vue-tracer: 1.2.0(vite@7.3.1(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.19.2)(yaml@2.8.2))(vue@3.5.29(typescript@6.0.2))
@@ -5429,7 +5436,7 @@ snapshots:
       rc9: 3.0.0
       scule: 1.3.0
       semver: 7.7.4
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       ufo: 1.6.3
       unctx: 2.5.0
       untyped: 2.0.0
@@ -8805,7 +8812,7 @@ snapshots:
       pkg-types: 2.3.0
       scule: 1.3.0
       strip-literal: 3.1.0
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       unplugin: 2.3.11
       unplugin-utils: 0.3.1
 
@@ -8835,7 +8842,7 @@ snapshots:
       pathe: 2.0.3
       picomatch: 4.0.4
       scule: 1.3.0
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       unplugin: 2.3.11
       unplugin-utils: 0.3.1
       yaml: 2.8.2
@@ -8954,7 +8961,7 @@ snapshots:
       picocolors: 1.1.1
       picomatch: 4.0.4
       tiny-invariant: 1.3.3
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       vite: 7.3.1(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(tsx@4.19.2)(yaml@2.8.2)
       vscode-uri: 3.1.0
     optionalDependencies:
@@ -8995,7 +9002,7 @@ snapshots:
       picomatch: 4.0.4
       postcss: 8.5.6
       rollup: 4.59.0
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
     optionalDependencies:
       fsevents: 2.3.3
       jiti: 2.6.1

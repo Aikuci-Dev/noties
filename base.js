@@ -4,22 +4,22 @@ export const oxc = {
     sortImports: {
       customGroups: [
         {
-          groupName: "type-noties",
+          groupName: "type-relaverse",
           modifiers: ["type"],
-          elementNamePattern: ["@noties/*"],
+          elementNamePattern: ["@relaverse/*"],
         },
         {
-          groupName: "value-noties",
+          groupName: "value-relaverse",
           modifiers: ["value"],
-          elementNamePattern: ["@noties/*"],
+          elementNamePattern: ["@relaverse/*"],
         },
       ],
       groups: [
         "type-import",
         ["value-builtin", "value-external"],
 
-        "type-noties",
-        "value-noties",
+        "type-relaverse",
+        "value-relaverse",
 
         "type-internal",
         "value-internal",

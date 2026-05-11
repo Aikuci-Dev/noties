@@ -1,5 +1,5 @@
 {
-  "name": "@noties/x6",
+  "name": "@relaverse/x6",
   "version": "0.0.0",
   "private": true,
   "files": [
@@ -17,17 +17,17 @@
   "dependencies": {
     "@antv/x6": "^3.1.6",
     "@dagrejs/dagre": "^2.0.4",
-    "@noties/shared-util": "workspace:*"
+    "@relaverse/shared-util": "workspace:*"
   },
   "devDependencies": {
     "tsdown": "catalog:lib",
     "typescript": "catalog:"
   },
   "peerDependencies": {
-    "@noties/shared-schema": "workspace:*"
+    "@relaverse/shared-schema": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@noties/shared-schema": {
+    "@relaverse/shared-schema": {
       "optional": true
     }
   }
