@@ -26,6 +26,13 @@ export const KINDS = {
 export const KindSchema = v.picklist(Object.values(KINDS));
 export type KindSchema = v.InferOutput<typeof KindSchema>;
 
+export const DEFAULT_KINDS = {
+  Default: "Default",
+  WithMeta: "WithMeta",
+} as const;
+export const DefaultKindSchema = v.picklist(Object.values(DEFAULT_KINDS));
+export type DefaultKindSchema = v.InferOutput<typeof DefaultKindSchema>;
+
 /**
  * =========================
  * DEFAULT
