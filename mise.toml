@@ -1,0 +1,26 @@
+experimental_monorepo_root = true
+
+[tools]
+node = "26.1.0"
+pnpm = "11.1.0"
+
+[env]
+MISE_EXPERIMENTAL = 1
+
+[monorepo]
+config_roots = ["apps/*", "packages/*", "packages/shared/*"]
+
+[tasks.dev]
+depends = ["//apps/...:dev"]
+
+[tasks."packages:dev"]
+depends = ["//packages/...:dev"]
+
+[tasks."libs:dev"]
+depends = ["//packages/*:dev"]
+
+[tasks."shared:dev"]
+depends = ["//packages/shared/*:dev"]
+
+[tasks."shared:test"]
+depends = ["//packages/shared/*:test"]

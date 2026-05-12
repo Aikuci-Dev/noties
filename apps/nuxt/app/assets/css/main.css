@@ -1,0 +1,89 @@
+@import "tailwindcss" prefix(tw);
+@plugin "daisyui" {
+  prefix: "d-";
+}
+
+:root {
+  --base-color-primary: oklch(62% 0.214 259.815); /* ≈ blue-500 */
+  --base-color-primary-content: oklch(97% 0.014 254.604); /* ≈ blue-50 */
+  --base-color-secondary: oklch(65% 0.241 354.308); /* ≈ pink-500 */
+  --base-color-secondary-content: oklch(97% 0.014 343.198); /* ≈ pink-50 */
+  --base-color-accent: oklch(55% 0.027 264.364); /* ≈ gray-500 */
+  --base-color-accent-content: oklch(98% 0.002 247.839); /* ≈ gray-50 */
+  --base-color-neutral: oklch(55% 0.046 257.417); /* ≈ slate-500 */
+  --base-color-neutral-content: oklch(98% 0.003 247.858); /* ≈ slate-50 */
+  --base-color-info: oklch(78% 0.154 211.53); /* ≈ cyan-400 */
+  --base-color-info-content: oklch(39% 0.07 227.392); /* ≈ cyan-900 */
+  --base-color-success: oklch(79% 0.209 151.711); /* ≈ green-400 */
+  --base-color-success-content: oklch(39% 0.095 152.535); /* ≈ green-900 */
+  --base-color-warning: oklch(85% 0.199 91.936); /* ≈ yellow-400 */
+  --base-color-warning-content: oklch(42% 0.095 57.708); /* ≈ yellow-900 */
+  --base-color-error: oklch(70% 0.191 22.216); /* ≈ red-400 */
+  --base-color-error-content: oklch(39% 0.141 25.723); /* ≈ red-900 */
+}
+
+@utility text-muted {
+  @apply tw:text-gray-500/80;
+}
+
+@utility required-asterisk {
+  @apply tw:ml-1 tw:text-error-content;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+
+  /* --color-base-100: oklch(100% 0 0); */ /* ≈ white */
+  /* --color-base-200: oklch(92% 0 0); */ /* ≈ neutral-200 */
+  /* --color-base-300: oklch(55% 0 0); */ /* ≈ neutral-500 */
+  /* --color-base-content: oklch(0% 0 0); */ /* ≈ black */
+
+  --color-primary: var(--base-color-primary);
+  --color-primary-content: var(--base-color-primary-content);
+  --color-secondary: var(--base-color-secondary);
+  --color-secondary-content: var(--base-color-secondary-content);
+  --color-accent: var(--base-color-accent);
+  --color-accent-content: var(--base-color-accent-content);
+  --color-neutral: var(--base-color-neutral);
+  --color-neutral-content: var(--base-color-neutral-content);
+  --color-info: var(--base-color-info);
+  --color-info-content: var(--base-color-info-content);
+  --color-success: var(--base-color-success);
+  --color-success-content: var(--base-color-success-content);
+  --color-warning: var(--base-color-warning);
+  --color-warning-content: var(--base-color-warning-content);
+  --color-error: var(--base-color-error);
+  --color-error-content: var(--base-color-error-content);
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: "dark";
+
+  /* --color-base-100: oklch(0% 0 0); */ /* ≈ black */
+  /* --color-base-200: oklch(55% 0 0); */ /* ≈ neutral-500 */
+  /* --color-base-300: oklch(26% 0 0); */ /* ≈ neutral-800 */
+  /* --color-base-content: oklch(100% 0 0); */ /* ≈ white */
+
+  --color-primary: var(--base-color-primary);
+  --color-primary-content: var(--base-color-primary-content);
+  --color-secondary: var(--base-color-secondary);
+  --color-secondary-content: var(--base-color-secondary-content);
+  --color-accent: var(--base-color-accent);
+  --color-accent-content: var(--base-color-accent-content);
+  --color-neutral: var(--base-color-neutral);
+  --color-neutral-content: var(--base-color-neutral-content);
+  --color-info: var(--base-color-info);
+  --color-info-content: var(--base-color-info-content);
+  --color-success: var(--base-color-success);
+  --color-success-content: var(--base-color-success-content);
+  --color-warning: var(--base-color-warning);
+  --color-warning-content: var(--base-color-warning-content);
+  --color-error: var(--base-color-error);
+  --color-error-content: var(--base-color-error-content);
+}

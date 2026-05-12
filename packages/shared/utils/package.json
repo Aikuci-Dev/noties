@@ -1,0 +1,32 @@
+{
+  "name": "@relaverse/shared-util",
+  "version": "0.0.1",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "fast-check": "catalog:test",
+    "tsdown": "catalog:lib",
+    "typescript": "catalog:",
+    "vitest": "catalog:test"
+  },
+  "peerDependencies": {
+    "@relaverse/shared-schema": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@relaverse/shared-schema": {
+      "optional": true
+    }
+  }
+}

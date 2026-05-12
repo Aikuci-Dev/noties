@@ -1,0 +1,30 @@
+import * as v from "valibot";
+
+type TBaseSchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
+
+export function normalizeEmptyToNull<TSchema extends TBaseSchema>(schema: TSchema) {
+  return v.pipe(
+    schema,
+    v.transform((input) => {
+      const { success: isEmptyString } = v.safeParse(v.pipe(v.string(), v.empty()), input);
+      const { success: isEmptyArray } = v.safeParse(v.pipe(v.array(v.any()), v.empty()), input);
+      return isEmptyString || isEmptyArray ? null : input;
+    }),
+  );
+}
+
+export function exactOptionalUndefinable<
+  TWrapped extends TBaseSchema,
+  TDefault extends v.Default<TWrapped, null | undefined>,
+>(wrappedSchema: TWrapped, defaultValue?: TDefault) {
+  const withUndefined = v.undefinedable(wrappedSchema, defaultValue);
+  return v.exactOptional(withUndefined, defaultValue);
+}
+
+export function exactOptionalNullish<
+  TWrapped extends TBaseSchema,
+  TDefault extends v.Default<TWrapped, null | undefined>,
+>(wrappedSchema: TWrapped, defaultValue?: TDefault) {
+  const withNullish = v.nullish(wrappedSchema, defaultValue);
+  return v.exactOptional(withNullish, defaultValue);
+}
