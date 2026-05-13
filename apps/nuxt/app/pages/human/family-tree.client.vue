@@ -1,5 +1,5 @@
 <template>
-  <div class="tw:relative tw:h-screen">
+  <div class="tw:relative tw:min-h-svh">
     <div ref="graphEl"></div>
 
     <div class="tw:absolute tw:inset-e-4 tw:inset-be-4">
