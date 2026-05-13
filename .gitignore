@@ -20,6 +20,3 @@ mise.*local.toml
 .nitro
 .cache
 dist
-
-# Local Netlify folder
-.netlify
