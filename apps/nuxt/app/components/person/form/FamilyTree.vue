@@ -6,7 +6,7 @@
         <UiFormFieldSet
           :of
           :path="['life_span']"
-          :wrapperProps="{ label: 'Life Span' }"
+          :wrapperProps="{ label: 'Lifespan', description: 'Date of Birth - Date of Death' }"
           variant="date-picker"
           :props="{ required: false, range: true }"
         />
@@ -15,7 +15,7 @@
           :path="['gender']"
           :wrapperProps="{ label: 'Gender' }"
           variant="select"
-          :props="{ options: [...Human.GENDERS], required: false }"
+          :props="{ options: genderOptions, required: false }"
         />
         <UiFormFieldSet
           :of
@@ -70,6 +70,12 @@ const personForm = useForm({
   schema: Human.FamilyTree.FormSchemaOutput,
   initialInput: person ? Human.schemaToFormSchema(Human.KINDS.FamilyTree, person) : undefined,
 });
+
+const gendersMap = {
+  M: "Male",
+  F: "Female",
+} satisfies Record<(typeof Human.GENDERS)[number], string>;
+const genderOptions = Human.GENDERS.map((value) => ({ value, label: gendersMap[value] }));
 
 function resetForm() {
   reset(personForm);
