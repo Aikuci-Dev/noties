@@ -1,6 +1,6 @@
 <template>
   <fieldset class="tw:d-fieldset tw:p-4">
-    <field :of :path v-slot="field">
+    <field :of :path #default="field">
       <slot>
         <component
           :is="FormFieldVariantComponentMap[variant ?? 'input']"

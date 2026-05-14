@@ -1,5 +1,5 @@
 <template>
-  <DefineTreeItemTemplate v-slot="{ item }">
+  <DefineTreeItemTemplate #default="{ item }">
     <template v-if="item.children">
       <Icon v-if="item.icon !== false" :name="item.icon ?? (item.isOpen ? 'lucide:folder-open' : 'lucide:folder')" />
       {{ item.label }}
@@ -12,7 +12,7 @@
     </template>
   </DefineTreeItemTemplate>
 
-  <DefineTreeTemplate v-slot="{ items }">
+  <DefineTreeTemplate #default="{ items }">
     <li v-for="(item, index) in items" :key="item.label" :item :class="{ 'tw:d-menu-active': item.isActive }">
       <details
         v-if="item.children?.length"

@@ -1,7 +1,7 @@
 <template>
   <div class="tw:p-4">
     <UiFormWrapper ref="formWrapperEl" :of="personForm" @submit="handleSubmitForm">
-      <template v-slot="{ of }">
+      <template #default="{ of }">
         <UiFormFieldSet :of :path="['name']" :wrapperProps="{ label: 'Name' }" />
         <UiFormFieldSet
           :of
@@ -39,8 +39,8 @@
           :props="{ options: peopleOptions, multiple: true, required: false }"
         />
       </template>
-      <template v-if="$slots['action-buttons']" #action-buttons>
-        <slot name="action-buttons" />
+      <template #action-buttons>
+        <slot v-if="$slots['action-buttons']" name="action-buttons" />
       </template>
     </UiFormWrapper>
   </div>
