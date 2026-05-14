@@ -60,6 +60,10 @@ import { Human } from "@relaverse/shared-schema";
 import { isEmpty } from "@relaverse/shared-util";
 import { addAnimation, addInteraction, createGraphInstance, familyTreeLayout, registerCells } from "@relaverse/x6";
 
+definePageMeta({
+  alias: "/",
+});
+
 const { data } = useLiveQuery(useHumanFamilyTreeQuery);
 
 const fallbackId = ref<Human.IdSchema>((1 + (data.value[data.value.length - 1]?.id ?? 0)) as Human.IdSchema);
