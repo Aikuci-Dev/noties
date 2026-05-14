@@ -5,8 +5,6 @@ import type { NodePersonData } from "../types";
 export const BUTTON_NODE_EDIT = "button-node-edit-person";
 
 export default function nodeTool({ handleClick }: { handleClick?: (data: NodePersonData) => void }) {
-  const defaultAttrs = { fill: "none", stroke: "#000" };
-
   return {
     inherit: "button",
     onClick({ cell }: { cell: Cell }) {
@@ -28,21 +26,11 @@ export default function nodeTool({ handleClick }: { handleClick?: (data: NodePer
         },
       },
       {
-        tagName: "circle",
-        selector: "head",
-        attrs: { ...defaultAttrs, cx: 8, cy: 4.8, r: 3 },
-      },
-      {
-        tagName: "path",
-        selector: "body",
-        attrs: { ...defaultAttrs, d: "M3.2 12.6a4.8 4.8 0 0 1 6.493-4.492" },
-      },
-      {
-        tagName: "path",
-        selector: "edit",
+        tagName: "image",
+        selector: "icon",
         attrs: {
-          ...defaultAttrs,
-          d: "M12.827 9.376a1 1 0 0 0-1.8-1.8L8.621 9.984a1.2 1.2 0 0 0-.304.512l-.502 1.722a.3.3 0 0 0 .372.372l1.722-.502a1.2 1.2 0 0 0 .512-.304z",
+          "xlink:href": "https://api.iconify.design/lucide:user-pen.svg",
+          cursor: "pointer",
         },
       },
     ],

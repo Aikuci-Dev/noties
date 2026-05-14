@@ -1,6 +1,6 @@
-import type { Dimension } from "@relaverse/shared-schema";
-
 import { Graph } from "@antv/x6";
+
+import type { Dimension } from "@relaverse/shared-schema";
 
 import type { BaseGraphDep } from "@/common/types";
 
