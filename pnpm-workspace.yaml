@@ -3,7 +3,7 @@ packages:
   - packages/**/*
 
 allowBuilds:
-  '@parcel/watcher': false
+  "@parcel/watcher": false
   esbuild: false
   vue-demi: false
 
@@ -17,4 +17,5 @@ catalogs:
 
   test:
     fast-check: ^4.6.0
-    vitest: ^4.1.2
+    vitest: ^4.1.9
+    "@vitest/coverage-v8": "^4.1.9"
