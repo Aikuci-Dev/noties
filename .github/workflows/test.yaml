@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.0
         with:
           persist-credentials: false
 
-      - uses: voidzero-dev/setup-vp@v1.12
+      - uses: voidzero-dev/setup-vp@v1.12.0
         with:
           cache: true
           sfw: true
@@ -26,6 +26,6 @@ jobs:
 
       - name: ⬆︎ Upload results to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@v7
+        uses: codecov/codecov-action@v7.0.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
