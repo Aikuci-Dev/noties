@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en-US
+reviews:
+  profile: chill
+  estimate_code_review_effort: false
+  in_progress_fortune: false
+  poem: false
+
+  slop_detection:
+    enabled: true
+    label: "slop"
+
+  auto_review:
+    ignore_title_keywords:
+      - 'WIP'
+      - '[skip-review]'
+      - 'chore(release)'
+    labels:
+      - '!release'
+
+  pre_merge_checks:
+    docstrings:
+      mode: off
+    title:
+      mode: error
+
+  tools:
+    markdownlint:
+      enabled: false
+    languagetool:
+      enabled: false
+    biome:
+      enabled: false
+    eslint:
+      enabled: false
+    stylelint:
+      enabled: false
+    # oxc:
+      # enabled: false
+    # oxlint:
+      # enabled: false
