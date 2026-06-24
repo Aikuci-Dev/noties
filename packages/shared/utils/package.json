@@ -16,6 +16,7 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@types/node": "catalog:type",
     "fast-check": "catalog:test",
     "tsdown": "catalog:lib",
     "typescript": "catalog:",
