@@ -16,6 +16,8 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@types/node": "catalog:type",
+    "@vitest/coverage-v8": "catalog:test",
     "fast-check": "catalog:test",
     "tsdown": "catalog:lib",
     "typescript": "catalog:",
