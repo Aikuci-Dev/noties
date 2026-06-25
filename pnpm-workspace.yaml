@@ -17,8 +17,9 @@ catalogs:
 
   lib:
     tsdown: ^0.21.7
+    vite-plus: ^0.2.1
 
   test:
     fast-check: ^4.6.0
     vitest: ^4.1.9
-    "@vitest/coverage-v8": "^4.1.9"
+    "@vitest/coverage-v8": ^4.1.9
