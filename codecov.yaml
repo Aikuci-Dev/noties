@@ -1,0 +1,14 @@
+coverage:
+  status:
+    changes:
+      default:
+        only_pulls: true
+        informational: true
+    project:
+      default:
+        only_pulls: true
+        informational: true
+    patch:
+      default:
+        only_pulls: true
+        informational: true
