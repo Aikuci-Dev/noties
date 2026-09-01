@@ -2,7 +2,7 @@ experimental_monorepo_root = true
 
 [tools]
 node = "26.1.0"
-pnpm = "11.1.0"
+pnpm = "11.25.0"
 
 [env]
 MISE_EXPERIMENTAL = 1
