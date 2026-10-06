@@ -13,7 +13,7 @@
     "@floating-ui/vue": "^1.1.11",
     "@formisch/vue": "^0.7.5",
     "@formkit/auto-animate": "^0.9.0",
-    "@nuxt/icon": "2.2.2",
+    "@nuxt/icon": "2.5.1",
     "@relaverse/shared-schema": "workspace:*",
     "@relaverse/shared-util": "workspace:*",
     "@relaverse/x6": "workspace:*",
