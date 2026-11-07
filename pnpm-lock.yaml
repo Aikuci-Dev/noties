@@ -17,7 +17,7 @@ catalogs:
       specifier: ^0.21.7
       version: 0.21.7
     vite-plus:
-      specifier: latest
+      specifier: ^0.2.1
       version: 0.2.1
   test:
     '@vitest/coverage-v8':
@@ -79,13 +79,13 @@ importers:
         version: 0.0.116(typescript@6.0.2)(vue@3.5.29(typescript@6.0.2))
       '@vueuse/integrations':
         specifier: ^14.3.0
-        version: 14.3.0(focus-trap@8.2.0)(fuse.js@7.3.0)(vue@3.5.29(typescript@6.0.2))
+        version: 14.3.0(focus-trap@8.2.4)(fuse.js@7.3.0)(vue@3.5.29(typescript@6.0.2))
       daisyui:
         specifier: ^5.5.19
         version: 5.5.19
       focus-trap:
         specifier: ^8.2.0
-        version: 8.2.0
+        version: 8.2.4
       fuse.js:
         specifier: ^7.3.0
         version: 7.3.0
@@ -3193,8 +3193,8 @@ packages:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
 
-  focus-trap@8.2.0:
-    resolution: {integrity: sha512-CaBdQ9P4fa/yCA6pDf/3aJd8bf9IOG5QGK21/E+86o2V4V8kzXaR4A9E6tNR7KkkS1+T5ZIU1tJDBDLwsucz9g==}
+  focus-trap@8.2.4:
+    resolution: {integrity: sha512-oy6dj7WZYgMbbpoOA29K5W++473F1zEzdI1oJgPb6x7yWT36YaWedUe6i6YPWEt5quSh0pRMohVyHLWXUxtdxg==}
 
   foreground-child@3.3.1:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
@@ -4488,8 +4488,8 @@ packages:
     resolution: {integrity: sha512-ulAk51I9UVUyJgxlv9M6lFot2WP3e7t8Kz9+IS6D4rVba1tR9kON+Ey69f+1R4Q8cd45Lod6a4IcJIxnzGc/zA==}
     engines: {node: '>=18'}
 
-  tabbable@6.4.0:
-    resolution: {integrity: sha512-05PUHKSNE8ou2dwIxTngl4EzcnsCDZGJ/iCLtDflR/SHB/ny14rXc+qU5P4mG9JkusiV7EivzY9Mhm55AzAvCg==}
+  tabbable@6.5.1:
+    resolution: {integrity: sha512-dMCuwDUY6Noz3zVKLefBC4wq+aJV20yc7vWmM7uTNGwtQSFF5kX7OUIUsxuVajz/bdt5Xqdah3/0NLjth+cM5A==}
 
   tagged-tag@1.0.0:
     resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
@@ -7075,13 +7075,13 @@ snapshots:
       '@vueuse/shared': 14.3.0(vue@3.5.29(typescript@6.0.2))
       vue: 3.5.29(typescript@6.0.2)
 
-  '@vueuse/integrations@14.3.0(focus-trap@8.2.0)(fuse.js@7.3.0)(vue@3.5.29(typescript@6.0.2))':
+  '@vueuse/integrations@14.3.0(focus-trap@8.2.4)(fuse.js@7.3.0)(vue@3.5.29(typescript@6.0.2))':
     dependencies:
       '@vueuse/core': 14.3.0(vue@3.5.29(typescript@6.0.2))
       '@vueuse/shared': 14.3.0(vue@3.5.29(typescript@6.0.2))
       vue: 3.5.29(typescript@6.0.2)
     optionalDependencies:
-      focus-trap: 8.2.0
+      focus-trap: 8.2.4
       fuse.js: 7.3.0
 
   '@vueuse/metadata@14.3.0': {}
@@ -7691,9 +7691,9 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  focus-trap@8.2.0:
+  focus-trap@8.2.4:
     dependencies:
-      tabbable: 6.4.0
+      tabbable: 6.5.1
 
   foreground-child@3.3.1:
     dependencies:
@@ -9250,7 +9250,7 @@ snapshots:
 
   system-architecture@0.1.0: {}
 
-  tabbable@6.4.0: {}
+  tabbable@6.5.1: {}
 
   tagged-tag@1.0.0: {}
 
