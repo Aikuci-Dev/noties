@@ -17,7 +17,7 @@ catalogs:
       specifier: ^0.21.7
       version: 0.21.7
     vite-plus:
-      specifier: latest
+      specifier: ^0.2.1
       version: 0.2.1
   test:
     '@vitest/coverage-v8':
@@ -75,8 +75,8 @@ importers:
         specifier: ^4.2.4
         version: 4.2.4(vite@7.3.1(@types/node@26.0.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(yaml@2.8.2))
       '@tanstack/vue-db':
-        specifier: ^0.0.116
-        version: 0.0.116(typescript@6.0.2)(vue@3.5.29(typescript@6.0.2))
+        specifier: ^0.3.0
+        version: 0.3.12(typescript@6.0.2)(vue@3.5.29(typescript@6.0.2))
       '@vueuse/integrations':
         specifier: ^14.3.0
         version: 14.3.0(focus-trap@8.2.0)(fuse.js@7.3.0)(vue@3.5.29(typescript@6.0.2))
@@ -2196,13 +2196,13 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@tanstack/db-ivm@0.1.18':
-    resolution: {integrity: sha512-+pZJiRKdoKRM5Epq9T7otD9ZJl82pRFauo7LKuJGrarjVKQ7r+QQlPe3kGdN9LEKSnuNGIWjX9OOY4M8kH4eLw==}
+  '@tanstack/db-ivm@0.2.0':
+    resolution: {integrity: sha512-AuMuGzVdWR5qzJPRYajmrUp95vMo0duvMZ0zBjMOvaI9rkh2GHZWCsJ/p7s81UN4Lep6HHJjahnYUF+XVL0+AQ==}
     peerDependencies:
       typescript: '>=4.7'
 
-  '@tanstack/db@0.6.5':
-    resolution: {integrity: sha512-gtCuAo4UtC9SR/kTMu5fVEff6qZ2R1FZi9X7MybtHKA6wve7RePifGG6qBI4OmMB+7juT5/+glNbnqZOrG0/pg==}
+  '@tanstack/db@0.15.2':
+    resolution: {integrity: sha512-s7CR8kOgkF1oPEGyKWItWHsg7U3hhQQu+k9CPjjAWwS6wzWVvjCbHbu/xnJvO1aPe7v3SBwo1tf6CMyKjNPNxg==}
     peerDependencies:
       typescript: '>=4.7'
 
@@ -2210,8 +2210,8 @@ packages:
     resolution: {integrity: sha512-3PouiFjR4B6x1c969/Pl4ZIJleof1M0n6fNX8NRiC9Sqv1g06CVDlEaXUR4212ycGFyfq4q+t8Gi37Xy+z34iQ==}
     engines: {node: '>=18'}
 
-  '@tanstack/vue-db@0.0.116':
-    resolution: {integrity: sha512-Ic5vH5D+m+vCn+dNNa4vd5HckVaW6tfbDqWPJw6cUiOwUE9AzoN/l/9NAaK97Out8Lm4OrBiKKBvtzw3ojpYmg==}
+  '@tanstack/vue-db@0.3.12':
+    resolution: {integrity: sha512-mnEeSs4vUtMKl7QmWAV/xDzQMGZzsA8GVJ50rV6ViEZSqBOSWaEGqso77RQLWChcQBu+8VV/BsrdfFsr8XhG/Q==}
     peerDependencies:
       vue: '>=3.3.0'
 
@@ -4379,9 +4379,6 @@ packages:
   smob@1.5.0:
     resolution: {integrity: sha512-g6T+p7QO8npa+/hNx9ohv1E5pVCmWrVCUzUXJyLdMmftX6ER0oiWY/w9knEonLpnOp6b6FenKnMfR8gqwWdwig==}
 
-  sorted-btree@1.8.1:
-    resolution: {integrity: sha512-395+XIP+wqNn3USkFSrNz7G3Ss/MXlZEqesxvzCRFwL14h6e8LukDHdLBePn5pwbm5OQ9vGu8mDyz2lLDIqamQ==}
-
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -5089,7 +5086,7 @@ snapshots:
 
   '@babel/code-frame@7.29.0':
     dependencies:
-      '@babel/helper-validator-identifier': 7.28.5
+      '@babel/helper-validator-identifier': 7.29.7
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
@@ -6699,24 +6696,23 @@ snapshots:
       tailwindcss: 4.2.4
       vite: 7.3.1(@types/node@26.0.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(yaml@2.8.2)
 
-  '@tanstack/db-ivm@0.1.18(typescript@6.0.2)':
+  '@tanstack/db-ivm@0.2.0(typescript@6.0.2)':
     dependencies:
       fractional-indexing: 3.2.0
-      sorted-btree: 1.8.1
       typescript: 6.0.2
 
-  '@tanstack/db@0.6.5(typescript@6.0.2)':
+  '@tanstack/db@0.15.2(typescript@6.0.2)':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@tanstack/db-ivm': 0.1.18(typescript@6.0.2)
+      '@tanstack/db-ivm': 0.2.0(typescript@6.0.2)
       '@tanstack/pacer-lite': 0.2.1
       typescript: 6.0.2
 
   '@tanstack/pacer-lite@0.2.1': {}
 
-  '@tanstack/vue-db@0.0.116(typescript@6.0.2)(vue@3.5.29(typescript@6.0.2))':
+  '@tanstack/vue-db@0.3.12(typescript@6.0.2)(vue@3.5.29(typescript@6.0.2))':
     dependencies:
-      '@tanstack/db': 0.6.5(typescript@6.0.2)
+      '@tanstack/db': 0.15.2(typescript@6.0.2)
       vue: 3.5.29(typescript@6.0.2)
     transitivePeerDependencies:
       - typescript
@@ -9147,8 +9143,6 @@ snapshots:
   slash@5.1.0: {}
 
   smob@1.5.0: {}
-
-  sorted-btree@1.8.1: {}
 
   source-map-js@1.2.1: {}
 
