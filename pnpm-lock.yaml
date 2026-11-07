@@ -17,7 +17,7 @@ catalogs:
       specifier: ^0.21.7
       version: 0.21.7
     vite-plus:
-      specifier: latest
+      specifier: ^0.2.1
       version: 0.2.1
   test:
     '@vitest/coverage-v8':
@@ -79,7 +79,7 @@ importers:
         version: 0.0.116(typescript@6.0.2)(vue@3.5.29(typescript@6.0.2))
       '@vueuse/integrations':
         specifier: ^14.3.0
-        version: 14.3.0(focus-trap@8.2.0)(fuse.js@7.3.0)(vue@3.5.29(typescript@6.0.2))
+        version: 14.3.0(focus-trap@8.2.0)(fuse.js@7.5.0)(vue@3.5.29(typescript@6.0.2))
       daisyui:
         specifier: ^5.5.19
         version: 5.5.19
@@ -88,7 +88,7 @@ importers:
         version: 8.2.0
       fuse.js:
         specifier: ^7.3.0
-        version: 7.3.0
+        version: 7.5.0
       nuxt:
         specifier: ^4.3.1
         version: 4.3.1(@parcel/watcher@2.5.1)(@types/node@26.0.0)(@vue/compiler-sfc@3.5.29)(cac@6.7.14)(db0@0.3.4)(ioredis@5.10.0)(lightningcss@1.32.0)(magicast@0.5.3)(oxlint@1.70.0(oxlint-tsgolint@0.23.0)(vite-plus@0.2.1(@types/node@26.0.0)(@vitest/coverage-v8@4.1.9(@vitest/browser@4.1.9)(vitest@4.1.9))(esbuild@0.27.3)(jiti@2.6.1)(terser@5.44.1)(typescript@6.0.2)(unrun@0.2.34)(vite@7.3.1(@types/node@26.0.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(yaml@2.8.2))(yaml@2.8.2)))(rolldown@1.0.0-rc.12)(rollup@4.59.0)(terser@5.44.1)(typescript@6.0.2)(vite@7.3.1(@types/node@26.0.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.44.1)(yaml@2.8.2))(yaml@2.8.2)
@@ -3219,8 +3219,8 @@ packages:
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
 
-  fuse.js@7.3.0:
-    resolution: {integrity: sha512-plz8RVjfcDedTGfVngWH1jmJvBvAwi1v2jecfDerbEnMcmOYUEEwKFTHbNoCiYyzaK2Ws8lABkTCcRSqCY1q4w==}
+  fuse.js@7.5.0:
+    resolution: {integrity: sha512-sQtrEfA+ez/3G0cCZecF70oqpCRttCexYUG4mUrtWL49ULUzUyxokt5kyqwtKzj1270RaKih+hcP3qLcumccow==}
     engines: {node: '>=10'}
 
   fzf@0.5.2:
@@ -5570,7 +5570,7 @@ snapshots:
       debug: 4.4.3
       defu: 6.1.4
       exsolve: 1.0.8
-      fuse.js: 7.3.0
+      fuse.js: 7.5.0
       fzf: 0.5.2
       giget: 3.1.2
       jiti: 2.6.1
@@ -7075,14 +7075,14 @@ snapshots:
       '@vueuse/shared': 14.3.0(vue@3.5.29(typescript@6.0.2))
       vue: 3.5.29(typescript@6.0.2)
 
-  '@vueuse/integrations@14.3.0(focus-trap@8.2.0)(fuse.js@7.3.0)(vue@3.5.29(typescript@6.0.2))':
+  '@vueuse/integrations@14.3.0(focus-trap@8.2.0)(fuse.js@7.5.0)(vue@3.5.29(typescript@6.0.2))':
     dependencies:
       '@vueuse/core': 14.3.0(vue@3.5.29(typescript@6.0.2))
       '@vueuse/shared': 14.3.0(vue@3.5.29(typescript@6.0.2))
       vue: 3.5.29(typescript@6.0.2)
     optionalDependencies:
       focus-trap: 8.2.0
-      fuse.js: 7.3.0
+      fuse.js: 7.5.0
 
   '@vueuse/metadata@14.3.0': {}
 
@@ -7711,7 +7711,7 @@ snapshots:
 
   function-bind@1.1.2: {}
 
-  fuse.js@7.3.0: {}
+  fuse.js@7.5.0: {}
 
   fzf@0.5.2: {}
 
