@@ -17,7 +17,7 @@ catalogs:
       specifier: ^0.21.7
       version: 0.21.7
     vite-plus:
-      specifier: latest
+      specifier: ^0.2.1
       version: 0.2.1
   test:
     '@vitest/coverage-v8':
@@ -108,8 +108,8 @@ importers:
         specifier: ^4.6.4
         version: 4.6.4(vue@3.5.29(typescript@6.0.2))
       wc-datepicker:
-        specifier: ^0.11.0
-        version: 0.11.0
+        specifier: ^0.13.0
+        version: 0.13.0
     devDependencies:
       '@iconify-json/lucide':
         specifier: ^1.2.105
@@ -4976,8 +4976,8 @@ packages:
       typescript:
         optional: true
 
-  wc-datepicker@0.11.0:
-    resolution: {integrity: sha512-JDQxC8qyG4opIURzZSRLyRxBENi0mfBWNK88r9KQKBY8IvB99aFRYcYpveOtWkvtZSX/vSYL/HGbJ7N6/wbj8w==}
+  wc-datepicker@0.13.0:
+    resolution: {integrity: sha512-n/8HVLcPKsX3q7S8rtb+il1YFaejTVrbHmKZfss60N3US3Om0Lx7+vLtlQ4KeGNqMAWrAJosIR/aJRmoyghsoQ==}
 
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
@@ -5089,7 +5089,7 @@ snapshots:
 
   '@babel/code-frame@7.29.0':
     dependencies:
-      '@babel/helper-validator-identifier': 7.28.5
+      '@babel/helper-validator-identifier': 7.29.7
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
@@ -9719,7 +9719,7 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.2
 
-  wc-datepicker@0.11.0:
+  wc-datepicker@0.13.0:
     dependencies:
       '@stencil/core': 2.22.3
 

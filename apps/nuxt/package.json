@@ -29,7 +29,7 @@
     "valibot": "catalog:",
     "vue": "^3.5.29",
     "vue-router": "^4.6.4",
-    "wc-datepicker": "^0.11.0"
+    "wc-datepicker": "^0.13.0"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.105",
